@@ -14,6 +14,7 @@ import { Route as WorkspaceRouteImport } from './routes/_workspace'
 import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_workspace.corporation-investments'
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
 import { Route as WorkspaceListedStocksRouteImport } from './routes/_workspace.listed-stocks'
+import { Route as WorkspaceNasdaqInfoRouteImport } from './routes/_workspace.nasdaq-info'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,18 +41,25 @@ const WorkspaceListedStocksRoute = WorkspaceListedStocksRouteImport.update({
   path: '/listed-stocks',
   getParentRoute: () => WorkspaceRoute,
 } as any)
+const WorkspaceNasdaqInfoRoute = WorkspaceNasdaqInfoRouteImport.update({
+  id: '/nasdaq-info',
+  path: '/nasdaq-info',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
+  '/nasdaq-info': typeof WorkspaceNasdaqInfoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
+  '/nasdaq-info': typeof WorkspaceNasdaqInfoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -60,13 +68,23 @@ export interface FileRoutesById {
   '/_workspace/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
   '/_workspace/listed-stocks': typeof WorkspaceListedStocksRoute
+  '/_workspace/nasdaq-info': typeof WorkspaceNasdaqInfoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/corporation-investments' | '/corporations' | '/listed-stocks'
+    | '/'
+    | '/corporation-investments'
+    | '/corporations'
+    | '/listed-stocks'
+    | '/nasdaq-info'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/corporation-investments' | '/corporations' | '/listed-stocks'
+  to:
+    | '/'
+    | '/corporation-investments'
+    | '/corporations'
+    | '/listed-stocks'
+    | '/nasdaq-info'
   id:
     | '__root__'
     | '/'
@@ -74,6 +92,7 @@ export interface FileRouteTypes {
     | '/_workspace/corporation-investments'
     | '/_workspace/corporations'
     | '/_workspace/listed-stocks'
+    | '/_workspace/nasdaq-info'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceListedStocksRouteImport
       parentRoute: typeof WorkspaceRoute
     }
+    '/_workspace/nasdaq-info': {
+      id: '/_workspace/nasdaq-info'
+      path: '/nasdaq-info'
+      fullPath: '/nasdaq-info'
+      preLoaderRoute: typeof WorkspaceNasdaqInfoRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
   }
 }
 
@@ -125,12 +151,14 @@ interface WorkspaceRouteChildren {
   WorkspaceCorporationInvestmentsRoute: typeof WorkspaceCorporationInvestmentsRoute
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
   WorkspaceListedStocksRoute: typeof WorkspaceListedStocksRoute
+  WorkspaceNasdaqInfoRoute: typeof WorkspaceNasdaqInfoRoute
 }
 
 const WorkspaceRouteChildren: WorkspaceRouteChildren = {
   WorkspaceCorporationInvestmentsRoute: WorkspaceCorporationInvestmentsRoute,
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,
   WorkspaceListedStocksRoute: WorkspaceListedStocksRoute,
+  WorkspaceNasdaqInfoRoute: WorkspaceNasdaqInfoRoute,
 }
 
 const WorkspaceRouteWithChildren = WorkspaceRoute._addFileChildren(

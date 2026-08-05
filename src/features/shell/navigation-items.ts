@@ -1,12 +1,16 @@
 import {
   Building2Icon,
   ChartCandlestickIcon,
+  Globe2Icon,
   NetworkIcon,
   type LucideIcon,
 } from "lucide-react";
 
 export type NavigationPath =
-  "/corporations" | "/corporation-investments" | "/listed-stocks";
+  | "/nasdaq-info"
+  | "/corporations"
+  | "/corporation-investments"
+  | "/listed-stocks";
 
 export interface NavigationItem {
   icon: LucideIcon;
@@ -15,6 +19,11 @@ export interface NavigationItem {
 }
 
 export const navigationItems = [
+  {
+    icon: Globe2Icon,
+    label: "나스닥 정보",
+    to: "/nasdaq-info",
+  },
   {
     icon: Building2Icon,
     label: "법인",

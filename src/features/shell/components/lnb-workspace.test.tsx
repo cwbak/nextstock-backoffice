@@ -17,6 +17,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { equityInvestmentsQueryOptions } from "@/data-access/queries/equity-investments/queries";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
 import { listedStocksQueryOptions } from "@/data-access/queries/listed-stocks/queries";
+import { nasdaqInfoQueryOptions } from "@/data-access/queries/nasdaq-info/queries";
 import { routeTree } from "@/routeTree.gen";
 
 function renderWorkspace() {
@@ -34,6 +35,7 @@ function renderWorkspace() {
   queryClient.setQueryData(corporationsQueryOptions.queryKey, []);
   queryClient.setQueryData(equityInvestmentsQueryOptions.queryKey, []);
   queryClient.setQueryData(listedStocksQueryOptions.queryKey, []);
+  queryClient.setQueryData(nasdaqInfoQueryOptions.queryKey, []);
 
   const router = createRouter({
     context: { queryClient },
@@ -68,6 +70,17 @@ describe("LnbWorkspace", () => {
 
     fireEvent.compositionStart(corporationsInput);
     fireEvent.change(corporationsInput, { target: { value: "삼성" } });
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "나스닥 정보",
+      }),
+    );
+
+    const nasdaqInfoInput = await screen.findByRole("searchbox", {
+      name: "나스닥 정보 검색",
+    });
+
+    fireEvent.change(nasdaqInfoInput, { target: { value: "Apple" } });
     fireEvent.click(
       screen.getByRole("link", {
         name: "출자현황",
@@ -118,6 +131,15 @@ describe("LnbWorkspace", () => {
 
     await waitFor(() => expect(listedStocksInput).toBeVisible());
     expect(listedStocksInput).toHaveValue("현대");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "나스닥 정보",
+      }),
+    );
+
+    await waitFor(() => expect(nasdaqInfoInput).toBeVisible());
+    expect(nasdaqInfoInput).toHaveValue("Apple");
   });
 
   it("검색 상태는 유지하면서 URL에는 현재 메뉴 경로만 표시한다", async () => {
@@ -130,6 +152,27 @@ describe("LnbWorkspace", () => {
     await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
 
     expect(router.state.location.href).toBe("/corporations");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "나스닥 정보",
+      }),
+    );
+
+    const nasdaqInfoInput = await screen.findByRole("searchbox", {
+      name: "나스닥 정보 검색",
+    });
+
+    fireEvent.change(nasdaqInfoInput, { target: { value: "NVDA" } });
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
+
+    expect(router.state.location.href).toBe("/nasdaq-info");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "법인",
+      }),
+    );
 
     fireEvent.click(
       screen.getByRole("link", {

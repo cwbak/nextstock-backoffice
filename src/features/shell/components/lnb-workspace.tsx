@@ -6,6 +6,7 @@ import { ManagementPageLoading } from "@/components/common/management-page-loadi
 import { CorporationInvestmentsPage } from "@/features/corporation-investments";
 import { CorporationsPage } from "@/features/corporations";
 import { ListedStocksPage } from "@/features/listed-stocks";
+import { NasdaqInfoPage } from "@/features/nasdaq-info";
 import { isNavigationPath } from "@/features/shell/navigation-items";
 
 export function LnbWorkspace() {
@@ -20,6 +21,14 @@ export function LnbWorkspace() {
 
   return (
     <>
+      <Activity
+        mode={activePath === "/nasdaq-info" ? "visible" : "hidden"}
+        name="NASDAQ info workspace"
+      >
+        <Suspense fallback={<ManagementPageLoading label="나스닥 정보" />}>
+          <NasdaqInfoPage />
+        </Suspense>
+      </Activity>
       <Activity
         mode={activePath === "/corporations" ? "visible" : "hidden"}
         name="Corporations workspace"
