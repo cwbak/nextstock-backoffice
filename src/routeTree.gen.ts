@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspaceRouteImport } from './routes/_workspace'
+import { Route as WorkspaceCalendarEventsRouteImport } from './routes/_workspace.calendar-events'
 import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_workspace.corporation-investments'
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
 import { Route as WorkspaceListedStocksRouteImport } from './routes/_workspace.listed-stocks'
@@ -24,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const WorkspaceRoute = WorkspaceRouteImport.update({
   id: '/_workspace',
   getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceCalendarEventsRoute = WorkspaceCalendarEventsRouteImport.update({
+  id: '/calendar-events',
+  path: '/calendar-events',
+  getParentRoute: () => WorkspaceRoute,
 } as any)
 const WorkspaceCorporationInvestmentsRoute =
   WorkspaceCorporationInvestmentsRouteImport.update({
@@ -49,6 +55,7 @@ const WorkspaceNasdaqsRoute = WorkspaceNasdaqsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
@@ -56,6 +63,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
@@ -65,6 +73,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_workspace': typeof WorkspaceRouteWithChildren
+  '/_workspace/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/_workspace/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
   '/_workspace/listed-stocks': typeof WorkspaceListedStocksRoute
@@ -74,6 +83,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
     | '/listed-stocks'
@@ -81,6 +91,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
     | '/listed-stocks'
@@ -89,6 +100,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_workspace'
+    | '/_workspace/calendar-events'
     | '/_workspace/corporation-investments'
     | '/_workspace/corporations'
     | '/_workspace/listed-stocks'
@@ -115,6 +127,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_workspace/calendar-events': {
+      id: '/_workspace/calendar-events'
+      path: '/calendar-events'
+      fullPath: '/calendar-events'
+      preLoaderRoute: typeof WorkspaceCalendarEventsRouteImport
+      parentRoute: typeof WorkspaceRoute
     }
     '/_workspace/corporation-investments': {
       id: '/_workspace/corporation-investments'
@@ -148,6 +167,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface WorkspaceRouteChildren {
+  WorkspaceCalendarEventsRoute: typeof WorkspaceCalendarEventsRoute
   WorkspaceCorporationInvestmentsRoute: typeof WorkspaceCorporationInvestmentsRoute
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
   WorkspaceListedStocksRoute: typeof WorkspaceListedStocksRoute
@@ -155,6 +175,7 @@ interface WorkspaceRouteChildren {
 }
 
 const WorkspaceRouteChildren: WorkspaceRouteChildren = {
+  WorkspaceCalendarEventsRoute: WorkspaceCalendarEventsRoute,
   WorkspaceCorporationInvestmentsRoute: WorkspaceCorporationInvestmentsRoute,
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,
   WorkspaceListedStocksRoute: WorkspaceListedStocksRoute,

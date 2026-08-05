@@ -1,3 +1,4 @@
+export * from "@/data-access/schemas/calendar-event";
 export * from "@/data-access/schemas/corporation";
 export * from "@/data-access/schemas/corporation-industry";
 export * from "@/data-access/schemas/equity-investment";

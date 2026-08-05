@@ -3,6 +3,7 @@ import { Activity, Suspense } from "react";
 import { Outlet, useRouterState } from "@tanstack/react-router";
 
 import { ManagementPageLoading } from "@/components/common/management-page-loading";
+import { CalendarEventsPage } from "@/features/calendar-events";
 import { CorporationInvestmentsPage } from "@/features/corporation-investments";
 import { CorporationsPage } from "@/features/corporations";
 import { ListedStocksPage } from "@/features/listed-stocks";
@@ -51,6 +52,14 @@ export function LnbWorkspace() {
       >
         <Suspense fallback={<ManagementPageLoading label="상장 종목 목록" />}>
           <ListedStocksPage />
+        </Suspense>
+      </Activity>
+      <Activity
+        mode={activePath === "/calendar-events" ? "visible" : "hidden"}
+        name="Calendar events workspace"
+      >
+        <Suspense fallback={<ManagementPageLoading label="일정" />}>
+          <CalendarEventsPage />
         </Suspense>
       </Activity>
       <Outlet />
