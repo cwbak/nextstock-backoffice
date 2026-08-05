@@ -10,7 +10,7 @@ export async function uploadNasdaqInfoCsv(
   const formData = new FormData();
   formData.append("file", file);
 
-  return apiRequest("/admin/nasdaq-info", nasdaqInfoUploadResultSchema, {
+  return apiRequest("/admin/nasdaqs", nasdaqInfoUploadResultSchema, {
     method: "POST",
     body: formData,
   });

@@ -11,7 +11,7 @@ import {
 import { DataTableCard } from "@/components/common/data-table-card";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
-  type DataTableState,
+  type SortableDataTableState,
   useDataTableState,
 } from "@/components/common/use-data-table-state";
 import { useDataTableFilterQuery } from "@/components/common/use-data-table-filter-query";
@@ -23,16 +23,20 @@ import { NasdaqInfoEmptyState } from "@/features/nasdaq-info/components/nasdaq-i
 import { NasdaqInfoTable } from "@/features/nasdaq-info/components/nasdaq-info-table";
 import { NasdaqInfoUploadDialog } from "@/features/nasdaq-info/components/nasdaq-info-upload-dialog";
 import { NasdaqInfoUploadSummary } from "@/features/nasdaq-info/components/nasdaq-info-upload-summary";
+import { sortNasdaqInfoByMarketCap } from "@/features/nasdaq-info/nasdaq-info-sort";
 
 const pageSize = 50;
-const initialTableState: DataTableState = {
+const initialTableState: SortableDataTableState<"marketCap"> = {
   page: 1,
   q: "",
+  sortBy: null,
+  sortDirection: "asc",
 };
 
 export function NasdaqInfoPage() {
   const nasdaqInfoQuery = useSuspenseQuery(nasdaqInfoQueryOptions);
   const {
+    setState: setTableState,
     state: tableState,
     updatePage,
     updateQuery,
@@ -62,10 +66,31 @@ export function NasdaqInfoPage() {
       ].some((value) => value.toLocaleLowerCase("en-US").includes(query)),
     );
   }, [filterQuery, nasdaqInfoQuery.data]);
-  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+  const sortedItems = useMemo(
+    () =>
+      tableState.sortBy === null
+        ? filteredItems
+        : sortNasdaqInfoByMarketCap(filteredItems, tableState.sortDirection),
+    [filteredItems, tableState.sortBy, tableState.sortDirection],
+  );
+  const totalPages = Math.max(1, Math.ceil(sortedItems.length / pageSize));
   const currentPage = Math.min(tableState.page, totalPages);
   const startIndex = (currentPage - 1) * pageSize;
-  const visibleItems = filteredItems.slice(startIndex, startIndex + pageSize);
+  const visibleItems = sortedItems.slice(startIndex, startIndex + pageSize);
+
+  const updateSort = () => {
+    const sortDirection =
+      tableState.sortBy === "marketCap" && tableState.sortDirection === "asc"
+        ? "desc"
+        : "asc";
+
+    setTableState((previous) => ({
+      ...previous,
+      page: 1,
+      sortBy: "marketCap",
+      sortDirection,
+    }));
+  };
 
   return (
     <>
@@ -111,7 +136,7 @@ export function NasdaqInfoPage() {
           onQueryChange={updateQuery}
         />
         <DataTableCard
-          description="NASDAQ 종목 정보를 심볼 오름차순으로 표시합니다."
+          description="기본은 심볼 순이며 시가총액 헤더를 눌러 오름차순·내림차순으로 정렬할 수 있습니다."
           recordCount={filteredItems.length}
           title="NASDAQ 종목 정보"
         >
@@ -124,7 +149,12 @@ export function NasdaqInfoPage() {
             />
           ) : (
             <>
-              <NasdaqInfoTable items={visibleItems} />
+              <NasdaqInfoTable
+                items={visibleItems}
+                sortBy={tableState.sortBy}
+                sortDirection={tableState.sortDirection}
+                onSort={updateSort}
+              />
               <DataPagination
                 endRecord={Math.min(
                   startIndex + pageSize,

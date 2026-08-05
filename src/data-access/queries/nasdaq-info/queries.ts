@@ -7,6 +7,6 @@ import { nasdaqInfoListSchema } from "@/data-access/schemas/nasdaq-info";
 export const nasdaqInfoQueryOptions = queryOptions({
   queryKey: nasdaqInfoKeys.list(),
   queryFn: ({ signal }) =>
-    apiRequest("/admin/nasdaq-info", nasdaqInfoListSchema, { signal }),
+    apiRequest("/admin/nasdaqs", nasdaqInfoListSchema, { signal }),
   staleTime: 30 * 1000,
 });

@@ -21,7 +21,7 @@ describe("nasdaq info mutations", () => {
 
     await expect(uploadNasdaqInfoCsv(file)).resolves.toEqual(result);
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/nasdaq-info");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/nasdaqs");
     const request = fetchMock.mock.calls[0]?.[1];
     expect(request?.method).toBe("POST");
     expect(request?.headers).toBeInstanceOf(Headers);

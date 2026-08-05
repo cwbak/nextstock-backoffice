@@ -166,7 +166,7 @@ describe("LnbWorkspace", () => {
     fireEvent.change(nasdaqInfoInput, { target: { value: "NVDA" } });
     await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
 
-    expect(router.state.location.href).toBe("/nasdaq-info");
+    expect(router.state.location.href).toBe("/nasdaqs");
 
     fireEvent.click(
       screen.getByRole("link", {

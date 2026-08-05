@@ -1,3 +1,5 @@
+import { SortableTableHead } from "@/components/common/sortable-table-head";
+import type { SortDirection } from "@/components/common/use-data-table-state";
 import {
   Table,
   TableBody,
@@ -23,9 +25,17 @@ function formatMarketCap(value: string | null) {
 
 interface NasdaqInfoTableProps {
   items: ReadonlyArray<NasdaqInfo>;
+  onSort: () => void;
+  sortBy: "marketCap" | null;
+  sortDirection: SortDirection;
 }
 
-export function NasdaqInfoTable({ items }: NasdaqInfoTableProps) {
+export function NasdaqInfoTable({
+  items,
+  onSort,
+  sortBy,
+  sortDirection,
+}: NasdaqInfoTableProps) {
   return (
     <Table className="min-w-[100rem] table-fixed">
       <TableCaption className="sr-only">등록된 나스닥 종목 정보</TableCaption>
@@ -44,7 +54,11 @@ export function NasdaqInfoTable({ items }: NasdaqInfoTableProps) {
         <TableRow className="bg-muted/35 hover:bg-muted/35">
           <TableHead className="pl-4">심볼</TableHead>
           <TableHead>종목명</TableHead>
-          <TableHead className="text-right">시가총액</TableHead>
+          <SortableTableHead
+            direction={sortBy === "marketCap" ? sortDirection : null}
+            label="시가총액"
+            onSort={onSort}
+          />
           <TableHead>국가</TableHead>
           <TableHead>IPO 연도</TableHead>
           <TableHead>섹터</TableHead>

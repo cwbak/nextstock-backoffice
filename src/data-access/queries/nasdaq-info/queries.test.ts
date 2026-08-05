@@ -36,6 +36,6 @@ describe("nasdaq info queries", () => {
     await expect(
       queryClient.fetchQuery(nasdaqInfoQueryOptions),
     ).resolves.toEqual(listResult);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/nasdaq-info");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/nasdaqs");
   });
 });

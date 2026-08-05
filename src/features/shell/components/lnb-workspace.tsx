@@ -22,7 +22,7 @@ export function LnbWorkspace() {
   return (
     <>
       <Activity
-        mode={activePath === "/nasdaq-info" ? "visible" : "hidden"}
+        mode={activePath === "/nasdaqs" ? "visible" : "hidden"}
         name="NASDAQ info workspace"
       >
         <Suspense fallback={<ManagementPageLoading label="나스닥 정보" />}>

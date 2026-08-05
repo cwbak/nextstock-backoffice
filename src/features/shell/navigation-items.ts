@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 export type NavigationPath =
-  | "/nasdaq-info"
+  | "/nasdaqs"
   | "/corporations"
   | "/corporation-investments"
   | "/listed-stocks";
@@ -22,7 +22,7 @@ export const navigationItems = [
   {
     icon: Globe2Icon,
     label: "나스닥 정보",
-    to: "/nasdaq-info",
+    to: "/nasdaqs",
   },
   {
     icon: Building2Icon,
