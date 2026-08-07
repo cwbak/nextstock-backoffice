@@ -14,6 +14,7 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { calendarEarningsQueryOptions } from "@/data-access/queries/calendar-earnings/queries";
 import { calendarEventsQueryOptions } from "@/data-access/queries/calendar-events/queries";
 import { equityInvestmentsQueryOptions } from "@/data-access/queries/equity-investments/queries";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
@@ -38,6 +39,7 @@ function renderWorkspace() {
   queryClient.setQueryData(listedStocksQueryOptions.queryKey, []);
   queryClient.setQueryData(nasdaqInfoQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
+  queryClient.setQueryData(calendarEarningsQueryOptions.queryKey, []);
 
   const router = createRouter({
     context: { queryClient },
@@ -120,6 +122,17 @@ describe("LnbWorkspace", () => {
     fireEvent.change(calendarEventsInput, { target: { value: "경제지표" } });
     fireEvent.click(
       screen.getByRole("link", {
+        name: "실적",
+      }),
+    );
+
+    const calendarEarningsInput = await screen.findByRole("searchbox", {
+      name: "실적 일정 검색",
+    });
+
+    fireEvent.change(calendarEarningsInput, { target: { value: "ACIU" } });
+    fireEvent.click(
+      screen.getByRole("link", {
         name: "법인",
       }),
     );
@@ -153,6 +166,15 @@ describe("LnbWorkspace", () => {
 
     await waitFor(() => expect(calendarEventsInput).toBeVisible());
     expect(calendarEventsInput).toHaveValue("경제지표");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "실적",
+      }),
+    );
+
+    await waitFor(() => expect(calendarEarningsInput).toBeVisible());
+    expect(calendarEarningsInput).toHaveValue("ACIU");
 
     fireEvent.click(
       screen.getByRole("link", {
@@ -240,6 +262,21 @@ describe("LnbWorkspace", () => {
     await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
 
     expect(router.state.location.href).toBe("/calendar-events");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "실적",
+      }),
+    );
+
+    const calendarEarningsInput = await screen.findByRole("searchbox", {
+      name: "실적 일정 검색",
+    });
+
+    fireEvent.change(calendarEarningsInput, { target: { value: "AAPL" } });
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
+
+    expect(router.state.location.href).toBe("/calendar-earnings");
 
     fireEvent.click(
       screen.getByRole("link", {

@@ -10,6 +10,7 @@ describe("navigationItems", () => {
       { label: "출자현황", to: "/corporation-investments" },
       { label: "주식", to: "/listed-stocks" },
       { label: "일정", to: "/calendar-events" },
+      { label: "실적", to: "/calendar-earnings" },
     ]);
   });
 });

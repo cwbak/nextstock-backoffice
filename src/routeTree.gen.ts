@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspaceRouteImport } from './routes/_workspace'
+import { Route as WorkspaceCalendarEarningsRouteImport } from './routes/_workspace.calendar-earnings'
 import { Route as WorkspaceCalendarEventsRouteImport } from './routes/_workspace.calendar-events'
 import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_workspace.corporation-investments'
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
@@ -26,6 +27,12 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
   id: '/_workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceCalendarEarningsRoute =
+  WorkspaceCalendarEarningsRouteImport.update({
+    id: '/calendar-earnings',
+    path: '/calendar-earnings',
+    getParentRoute: () => WorkspaceRoute,
+  } as any)
 const WorkspaceCalendarEventsRoute = WorkspaceCalendarEventsRouteImport.update({
   id: '/calendar-events',
   path: '/calendar-events',
@@ -55,6 +62,7 @@ const WorkspaceNasdaqsRoute = WorkspaceNasdaqsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
@@ -63,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
@@ -73,6 +82,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_workspace': typeof WorkspaceRouteWithChildren
+  '/_workspace/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
   '/_workspace/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/_workspace/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
@@ -83,6 +93,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/calendar-earnings'
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
@@ -91,6 +102,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/calendar-earnings'
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
@@ -100,6 +112,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_workspace'
+    | '/_workspace/calendar-earnings'
     | '/_workspace/calendar-events'
     | '/_workspace/corporation-investments'
     | '/_workspace/corporations'
@@ -127,6 +140,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_workspace/calendar-earnings': {
+      id: '/_workspace/calendar-earnings'
+      path: '/calendar-earnings'
+      fullPath: '/calendar-earnings'
+      preLoaderRoute: typeof WorkspaceCalendarEarningsRouteImport
+      parentRoute: typeof WorkspaceRoute
     }
     '/_workspace/calendar-events': {
       id: '/_workspace/calendar-events'
@@ -167,6 +187,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface WorkspaceRouteChildren {
+  WorkspaceCalendarEarningsRoute: typeof WorkspaceCalendarEarningsRoute
   WorkspaceCalendarEventsRoute: typeof WorkspaceCalendarEventsRoute
   WorkspaceCorporationInvestmentsRoute: typeof WorkspaceCorporationInvestmentsRoute
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
@@ -175,6 +196,7 @@ interface WorkspaceRouteChildren {
 }
 
 const WorkspaceRouteChildren: WorkspaceRouteChildren = {
+  WorkspaceCalendarEarningsRoute: WorkspaceCalendarEarningsRoute,
   WorkspaceCalendarEventsRoute: WorkspaceCalendarEventsRoute,
   WorkspaceCorporationInvestmentsRoute: WorkspaceCorporationInvestmentsRoute,
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,

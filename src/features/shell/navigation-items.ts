@@ -1,5 +1,6 @@
 import {
   Building2Icon,
+  CalendarClockIcon,
   CalendarDaysIcon,
   ChartCandlestickIcon,
   Globe2Icon,
@@ -12,7 +13,8 @@ export type NavigationPath =
   | "/corporations"
   | "/corporation-investments"
   | "/listed-stocks"
-  | "/calendar-events";
+  | "/calendar-events"
+  | "/calendar-earnings";
 
 export interface NavigationItem {
   icon: LucideIcon;
@@ -45,6 +47,11 @@ export const navigationItems = [
     icon: CalendarDaysIcon,
     label: "일정",
     to: "/calendar-events",
+  },
+  {
+    icon: CalendarClockIcon,
+    label: "실적",
+    to: "/calendar-earnings",
   },
 ] as const satisfies ReadonlyArray<NavigationItem>;
 
