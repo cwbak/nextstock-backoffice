@@ -12,6 +12,7 @@ export const nasdaqInfoSchema = z
     ipoYear: z.number().int().nullable(),
     sector: z.string().nullable(),
     industry: z.string().nullable(),
+    isSp500: z.boolean(),
     createdAt: z.iso.datetime({ offset: true }),
     updatedAt: z.iso.datetime({ offset: true }),
   })

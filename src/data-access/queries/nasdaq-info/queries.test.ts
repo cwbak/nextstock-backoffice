@@ -12,6 +12,7 @@ const listResult = [
     ipoYear: 1999,
     sector: "Industrials",
     industry: "Biotechnology: Laboratory Analytical Instruments",
+    isSp500: true,
     createdAt: "2026-08-05T10:00:00+09:00",
     updatedAt: "2026-08-05T10:00:00+09:00",
   },

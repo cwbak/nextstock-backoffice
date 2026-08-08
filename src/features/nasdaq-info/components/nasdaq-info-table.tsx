@@ -26,12 +26,13 @@ export function NasdaqInfoTable({
   sortDirection,
 }: NasdaqInfoTableProps) {
   return (
-    <Table className="min-w-[100rem] table-fixed">
+    <Table className="min-w-[106rem] table-fixed">
       <TableCaption className="sr-only">등록된 나스닥 종목 정보</TableCaption>
       <colgroup>
         <col className="w-28" />
         <col className="w-64" />
         <col className="w-44" />
+        <col className="w-24" />
         <col className="w-40" />
         <col className="w-24" />
         <col className="w-52" />
@@ -48,6 +49,7 @@ export function NasdaqInfoTable({
             label="시가총액"
             onSort={onSort}
           />
+          <TableHead>S&amp;P 500</TableHead>
           <TableHead>국가</TableHead>
           <TableHead>IPO 연도</TableHead>
           <TableHead>섹터</TableHead>
@@ -70,6 +72,7 @@ export function NasdaqInfoTable({
             <TableCell className="text-right font-medium tabular-nums">
               {formatUsdMarketCap(item.marketCap)}
             </TableCell>
+            <TableCell>{item.isSp500 ? "편입" : "-"}</TableCell>
             <TableCell>{item.country ?? "-"}</TableCell>
             <TableCell className="tabular-nums">
               {item.ipoYear ?? "-"}

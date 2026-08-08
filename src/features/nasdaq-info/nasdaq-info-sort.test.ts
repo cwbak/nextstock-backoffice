@@ -12,6 +12,7 @@ function createItem(symbol: string, marketCap: string | null): NasdaqInfo {
     ipoYear: null,
     sector: null,
     industry: null,
+    isSp500: false,
     createdAt: "2026-08-05T10:00:00+09:00",
     updatedAt: "2026-08-05T10:00:00+09:00",
   };

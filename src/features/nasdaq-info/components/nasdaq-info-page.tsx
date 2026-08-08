@@ -10,6 +10,7 @@ import {
 } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
 import { MarketCapFilterSelect } from "@/components/common/market-cap-filter-select";
+import { Sp500FilterSelect } from "@/components/common/sp500-filter-select";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
   type SortableDataTableState,
@@ -29,6 +30,11 @@ import {
   getMarketCapFilterLabel,
   type MarketCapFilter,
 } from "@/lib/market-cap";
+import {
+  filterBySp500,
+  getSp500FilterLabel,
+  type Sp500Filter,
+} from "@/lib/sp500";
 import { sortNasdaqInfoByMarketCap } from "@/features/nasdaq-info/nasdaq-info-sort";
 
 const pageSize = 50;
@@ -52,6 +58,7 @@ export function NasdaqInfoPage() {
   );
   const [marketCapFilter, setMarketCapFilter] =
     useState<MarketCapFilter>("all");
+  const [sp500Filter, setSp500Filter] = useState<Sp500Filter>("all");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadResult, setUploadResult] =
     useState<NasdaqInfoUploadResult | null>(null);
@@ -61,12 +68,16 @@ export function NasdaqInfoPage() {
       nasdaqInfoQuery.data,
       marketCapFilter,
     );
+    const sp500FilteredItems = filterBySp500(
+      marketCapFilteredItems,
+      sp500Filter,
+    );
 
     if (!query) {
-      return marketCapFilteredItems;
+      return sp500FilteredItems;
     }
 
-    return marketCapFilteredItems.filter((item) =>
+    return sp500FilteredItems.filter((item) =>
       [
         item.symbol,
         item.name,
@@ -77,7 +88,7 @@ export function NasdaqInfoPage() {
         item.industry ?? "",
       ].some((value) => value.toLocaleLowerCase("en-US").includes(query)),
     );
-  }, [filterQuery, marketCapFilter, nasdaqInfoQuery.data]);
+  }, [filterQuery, marketCapFilter, nasdaqInfoQuery.data, sp500Filter]);
   const sortedItems = useMemo(
     () =>
       tableState.sortBy === null
@@ -90,9 +101,11 @@ export function NasdaqInfoPage() {
   const startIndex = (currentPage - 1) * pageSize;
   const visibleItems = sortedItems.slice(startIndex, startIndex + pageSize);
   const selectedMarketCapLabel = getMarketCapFilterLabel(marketCapFilter);
+  const selectedSp500Label = getSp500FilterLabel(sp500Filter);
   const activeFilterDescription = [
     filterQuery,
     marketCapFilter === "all" ? "" : selectedMarketCapLabel,
+    sp500Filter === "all" ? "" : selectedSp500Label,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -149,16 +162,28 @@ export function NasdaqInfoPage() {
         ) : null}
         <DataTableToolbar
           controls={
-            <MarketCapFilterSelect
-              value={marketCapFilter}
-              onValueChange={(value) => {
-                setMarketCapFilter(value);
-                setTableState((previous) => ({
-                  ...previous,
-                  page: 1,
-                }));
-              }}
-            />
+            <>
+              <MarketCapFilterSelect
+                value={marketCapFilter}
+                onValueChange={(value) => {
+                  setMarketCapFilter(value);
+                  setTableState((previous) => ({
+                    ...previous,
+                    page: 1,
+                  }));
+                }}
+              />
+              <Sp500FilterSelect
+                value={sp500Filter}
+                onValueChange={(value) => {
+                  setSp500Filter(value);
+                  setTableState((previous) => ({
+                    ...previous,
+                    page: 1,
+                  }));
+                }}
+              />
+            </>
           }
           label="나스닥 정보 검색"
           placeholder="심볼, 종목명, 시가총액, 국가, IPO 연도, 섹터, 산업 검색"
@@ -179,6 +204,7 @@ export function NasdaqInfoPage() {
               onClear={() => {
                 updateQuery("");
                 setMarketCapFilter("all");
+                setSp500Filter("all");
               }}
             />
           ) : (
