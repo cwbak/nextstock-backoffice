@@ -10,6 +10,11 @@ export const calendarEarningSchema = z
   .object({
     key: z.string().min(1),
     stockType: calendarEarningStockTypeSchema,
+    name: z.string().min(1),
+    marketCap: z
+      .string()
+      .regex(/^\d+(?:\.\d{1,2})?$/)
+      .nullable(),
     reportDate: z.iso.date(),
     reportTime: z
       .string()

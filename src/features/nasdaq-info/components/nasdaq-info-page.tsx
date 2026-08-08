@@ -9,6 +9,7 @@ import {
   DataTableToolbar,
 } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
+import { MarketCapFilterSelect } from "@/components/common/market-cap-filter-select";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
   type SortableDataTableState,
@@ -23,6 +24,11 @@ import { NasdaqInfoEmptyState } from "@/features/nasdaq-info/components/nasdaq-i
 import { NasdaqInfoTable } from "@/features/nasdaq-info/components/nasdaq-info-table";
 import { NasdaqInfoUploadDialog } from "@/features/nasdaq-info/components/nasdaq-info-upload-dialog";
 import { NasdaqInfoUploadSummary } from "@/features/nasdaq-info/components/nasdaq-info-upload-summary";
+import {
+  filterByMarketCap,
+  getMarketCapFilterLabel,
+  type MarketCapFilter,
+} from "@/lib/market-cap";
 import { sortNasdaqInfoByMarketCap } from "@/features/nasdaq-info/nasdaq-info-sort";
 
 const pageSize = 50;
@@ -44,17 +50,23 @@ export function NasdaqInfoPage() {
   const [filterQuery, updateFilterQuery] = useDataTableFilterQuery(
     tableState.q,
   );
+  const [marketCapFilter, setMarketCapFilter] =
+    useState<MarketCapFilter>("all");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadResult, setUploadResult] =
     useState<NasdaqInfoUploadResult | null>(null);
   const filteredItems = useMemo(() => {
     const query = filterQuery.trim().toLocaleLowerCase("en-US");
+    const marketCapFilteredItems = filterByMarketCap(
+      nasdaqInfoQuery.data,
+      marketCapFilter,
+    );
 
     if (!query) {
-      return nasdaqInfoQuery.data;
+      return marketCapFilteredItems;
     }
 
-    return nasdaqInfoQuery.data.filter((item) =>
+    return marketCapFilteredItems.filter((item) =>
       [
         item.symbol,
         item.name,
@@ -65,7 +77,7 @@ export function NasdaqInfoPage() {
         item.industry ?? "",
       ].some((value) => value.toLocaleLowerCase("en-US").includes(query)),
     );
-  }, [filterQuery, nasdaqInfoQuery.data]);
+  }, [filterQuery, marketCapFilter, nasdaqInfoQuery.data]);
   const sortedItems = useMemo(
     () =>
       tableState.sortBy === null
@@ -77,6 +89,13 @@ export function NasdaqInfoPage() {
   const currentPage = Math.min(tableState.page, totalPages);
   const startIndex = (currentPage - 1) * pageSize;
   const visibleItems = sortedItems.slice(startIndex, startIndex + pageSize);
+  const selectedMarketCapLabel = getMarketCapFilterLabel(marketCapFilter);
+  const activeFilterDescription = [
+    filterQuery,
+    marketCapFilter === "all" ? "" : selectedMarketCapLabel,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   const updateSort = () => {
     const sortDirection =
@@ -129,6 +148,18 @@ export function NasdaqInfoPage() {
           />
         ) : null}
         <DataTableToolbar
+          controls={
+            <MarketCapFilterSelect
+              value={marketCapFilter}
+              onValueChange={(value) => {
+                setMarketCapFilter(value);
+                setTableState((previous) => ({
+                  ...previous,
+                  page: 1,
+                }));
+              }}
+            />
+          }
           label="나스닥 정보 검색"
           placeholder="심볼, 종목명, 시가총액, 국가, IPO 연도, 섹터, 산업 검색"
           query={tableState.q}
@@ -144,8 +175,11 @@ export function NasdaqInfoPage() {
             <NasdaqInfoEmptyState onUpload={() => setUploadOpen(true)} />
           ) : filteredItems.length === 0 ? (
             <NoSearchResults
-              query={filterQuery}
-              onClear={() => updateQuery("")}
+              query={activeFilterDescription}
+              onClear={() => {
+                updateQuery("");
+                setMarketCapFilter("all");
+              }}
             />
           ) : (
             <>

@@ -1,11 +1,6 @@
 import type { SortDirection } from "@/components/common/use-data-table-state";
 import type { NasdaqInfo } from "@/data-access/schemas/nasdaq-info";
-
-function marketCapAsCents(value: string) {
-  const [integer = "0", fraction = ""] = value.split(".");
-
-  return BigInt(integer) * 100n + BigInt(fraction.padEnd(2, "0"));
-}
+import { marketCapAsCents } from "@/lib/market-cap";
 
 export function sortNasdaqInfoByMarketCap(
   items: ReadonlyArray<NasdaqInfo>,

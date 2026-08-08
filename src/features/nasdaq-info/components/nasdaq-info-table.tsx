@@ -10,18 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { NasdaqInfo } from "@/data-access/schemas/nasdaq-info";
-import { formatDateTime } from "@/lib/format";
-
-function formatMarketCap(value: string | null) {
-  if (value === null) {
-    return "-";
-  }
-
-  const [integer = "0", fraction] = value.split(".");
-  const formattedInteger = BigInt(integer).toLocaleString("en-US");
-
-  return `$${formattedInteger}${fraction ? `.${fraction}` : ""}`;
-}
+import { formatDateTime, formatUsdMarketCap } from "@/lib/format";
 
 interface NasdaqInfoTableProps {
   items: ReadonlyArray<NasdaqInfo>;
@@ -79,7 +68,7 @@ export function NasdaqInfoTable({
               </span>
             </TableCell>
             <TableCell className="text-right font-medium tabular-nums">
-              {formatMarketCap(item.marketCap)}
+              {formatUsdMarketCap(item.marketCap)}
             </TableCell>
             <TableCell>{item.country ?? "-"}</TableCell>
             <TableCell className="tabular-nums">

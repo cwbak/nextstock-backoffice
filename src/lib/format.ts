@@ -14,3 +14,14 @@ export function formatDate(value: string) {
 export function formatDateTime(value: string) {
   return dateTimeFormatter.format(new Date(value));
 }
+
+export function formatUsdMarketCap(value: string | null) {
+  if (value === null) {
+    return "-";
+  }
+
+  const [integer = "0", fraction] = value.split(".");
+  const formattedInteger = BigInt(integer).toLocaleString("en-US");
+
+  return `$${formattedInteger}${fraction ? `.${fraction}` : ""}`;
+}

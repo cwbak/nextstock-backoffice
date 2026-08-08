@@ -1,4 +1,11 @@
-import { memo, useEffect, useEffectEvent, useRef, useState } from "react";
+import {
+  memo,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
@@ -6,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 interface DataTableToolbarProps {
+  controls?: ReactNode;
   label: string;
   onFilterChange: (query: string) => void;
   onQueryChange: (query: string) => void;
@@ -16,6 +24,7 @@ interface DataTableToolbarProps {
 const searchUpdateDelay = 250;
 
 export const DataTableToolbar = memo(function DataTableToolbar({
+  controls,
   label,
   onFilterChange,
   onQueryChange,
@@ -64,7 +73,7 @@ export const DataTableToolbar = memo(function DataTableToolbar({
   }, [inputValue, isComposing, query]);
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <Input
         aria-label={label}
         className="w-full sm:max-w-sm"
@@ -78,6 +87,9 @@ export const DataTableToolbar = memo(function DataTableToolbar({
         }}
         onCompositionStart={() => setIsComposing(true)}
       />
+      {controls ? (
+        <div className="flex shrink-0 items-center gap-2">{controls}</div>
+      ) : null}
     </div>
   );
 });

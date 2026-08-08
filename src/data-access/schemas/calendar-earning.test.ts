@@ -8,6 +8,8 @@ import {
 const response = {
   key: "ACIU",
   stockType: "NASDAQ",
+  name: "AC Immune SA",
+  marketCap: null,
   reportDate: "2026-08-04",
   reportTime: null,
 } as const;
@@ -21,9 +23,13 @@ describe("calendar earning schemas", () => {
     expect(
       calendarEarningSchema.parse({
         ...response,
+        marketCap: "1945000000.00",
         reportTime: "22:30",
       }),
-    ).toMatchObject({ reportTime: "22:30" });
+    ).toMatchObject({
+      marketCap: "1945000000.00",
+      reportTime: "22:30",
+    });
   });
 
   it("NASDAQ 실적 일정 추가 결과를 검증한다", () => {

@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { CalendarEarning } from "@/data-access/schemas/calendar-earning";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatUsdMarketCap } from "@/lib/format";
 
 interface CalendarEarningsTableProps {
   items: ReadonlyArray<CalendarEarning>;
@@ -16,17 +16,21 @@ interface CalendarEarningsTableProps {
 
 export function CalendarEarningsTable({ items }: CalendarEarningsTableProps) {
   return (
-    <Table className="min-w-[44rem] table-fixed">
+    <Table className="min-w-[76rem] table-fixed">
       <TableCaption className="sr-only">등록된 실적 일정</TableCaption>
       <colgroup>
+        <col className="w-32" />
+        <col className="w-72" />
         <col className="w-44" />
-        <col className="w-36" />
+        <col className="w-28" />
         <col className="w-44" />
         <col className="w-36" />
       </colgroup>
       <TableHeader>
         <TableRow className="bg-muted/35 hover:bg-muted/35">
           <TableHead className="pl-4">종목</TableHead>
+          <TableHead>종목명</TableHead>
+          <TableHead className="text-right">시가총액</TableHead>
           <TableHead>시장</TableHead>
           <TableHead>발표일</TableHead>
           <TableHead className="pr-4">발표 시간</TableHead>
@@ -37,6 +41,14 @@ export function CalendarEarningsTable({ items }: CalendarEarningsTableProps) {
           <TableRow key={`${item.stockType}:${item.key}:${item.reportDate}`}>
             <TableCell className="pl-4 font-mono text-xs font-semibold">
               {item.key}
+            </TableCell>
+            <TableCell className="overflow-hidden">
+              <span className="block truncate font-medium" title={item.name}>
+                {item.name}
+              </span>
+            </TableCell>
+            <TableCell className="text-right font-medium tabular-nums">
+              {formatUsdMarketCap(item.marketCap)}
             </TableCell>
             <TableCell>{item.stockType}</TableCell>
             <TableCell className="font-medium tabular-nums">

@@ -9,6 +9,7 @@ import {
   DataTableToolbar,
 } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
+import { MarketCapFilterSelect } from "@/components/common/market-cap-filter-select";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import { useDataTableFilterQuery } from "@/components/common/use-data-table-filter-query";
 import {
@@ -23,6 +24,11 @@ import { CalendarEarningsCreateDialog } from "@/features/calendar-earnings/compo
 import { CalendarEarningsCreateSummary } from "@/features/calendar-earnings/components/calendar-earnings-create-summary";
 import { CalendarEarningsEmptyState } from "@/features/calendar-earnings/components/calendar-earnings-empty-state";
 import { CalendarEarningsTable } from "@/features/calendar-earnings/components/calendar-earnings-table";
+import {
+  filterByMarketCap,
+  getMarketCapFilterLabel,
+  type MarketCapFilter,
+} from "@/lib/market-cap";
 
 const pageSize = 50;
 const initialTableState: DataTableState = {
@@ -33,6 +39,7 @@ const initialTableState: DataTableState = {
 export function CalendarEarningsPage() {
   const calendarEarningsQuery = useSuspenseQuery(calendarEarningsQueryOptions);
   const {
+    setState: setTableState,
     state: tableState,
     updatePage,
     updateQuery,
@@ -40,29 +47,44 @@ export function CalendarEarningsPage() {
   const [filterQuery, updateFilterQuery] = useDataTableFilterQuery(
     tableState.q,
   );
+  const [marketCapFilter, setMarketCapFilter] =
+    useState<MarketCapFilter>("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [createResult, setCreateResult] =
     useState<CreateNasdaqCalendarEarningsResult | null>(null);
   const filteredItems = useMemo(() => {
     const query = filterQuery.trim().toLocaleLowerCase("en-US");
+    const marketCapFilteredItems = filterByMarketCap(
+      calendarEarningsQuery.data,
+      marketCapFilter,
+    );
 
     if (!query) {
-      return calendarEarningsQuery.data;
+      return marketCapFilteredItems;
     }
 
-    return calendarEarningsQuery.data.filter((item) =>
+    return marketCapFilteredItems.filter((item) =>
       [
         item.key,
+        item.name,
+        item.marketCap ?? "",
         item.stockType,
         item.reportDate,
         item.reportTime ?? "미정",
       ].some((value) => value.toLocaleLowerCase("en-US").includes(query)),
     );
-  }, [calendarEarningsQuery.data, filterQuery]);
+  }, [calendarEarningsQuery.data, filterQuery, marketCapFilter]);
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
   const currentPage = Math.min(tableState.page, totalPages);
   const startIndex = (currentPage - 1) * pageSize;
   const visibleItems = filteredItems.slice(startIndex, startIndex + pageSize);
+  const selectedMarketCapLabel = getMarketCapFilterLabel(marketCapFilter);
+  const activeFilterDescription = [
+    filterQuery,
+    marketCapFilter === "all" ? "" : selectedMarketCapLabel,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <>
@@ -101,8 +123,20 @@ export function CalendarEarningsPage() {
           />
         ) : null}
         <DataTableToolbar
+          controls={
+            <MarketCapFilterSelect
+              value={marketCapFilter}
+              onValueChange={(value) => {
+                setMarketCapFilter(value);
+                setTableState((previous) => ({
+                  ...previous,
+                  page: 1,
+                }));
+              }}
+            />
+          }
           label="실적 일정 검색"
-          placeholder="종목, 시장, 발표일, 발표 시간 검색"
+          placeholder="종목, 종목명, 시가총액, 시장, 발표일, 발표 시간 검색"
           query={tableState.q}
           onFilterChange={updateFilterQuery}
           onQueryChange={updateQuery}
@@ -116,8 +150,11 @@ export function CalendarEarningsPage() {
             <CalendarEarningsEmptyState onCreate={() => setCreateOpen(true)} />
           ) : filteredItems.length === 0 ? (
             <NoSearchResults
-              query={filterQuery}
-              onClear={() => updateQuery("")}
+              query={activeFilterDescription}
+              onClear={() => {
+                updateQuery("");
+                setMarketCapFilter("all");
+              }}
             />
           ) : (
             <>

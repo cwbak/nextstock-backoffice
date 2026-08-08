@@ -7,12 +7,16 @@ const listResult = [
   {
     key: "ACIU",
     stockType: "NASDAQ",
+    name: "AC Immune SA",
+    marketCap: null,
     reportDate: "2026-08-04",
     reportTime: null,
   },
   {
     key: "ACAD",
     stockType: "NASDAQ",
+    name: "Acadia Pharmaceuticals Inc",
+    marketCap: "1945000000.00",
     reportDate: "2026-08-04",
     reportTime: "22:30",
   },
