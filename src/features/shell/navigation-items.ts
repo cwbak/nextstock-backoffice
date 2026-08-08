@@ -14,7 +14,8 @@ export type NavigationPath =
   | "/corporation-investments"
   | "/listed-stocks"
   | "/calendar-events"
-  | "/calendar-earnings";
+  | "/calendar-earnings"
+  | "/calendar-earnings-krx";
 
 export interface NavigationItem {
   icon: LucideIcon;
@@ -50,8 +51,13 @@ export const navigationItems = [
   },
   {
     icon: CalendarClockIcon,
-    label: "실적",
+    label: "실적(NASDAQ)",
     to: "/calendar-earnings",
+  },
+  {
+    icon: CalendarClockIcon,
+    label: "실적(KRX)",
+    to: "/calendar-earnings-krx",
   },
 ] as const satisfies ReadonlyArray<NavigationItem>;
 

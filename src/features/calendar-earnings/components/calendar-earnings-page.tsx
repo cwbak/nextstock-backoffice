@@ -126,7 +126,7 @@ export function CalendarEarningsPage() {
           description="NASDAQ 종목의 실적 발표 일정을 한국 기준으로 조회합니다."
           eyebrow="Earnings calendar"
           recordCount={calendarEarningsQuery.data.length}
-          title="실적"
+          title="실적(NASDAQ)"
         />
         {createResult ? (
           <CalendarEarningsCreateSummary
@@ -159,7 +159,7 @@ export function CalendarEarningsPage() {
               />
             </>
           }
-          label="실적 일정 검색"
+          label="NASDAQ 실적 일정 검색"
           placeholder="종목, 종목명, 시가총액, 발표일, 발표 시간 검색"
           query={tableState.q}
           onFilterChange={updateFilterQuery}
@@ -168,7 +168,7 @@ export function CalendarEarningsPage() {
         <DataTableCard
           description="발표일, 발표 시간, 종목 순서로 표시됩니다."
           recordCount={filteredItems.length}
-          title="실적 일정"
+          title="NASDAQ 실적 일정"
         >
           {calendarEarningsQuery.data.length === 0 ? (
             <CalendarEarningsEmptyState onCreate={() => setCreateOpen(true)} />
@@ -183,7 +183,17 @@ export function CalendarEarningsPage() {
             />
           ) : (
             <>
-              <CalendarEarningsTable items={visibleItems} />
+              <CalendarEarningsTable
+                classificationLabel="S&P 500"
+                items={visibleItems.map((item) => ({
+                  classification: item.isSp500 ? "편입" : "-",
+                  identifier: item.symbol,
+                  marketCap: item.marketCap,
+                  name: item.name,
+                  reportDate: item.reportDate,
+                  reportTime: item.reportTime,
+                }))}
+              />
               <DataPagination
                 endRecord={Math.min(
                   startIndex + pageSize,

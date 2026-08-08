@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspaceRouteImport } from './routes/_workspace'
 import { Route as WorkspaceCalendarEarningsRouteImport } from './routes/_workspace.calendar-earnings'
+import { Route as WorkspaceCalendarEarningsKrxRouteImport } from './routes/_workspace.calendar-earnings-krx'
 import { Route as WorkspaceCalendarEventsRouteImport } from './routes/_workspace.calendar-events'
 import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_workspace.corporation-investments'
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
@@ -31,6 +32,12 @@ const WorkspaceCalendarEarningsRoute =
   WorkspaceCalendarEarningsRouteImport.update({
     id: '/calendar-earnings',
     path: '/calendar-earnings',
+    getParentRoute: () => WorkspaceRoute,
+  } as any)
+const WorkspaceCalendarEarningsKrxRoute =
+  WorkspaceCalendarEarningsKrxRouteImport.update({
+    id: '/calendar-earnings-krx',
+    path: '/calendar-earnings-krx',
     getParentRoute: () => WorkspaceRoute,
   } as any)
 const WorkspaceCalendarEventsRoute = WorkspaceCalendarEventsRouteImport.update({
@@ -63,6 +70,7 @@ const WorkspaceNasdaqsRoute = WorkspaceNasdaqsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
+  '/calendar-earnings-krx': typeof WorkspaceCalendarEarningsKrxRoute
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
@@ -72,6 +80,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
+  '/calendar-earnings-krx': typeof WorkspaceCalendarEarningsKrxRoute
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
@@ -83,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_workspace': typeof WorkspaceRouteWithChildren
   '/_workspace/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
+  '/_workspace/calendar-earnings-krx': typeof WorkspaceCalendarEarningsKrxRoute
   '/_workspace/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/_workspace/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/calendar-earnings'
+    | '/calendar-earnings-krx'
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/calendar-earnings'
+    | '/calendar-earnings-krx'
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_workspace'
     | '/_workspace/calendar-earnings'
+    | '/_workspace/calendar-earnings-krx'
     | '/_workspace/calendar-events'
     | '/_workspace/corporation-investments'
     | '/_workspace/corporations'
@@ -146,6 +159,13 @@ declare module '@tanstack/react-router' {
       path: '/calendar-earnings'
       fullPath: '/calendar-earnings'
       preLoaderRoute: typeof WorkspaceCalendarEarningsRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
+    '/_workspace/calendar-earnings-krx': {
+      id: '/_workspace/calendar-earnings-krx'
+      path: '/calendar-earnings-krx'
+      fullPath: '/calendar-earnings-krx'
+      preLoaderRoute: typeof WorkspaceCalendarEarningsKrxRouteImport
       parentRoute: typeof WorkspaceRoute
     }
     '/_workspace/calendar-events': {
@@ -188,6 +208,7 @@ declare module '@tanstack/react-router' {
 
 interface WorkspaceRouteChildren {
   WorkspaceCalendarEarningsRoute: typeof WorkspaceCalendarEarningsRoute
+  WorkspaceCalendarEarningsKrxRoute: typeof WorkspaceCalendarEarningsKrxRoute
   WorkspaceCalendarEventsRoute: typeof WorkspaceCalendarEventsRoute
   WorkspaceCorporationInvestmentsRoute: typeof WorkspaceCorporationInvestmentsRoute
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
@@ -197,6 +218,7 @@ interface WorkspaceRouteChildren {
 
 const WorkspaceRouteChildren: WorkspaceRouteChildren = {
   WorkspaceCalendarEarningsRoute: WorkspaceCalendarEarningsRoute,
+  WorkspaceCalendarEarningsKrxRoute: WorkspaceCalendarEarningsKrxRoute,
   WorkspaceCalendarEventsRoute: WorkspaceCalendarEventsRoute,
   WorkspaceCorporationInvestmentsRoute: WorkspaceCorporationInvestmentsRoute,
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,

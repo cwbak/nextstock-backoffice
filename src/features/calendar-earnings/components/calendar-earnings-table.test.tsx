@@ -1,23 +1,25 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { CalendarEarning } from "@/data-access/schemas/calendar-earning";
-import { CalendarEarningsTable } from "@/features/calendar-earnings/components/calendar-earnings-table";
+import {
+  CalendarEarningsTable,
+  type CalendarEarningsTableItem,
+} from "@/features/calendar-earnings/components/calendar-earnings-table";
 
-const items: ReadonlyArray<CalendarEarning> = [
+const items: ReadonlyArray<CalendarEarningsTableItem> = [
   {
-    symbol: "ACIU",
+    identifier: "ACIU",
     name: "AC Immune SA",
     marketCap: null,
-    isSp500: false,
+    classification: "-",
     reportDate: "2026-08-04",
     reportTime: null,
   },
   {
-    symbol: "ACAD",
+    identifier: "ACAD",
     name: "Acadia Pharmaceuticals Inc",
     marketCap: "1945000000.00",
-    isSp500: true,
+    classification: "편입",
     reportDate: "2026-08-05",
     reportTime: "22:30",
   },
@@ -29,7 +31,9 @@ describe("CalendarEarningsTable", () => {
   });
 
   it("종목명, 시가총액, S&P 500 편입 여부, 발표일과 nullable 발표 시간을 표시한다", () => {
-    render(<CalendarEarningsTable items={items} />);
+    render(
+      <CalendarEarningsTable classificationLabel="S&P 500" items={items} />,
+    );
 
     expect(screen.getByText("ACIU")).toBeInTheDocument();
     expect(screen.getByText("AC Immune SA")).toBeInTheDocument();

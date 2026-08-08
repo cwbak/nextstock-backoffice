@@ -6,5 +6,5 @@ import { calendarEarningsQueryOptions } from "@/data-access/queries/calendar-ear
 export const Route = createFileRoute("/_workspace/calendar-earnings")({
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(calendarEarningsQueryOptions),
-  pendingComponent: () => <ManagementPageLoading label="실적 일정" />,
+  pendingComponent: () => <ManagementPageLoading label="NASDAQ 실적 일정" />,
 });

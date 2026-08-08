@@ -14,7 +14,10 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { calendarEarningsQueryOptions } from "@/data-access/queries/calendar-earnings/queries";
+import {
+  calendarEarningsQueryOptions,
+  krxCalendarEarningsQueryOptions,
+} from "@/data-access/queries/calendar-earnings/queries";
 import { calendarEventsQueryOptions } from "@/data-access/queries/calendar-events/queries";
 import { equityInvestmentsQueryOptions } from "@/data-access/queries/equity-investments/queries";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
@@ -40,6 +43,7 @@ function renderWorkspace() {
   queryClient.setQueryData(nasdaqInfoQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEarningsQueryOptions.queryKey, []);
+  queryClient.setQueryData(krxCalendarEarningsQueryOptions.queryKey, []);
 
   const router = createRouter({
     context: { queryClient },
@@ -122,15 +126,27 @@ describe("LnbWorkspace", () => {
     fireEvent.change(calendarEventsInput, { target: { value: "경제지표" } });
     fireEvent.click(
       screen.getByRole("link", {
-        name: "실적",
+        name: "실적(NASDAQ)",
       }),
     );
 
     const calendarEarningsInput = await screen.findByRole("searchbox", {
-      name: "실적 일정 검색",
+      name: "NASDAQ 실적 일정 검색",
     });
 
     fireEvent.change(calendarEarningsInput, { target: { value: "ACIU" } });
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "실적(KRX)",
+      }),
+    );
+
+    const krxCalendarEarningsInput = await screen.findByRole("searchbox", {
+      name: "KRX 실적 일정 검색",
+    });
+
+    fireEvent.change(krxCalendarEarningsInput, { target: { value: "삼성" } });
     fireEvent.click(
       screen.getByRole("link", {
         name: "법인",
@@ -169,12 +185,21 @@ describe("LnbWorkspace", () => {
 
     fireEvent.click(
       screen.getByRole("link", {
-        name: "실적",
+        name: "실적(NASDAQ)",
       }),
     );
 
     await waitFor(() => expect(calendarEarningsInput).toBeVisible());
     expect(calendarEarningsInput).toHaveValue("ACIU");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "실적(KRX)",
+      }),
+    );
+
+    await waitFor(() => expect(krxCalendarEarningsInput).toBeVisible());
+    expect(krxCalendarEarningsInput).toHaveValue("삼성");
 
     fireEvent.click(
       screen.getByRole("link", {
@@ -265,12 +290,12 @@ describe("LnbWorkspace", () => {
 
     fireEvent.click(
       screen.getByRole("link", {
-        name: "실적",
+        name: "실적(NASDAQ)",
       }),
     );
 
     const calendarEarningsInput = await screen.findByRole("searchbox", {
-      name: "실적 일정 검색",
+      name: "NASDAQ 실적 일정 검색",
     });
 
     fireEvent.change(calendarEarningsInput, { target: { value: "AAPL" } });

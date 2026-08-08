@@ -3,11 +3,21 @@ import { queryOptions } from "@tanstack/react-query";
 import { apiRequest } from "@/data-access/api/client";
 import { calendarEarningKeys } from "@/data-access/queries/calendar-earnings/keys";
 import { calendarEarningListSchema } from "@/data-access/schemas/calendar-earning";
+import { krxCalendarEarningListSchema } from "@/data-access/schemas/krx-calendar-earning";
 
 export const calendarEarningsQueryOptions = queryOptions({
-  queryKey: calendarEarningKeys.list(),
+  queryKey: calendarEarningKeys.nasdaq(),
   queryFn: ({ signal }) =>
     apiRequest("/admin/calendar-earnings/nasdaq", calendarEarningListSchema, {
+      signal,
+    }),
+  staleTime: 30 * 1000,
+});
+
+export const krxCalendarEarningsQueryOptions = queryOptions({
+  queryKey: calendarEarningKeys.krx(),
+  queryFn: ({ signal }) =>
+    apiRequest("/admin/calendar-earnings/krx", krxCalendarEarningListSchema, {
       signal,
     }),
   staleTime: 30 * 1000,
