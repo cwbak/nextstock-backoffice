@@ -5,18 +5,18 @@ import { calendarEarningsQueryOptions } from "@/data-access/queries/calendar-ear
 
 const listResult = [
   {
-    key: "ACIU",
-    stockType: "NASDAQ",
+    symbol: "ACIU",
     name: "AC Immune SA",
     marketCap: null,
+    isSp500: false,
     reportDate: "2026-08-04",
     reportTime: null,
   },
   {
-    key: "ACAD",
-    stockType: "NASDAQ",
+    symbol: "ACAD",
     name: "Acadia Pharmaceuticals Inc",
     marketCap: "1945000000.00",
+    isSp500: true,
     reportDate: "2026-08-04",
     reportTime: "22:30",
   },
@@ -41,6 +41,8 @@ describe("calendar earning queries", () => {
     await expect(
       queryClient.fetchQuery(calendarEarningsQueryOptions),
     ).resolves.toEqual(listResult);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar-earnings");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/calendar-earnings/nasdaq",
+    );
   });
 });

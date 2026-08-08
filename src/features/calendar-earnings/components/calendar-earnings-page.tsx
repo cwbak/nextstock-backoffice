@@ -10,6 +10,7 @@ import {
 } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
 import { MarketCapFilterSelect } from "@/components/common/market-cap-filter-select";
+import { Sp500FilterSelect } from "@/components/common/sp500-filter-select";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import { useDataTableFilterQuery } from "@/components/common/use-data-table-filter-query";
 import {
@@ -29,6 +30,11 @@ import {
   getMarketCapFilterLabel,
   type MarketCapFilter,
 } from "@/lib/market-cap";
+import {
+  filterBySp500,
+  getSp500FilterLabel,
+  type Sp500Filter,
+} from "@/lib/sp500";
 
 const pageSize = 50;
 const initialTableState: DataTableState = {
@@ -49,6 +55,7 @@ export function CalendarEarningsPage() {
   );
   const [marketCapFilter, setMarketCapFilter] =
     useState<MarketCapFilter>("all");
+  const [sp500Filter, setSp500Filter] = useState<Sp500Filter>("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [createResult, setCreateResult] =
     useState<CreateNasdaqCalendarEarningsResult | null>(null);
@@ -58,30 +65,35 @@ export function CalendarEarningsPage() {
       calendarEarningsQuery.data,
       marketCapFilter,
     );
+    const sp500FilteredItems = filterBySp500(
+      marketCapFilteredItems,
+      sp500Filter,
+    );
 
     if (!query) {
-      return marketCapFilteredItems;
+      return sp500FilteredItems;
     }
 
-    return marketCapFilteredItems.filter((item) =>
+    return sp500FilteredItems.filter((item) =>
       [
-        item.key,
+        item.symbol,
         item.name,
         item.marketCap ?? "",
-        item.stockType,
         item.reportDate,
         item.reportTime ?? "미정",
       ].some((value) => value.toLocaleLowerCase("en-US").includes(query)),
     );
-  }, [calendarEarningsQuery.data, filterQuery, marketCapFilter]);
+  }, [calendarEarningsQuery.data, filterQuery, marketCapFilter, sp500Filter]);
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
   const currentPage = Math.min(tableState.page, totalPages);
   const startIndex = (currentPage - 1) * pageSize;
   const visibleItems = filteredItems.slice(startIndex, startIndex + pageSize);
   const selectedMarketCapLabel = getMarketCapFilterLabel(marketCapFilter);
+  const selectedSp500Label = getSp500FilterLabel(sp500Filter);
   const activeFilterDescription = [
     filterQuery,
     marketCapFilter === "all" ? "" : selectedMarketCapLabel,
+    sp500Filter === "all" ? "" : selectedSp500Label,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -111,7 +123,7 @@ export function CalendarEarningsPage() {
               </Button>
             </>
           }
-          description="NASDAQ·KOSPI·KOSDAQ 종목의 실적 발표 일정을 한국 기준으로 조회합니다."
+          description="NASDAQ 종목의 실적 발표 일정을 한국 기준으로 조회합니다."
           eyebrow="Earnings calendar"
           recordCount={calendarEarningsQuery.data.length}
           title="실적"
@@ -124,25 +136,37 @@ export function CalendarEarningsPage() {
         ) : null}
         <DataTableToolbar
           controls={
-            <MarketCapFilterSelect
-              value={marketCapFilter}
-              onValueChange={(value) => {
-                setMarketCapFilter(value);
-                setTableState((previous) => ({
-                  ...previous,
-                  page: 1,
-                }));
-              }}
-            />
+            <>
+              <MarketCapFilterSelect
+                value={marketCapFilter}
+                onValueChange={(value) => {
+                  setMarketCapFilter(value);
+                  setTableState((previous) => ({
+                    ...previous,
+                    page: 1,
+                  }));
+                }}
+              />
+              <Sp500FilterSelect
+                value={sp500Filter}
+                onValueChange={(value) => {
+                  setSp500Filter(value);
+                  setTableState((previous) => ({
+                    ...previous,
+                    page: 1,
+                  }));
+                }}
+              />
+            </>
           }
           label="실적 일정 검색"
-          placeholder="종목, 종목명, 시가총액, 시장, 발표일, 발표 시간 검색"
+          placeholder="종목, 종목명, 시가총액, 발표일, 발표 시간 검색"
           query={tableState.q}
           onFilterChange={updateFilterQuery}
           onQueryChange={updateQuery}
         />
         <DataTableCard
-          description="발표일, 발표 시간, 시장, 종목 순서로 표시됩니다."
+          description="발표일, 발표 시간, 종목 순서로 표시됩니다."
           recordCount={filteredItems.length}
           title="실적 일정"
         >
@@ -154,6 +178,7 @@ export function CalendarEarningsPage() {
               onClear={() => {
                 updateQuery("");
                 setMarketCapFilter("all");
+                setSp500Filter("all");
               }}
             />
           ) : (

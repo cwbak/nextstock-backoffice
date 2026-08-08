@@ -6,10 +6,10 @@ import {
 } from "@/data-access/schemas/calendar-earning";
 
 const response = {
-  key: "ACIU",
-  stockType: "NASDAQ",
+  symbol: "ACIU",
   name: "AC Immune SA",
   marketCap: null,
+  isSp500: false,
   reportDate: "2026-08-04",
   reportTime: null,
 } as const;

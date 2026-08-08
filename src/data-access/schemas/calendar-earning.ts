@@ -1,20 +1,14 @@
 import { z } from "zod";
 
-export const calendarEarningStockTypeSchema = z.enum([
-  "NASDAQ",
-  "KOSPI",
-  "KOSDAQ",
-]);
-
 export const calendarEarningSchema = z
   .object({
-    key: z.string().min(1),
-    stockType: calendarEarningStockTypeSchema,
+    symbol: z.string().min(1),
     name: z.string().min(1),
     marketCap: z
       .string()
       .regex(/^\d+(?:\.\d{1,2})?$/)
       .nullable(),
+    isSp500: z.boolean(),
     reportDate: z.iso.date(),
     reportTime: z
       .string()
@@ -34,9 +28,6 @@ export const createNasdaqCalendarEarningsResultSchema = z
   .strict();
 
 export type CalendarEarning = z.infer<typeof calendarEarningSchema>;
-export type CalendarEarningStockType = z.infer<
-  typeof calendarEarningStockTypeSchema
->;
 export type CreateNasdaqCalendarEarningsResult = z.infer<
   typeof createNasdaqCalendarEarningsResultSchema
 >;

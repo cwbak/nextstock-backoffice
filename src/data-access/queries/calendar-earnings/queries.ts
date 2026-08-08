@@ -7,7 +7,7 @@ import { calendarEarningListSchema } from "@/data-access/schemas/calendar-earnin
 export const calendarEarningsQueryOptions = queryOptions({
   queryKey: calendarEarningKeys.list(),
   queryFn: ({ signal }) =>
-    apiRequest("/admin/calendar-earnings", calendarEarningListSchema, {
+    apiRequest("/admin/calendar-earnings/nasdaq", calendarEarningListSchema, {
       signal,
     }),
   staleTime: 30 * 1000,
