@@ -17,7 +17,7 @@ export function CorporationsEmptyState() {
         </EmptyMedia>
         <EmptyTitle>등록된 법인이 없습니다</EmptyTitle>
         <EmptyDescription>
-          LISTED STOCKS에서 종목을 등록하면 연결 법인도 함께 생성됩니다.
+          주식 메뉴에서 종목을 등록하면 연결 법인도 함께 생성됩니다.
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

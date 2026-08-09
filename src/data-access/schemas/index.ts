@@ -4,5 +4,5 @@ export * from "@/data-access/schemas/corporation";
 export * from "@/data-access/schemas/corporation-industry";
 export * from "@/data-access/schemas/equity-investment";
 export * from "@/data-access/schemas/krx-calendar-earning";
-export * from "@/data-access/schemas/listed-stock";
-export * from "@/data-access/schemas/nasdaq-info";
+export * from "@/data-access/schemas/krx-stock";
+export * from "@/data-access/schemas/nasdaq-stock";

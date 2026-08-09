@@ -10,8 +10,8 @@ import {
 import { CalendarEventsPage } from "@/features/calendar-events";
 import { CorporationInvestmentsPage } from "@/features/corporation-investments";
 import { CorporationsPage } from "@/features/corporations";
-import { ListedStocksPage } from "@/features/listed-stocks";
-import { NasdaqInfoPage } from "@/features/nasdaq-info";
+import { KrxStocksPage } from "@/features/krx-stocks";
+import { NasdaqStocksPage } from "@/features/nasdaq-stocks";
 import { isNavigationPath } from "@/features/shell/navigation-items";
 
 export function LnbWorkspace() {
@@ -28,10 +28,10 @@ export function LnbWorkspace() {
     <>
       <Activity
         mode={activePath === "/nasdaqs" ? "visible" : "hidden"}
-        name="NASDAQ info workspace"
+        name="NASDAQ stocks workspace"
       >
         <Suspense fallback={<ManagementPageLoading label="나스닥 정보" />}>
-          <NasdaqInfoPage />
+          <NasdaqStocksPage />
         </Suspense>
       </Activity>
       <Activity
@@ -52,10 +52,10 @@ export function LnbWorkspace() {
       </Activity>
       <Activity
         mode={activePath === "/listed-stocks" ? "visible" : "hidden"}
-        name="Listed stocks workspace"
+        name="KRX stocks workspace"
       >
         <Suspense fallback={<ManagementPageLoading label="상장 종목 목록" />}>
-          <ListedStocksPage />
+          <KrxStocksPage />
         </Suspense>
       </Activity>
       <Activity

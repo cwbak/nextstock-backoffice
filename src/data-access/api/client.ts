@@ -10,10 +10,12 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "body code must match path code": "코드는 변경할 수 없습니다.",
   "business year must contain 4 digits": "사업연도는 숫자 4자리여야 합니다.",
   "corporation already exists": "이미 등록된 법인 코드입니다.",
+  "corporation or KRX stock already exists":
+    "이미 등록된 법인 또는 종목 코드입니다.",
   "corporation code must contain 8 digits":
     "법인 코드는 숫자 8자리여야 합니다.",
-  "corporation has listed stocks":
-    "연결된 상장 종목이 있어 법인을 삭제할 수 없습니다.",
+  "corporation has KRX stocks":
+    "연결된 KRX 종목이 있어 법인을 삭제할 수 없습니다.",
   "corporation not found": "법인을 찾을 수 없습니다.",
   "dart corporation investments lookup failed":
     "DART 출자현황을 조회하지 못했습니다.",
@@ -23,8 +25,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "internal server error": "서버 내부 오류가 발생했습니다.",
   "invalid dart corporation investments response":
     "DART 출자현황 응답 값이 올바르지 않습니다.",
-  "listed stock already exists": "이미 등록된 종목 코드입니다.",
-  "listed stock not found": "상장 종목을 찾을 수 없습니다.",
+  "KRX stock already exists": "이미 등록된 종목 코드입니다.",
+  "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
   "report code must be between 1 and 4": "보고서 구분을 선택해 주세요.",
 };
 

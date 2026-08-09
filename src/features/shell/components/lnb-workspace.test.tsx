@@ -21,8 +21,8 @@ import {
 import { calendarEventsQueryOptions } from "@/data-access/queries/calendar-events/queries";
 import { equityInvestmentsQueryOptions } from "@/data-access/queries/equity-investments/queries";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
-import { listedStocksQueryOptions } from "@/data-access/queries/listed-stocks/queries";
-import { nasdaqInfoQueryOptions } from "@/data-access/queries/nasdaq-info/queries";
+import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
+import { nasdaqStocksQueryOptions } from "@/data-access/queries/nasdaq-stocks/queries";
 import { routeTree } from "@/routeTree.gen";
 
 function renderWorkspace() {
@@ -39,8 +39,8 @@ function renderWorkspace() {
 
   queryClient.setQueryData(corporationsQueryOptions.queryKey, []);
   queryClient.setQueryData(equityInvestmentsQueryOptions.queryKey, []);
-  queryClient.setQueryData(listedStocksQueryOptions.queryKey, []);
-  queryClient.setQueryData(nasdaqInfoQueryOptions.queryKey, []);
+  queryClient.setQueryData(krxStocksQueryOptions.queryKey, []);
+  queryClient.setQueryData(nasdaqStocksQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEarningsQueryOptions.queryKey, []);
   queryClient.setQueryData(krxCalendarEarningsQueryOptions.queryKey, []);
@@ -84,11 +84,11 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    const nasdaqInfoInput = await screen.findByRole("searchbox", {
+    const nasdaqStockInput = await screen.findByRole("searchbox", {
       name: "나스닥 정보 검색",
     });
 
-    fireEvent.change(nasdaqInfoInput, { target: { value: "Apple" } });
+    fireEvent.change(nasdaqStockInput, { target: { value: "Apple" } });
     fireEvent.click(
       screen.getByRole("link", {
         name: "출자현황",
@@ -107,12 +107,12 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    const listedStocksInput = await screen.findByRole("searchbox", {
-      name: "상장 종목 검색",
+    const krxStocksInput = await screen.findByRole("searchbox", {
+      name: "KRX 종목 검색",
     });
 
-    fireEvent.compositionStart(listedStocksInput);
-    fireEvent.change(listedStocksInput, { target: { value: "현대" } });
+    fireEvent.compositionStart(krxStocksInput);
+    fireEvent.change(krxStocksInput, { target: { value: "현대" } });
     fireEvent.click(
       screen.getByRole("link", {
         name: "일정",
@@ -171,8 +171,8 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    await waitFor(() => expect(listedStocksInput).toBeVisible());
-    expect(listedStocksInput).toHaveValue("현대");
+    await waitFor(() => expect(krxStocksInput).toBeVisible());
+    expect(krxStocksInput).toHaveValue("현대");
 
     fireEvent.click(
       screen.getByRole("link", {
@@ -207,8 +207,8 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    await waitFor(() => expect(nasdaqInfoInput).toBeVisible());
-    expect(nasdaqInfoInput).toHaveValue("Apple");
+    await waitFor(() => expect(nasdaqStockInput).toBeVisible());
+    expect(nasdaqStockInput).toHaveValue("Apple");
   });
 
   it("검색 상태는 유지하면서 URL에는 현재 메뉴 경로만 표시한다", async () => {
@@ -228,11 +228,11 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    const nasdaqInfoInput = await screen.findByRole("searchbox", {
+    const nasdaqStockInput = await screen.findByRole("searchbox", {
       name: "나스닥 정보 검색",
     });
 
-    fireEvent.change(nasdaqInfoInput, { target: { value: "NVDA" } });
+    fireEvent.change(nasdaqStockInput, { target: { value: "NVDA" } });
     await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
 
     expect(router.state.location.href).toBe("/nasdaqs");
@@ -264,11 +264,11 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    const listedStocksInput = await screen.findByRole("searchbox", {
-      name: "상장 종목 검색",
+    const krxStocksInput = await screen.findByRole("searchbox", {
+      name: "KRX 종목 검색",
     });
 
-    fireEvent.change(listedStocksInput, { target: { value: "현대" } });
+    fireEvent.change(krxStocksInput, { target: { value: "현대" } });
     await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
 
     expect(router.state.location.href).toBe("/listed-stocks");
