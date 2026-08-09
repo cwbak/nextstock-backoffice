@@ -12,6 +12,7 @@ import { CorporationInvestmentsPage } from "@/features/corporation-investments";
 import { CorporationsPage } from "@/features/corporations";
 import { KrxStocksPage } from "@/features/krx-stocks";
 import { NasdaqStocksPage } from "@/features/nasdaq-stocks";
+import { ThemesPage } from "@/features/themes";
 import { isNavigationPath } from "@/features/shell/navigation-items";
 
 export function LnbWorkspace() {
@@ -56,6 +57,14 @@ export function LnbWorkspace() {
       >
         <Suspense fallback={<ManagementPageLoading label="상장 종목 목록" />}>
           <KrxStocksPage />
+        </Suspense>
+      </Activity>
+      <Activity
+        mode={activePath === "/themes" ? "visible" : "hidden"}
+        name="Theme listing workspace"
+      >
+        <Suspense fallback={<ManagementPageLoading label="테마 리스팅" />}>
+          <ThemesPage />
         </Suspense>
       </Activity>
       <Activity

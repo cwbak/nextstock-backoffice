@@ -23,7 +23,18 @@ import { equityInvestmentsQueryOptions } from "@/data-access/queries/equity-inve
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
 import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
 import { nasdaqStocksQueryOptions } from "@/data-access/queries/nasdaq-stocks/queries";
+import {
+  themesQueryOptions,
+  themeStocksQueryOptions,
+} from "@/data-access/queries/themes/queries";
 import { routeTree } from "@/routeTree.gen";
+const theme = {
+  id: 449,
+  parentThemeId: null,
+  name: "2차전지(생산)",
+  createdAt: "2026-08-09T10:00:00+09:00",
+  updatedAt: "2026-08-09T10:00:00+09:00",
+} as const;
 
 function renderWorkspace() {
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
@@ -44,6 +55,8 @@ function renderWorkspace() {
   queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEarningsQueryOptions.queryKey, []);
   queryClient.setQueryData(krxCalendarEarningsQueryOptions.queryKey, []);
+  queryClient.setQueryData(themesQueryOptions.queryKey, [theme]);
+  queryClient.setQueryData(themeStocksQueryOptions(theme.id).queryKey, []);
 
   const router = createRouter({
     context: { queryClient },
@@ -115,6 +128,17 @@ describe("LnbWorkspace", () => {
     fireEvent.change(krxStocksInput, { target: { value: "현대" } });
     fireEvent.click(
       screen.getByRole("link", {
+        name: "테마 리스팅",
+      }),
+    );
+
+    const themeInput = await screen.findByRole("searchbox", {
+      name: "테마 검색",
+    });
+
+    fireEvent.change(themeInput, { target: { value: "2차전지" } });
+    fireEvent.click(
+      screen.getByRole("link", {
         name: "일정",
       }),
     );
@@ -173,6 +197,15 @@ describe("LnbWorkspace", () => {
 
     await waitFor(() => expect(krxStocksInput).toBeVisible());
     expect(krxStocksInput).toHaveValue("현대");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "테마 리스팅",
+      }),
+    );
+
+    await waitFor(() => expect(themeInput).toBeVisible());
+    expect(themeInput).toHaveValue("2차전지");
 
     fireEvent.click(
       screen.getByRole("link", {
@@ -272,6 +305,21 @@ describe("LnbWorkspace", () => {
     await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
 
     expect(router.state.location.href).toBe("/listed-stocks");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "테마 리스팅",
+      }),
+    );
+
+    const themeInput = await screen.findByRole("searchbox", {
+      name: "테마 검색",
+    });
+
+    fireEvent.change(themeInput, { target: { value: "2차전지" } });
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 300));
+
+    expect(router.state.location.href).toBe("/themes");
 
     fireEvent.click(
       screen.getByRole("link", {

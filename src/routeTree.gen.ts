@@ -18,6 +18,7 @@ import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_w
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
 import { Route as WorkspaceListedStocksRouteImport } from './routes/_workspace.listed-stocks'
 import { Route as WorkspaceNasdaqsRouteImport } from './routes/_workspace.nasdaqs'
+import { Route as WorkspaceThemesRouteImport } from './routes/_workspace.themes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -66,6 +67,11 @@ const WorkspaceNasdaqsRoute = WorkspaceNasdaqsRouteImport.update({
   path: '/nasdaqs',
   getParentRoute: () => WorkspaceRoute,
 } as any)
+const WorkspaceThemesRoute = WorkspaceThemesRouteImport.update({
+  id: '/themes',
+  path: '/themes',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/corporations': typeof WorkspaceCorporationsRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
   '/nasdaqs': typeof WorkspaceNasdaqsRoute
+  '/themes': typeof WorkspaceThemesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/corporations': typeof WorkspaceCorporationsRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
   '/nasdaqs': typeof WorkspaceNasdaqsRoute
+  '/themes': typeof WorkspaceThemesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
   '/_workspace/listed-stocks': typeof WorkspaceListedStocksRoute
   '/_workspace/nasdaqs': typeof WorkspaceNasdaqsRoute
+  '/_workspace/themes': typeof WorkspaceThemesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/corporations'
     | '/listed-stocks'
     | '/nasdaqs'
+    | '/themes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/corporations'
     | '/listed-stocks'
     | '/nasdaqs'
+    | '/themes'
   id:
     | '__root__'
     | '/'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/_workspace/corporations'
     | '/_workspace/listed-stocks'
     | '/_workspace/nasdaqs'
+    | '/_workspace/themes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceNasdaqsRouteImport
       parentRoute: typeof WorkspaceRoute
     }
+    '/_workspace/themes': {
+      id: '/_workspace/themes'
+      path: '/themes'
+      fullPath: '/themes'
+      preLoaderRoute: typeof WorkspaceThemesRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
   }
 }
 
@@ -214,6 +233,7 @@ interface WorkspaceRouteChildren {
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
   WorkspaceListedStocksRoute: typeof WorkspaceListedStocksRoute
   WorkspaceNasdaqsRoute: typeof WorkspaceNasdaqsRoute
+  WorkspaceThemesRoute: typeof WorkspaceThemesRoute
 }
 
 const WorkspaceRouteChildren: WorkspaceRouteChildren = {
@@ -224,6 +244,7 @@ const WorkspaceRouteChildren: WorkspaceRouteChildren = {
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,
   WorkspaceListedStocksRoute: WorkspaceListedStocksRoute,
   WorkspaceNasdaqsRoute: WorkspaceNasdaqsRoute,
+  WorkspaceThemesRoute: WorkspaceThemesRoute,
 }
 
 const WorkspaceRouteWithChildren = WorkspaceRoute._addFileChildren(

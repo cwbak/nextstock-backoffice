@@ -5,6 +5,7 @@ import {
   ChartCandlestickIcon,
   Globe2Icon,
   NetworkIcon,
+  TagsIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -13,6 +14,7 @@ export type NavigationPath =
   | "/corporations"
   | "/corporation-investments"
   | "/listed-stocks"
+  | "/themes"
   | "/calendar-events"
   | "/calendar-earnings"
   | "/calendar-earnings-krx";
@@ -43,6 +45,11 @@ export const navigationItems = [
     icon: ChartCandlestickIcon,
     label: "주식",
     to: "/listed-stocks",
+  },
+  {
+    icon: TagsIcon,
+    label: "테마 리스팅",
+    to: "/themes",
   },
   {
     icon: CalendarDaysIcon,

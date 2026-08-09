@@ -28,6 +28,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "KRX stock already exists": "이미 등록된 종목 코드입니다.",
   "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
   "report code must be between 1 and 4": "보고서 구분을 선택해 주세요.",
+  "theme id must be a positive integer": "테마 ID는 양의 정수여야 합니다.",
+  "theme not found": "테마를 찾을 수 없습니다.",
 };
 
 export class ApiError extends Error {
