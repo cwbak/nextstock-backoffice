@@ -1,4 +1,8 @@
-import { AlertTriangleIcon, ChartCandlestickIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  ChartCandlestickIcon,
+  PlusIcon,
+} from "lucide-react";
 
 import { DataTableCard } from "@/components/common/data-table-card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +23,7 @@ import { ThemeStocksTable } from "@/features/themes/components/theme-stocks-tabl
 interface ThemeStocksPanelProps {
   error: unknown;
   isPending: boolean;
+  onAddStock: () => void;
   onRetry: () => void;
   parentThemeName: string | undefined;
   stocks: ReadonlyArray<KrxStock> | undefined;
@@ -27,6 +32,7 @@ interface ThemeStocksPanelProps {
 
 export function ThemeStocksPanel({
   error,
+  onAddStock,
   isPending,
   onRetry,
   parentThemeName,
@@ -39,6 +45,12 @@ export function ThemeStocksPanel({
 
   return (
     <DataTableCard
+      actions={
+        <Button size="sm" type="button" onClick={onAddStock}>
+          <PlusIcon aria-hidden="true" data-icon="inline-start" />
+          기업 추가
+        </Button>
+      }
       className="lg:h-full lg:min-h-0"
       contentClassName="lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
       description={description}

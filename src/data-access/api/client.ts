@@ -25,10 +25,21 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "internal server error": "서버 내부 오류가 발생했습니다.",
   "invalid dart corporation investments response":
     "DART 출자현황 응답 값이 올바르지 않습니다.",
+  "id must be a positive integer": "ID는 양의 정수여야 합니다.",
   "KRX stock already exists": "이미 등록된 종목 코드입니다.",
   "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
+  "name is required": "이름을 입력해 주세요.",
+  "parent theme id must be a positive integer":
+    "상위 테마 ID는 양의 정수여야 합니다.",
+  "parent theme id must differ from id":
+    "상위 테마는 생성할 테마와 달라야 합니다.",
+  "parent theme not found": "상위 테마를 찾을 수 없습니다.",
   "report code must be between 1 and 4": "보고서 구분을 선택해 주세요.",
   "theme id must be a positive integer": "테마 ID는 양의 정수여야 합니다.",
+  "stock already exists in theme": "이미 이 테마에 포함된 종목입니다.",
+  "stock code must contain 6 uppercase letters or digits":
+    "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
+  "theme already exists": "같은 ID 또는 이름의 테마가 이미 있습니다.",
   "theme not found": "테마를 찾을 수 없습니다.",
 };
 

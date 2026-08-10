@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { RefreshCwIcon } from "lucide-react";
+import { PlusIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import { DataTableToolbar } from "@/components/common/data-table-controls";
@@ -19,6 +19,8 @@ import {
   themeStocksQueryOptions,
 } from "@/data-access/queries/themes/queries";
 import { ThemeList } from "@/features/themes/components/theme-list";
+import { ThemeCreateDialog } from "@/features/themes/components/theme-create-dialog";
+import { ThemeStockCreateDialog } from "@/features/themes/components/theme-stock-create-dialog";
 import { ThemeStocksPanel } from "@/features/themes/components/theme-stocks-panel";
 import { ThemesEmptyState } from "@/features/themes/components/themes-empty-state";
 
@@ -32,6 +34,8 @@ export function ThemesPage() {
   const [selectedThemeId, setSelectedThemeId] = useState(
     () => themesQuery.data[0]?.id ?? null,
   );
+  const [createOpen, setCreateOpen] = useState(false);
+  const [stockCreateOpen, setStockCreateOpen] = useState(false);
   const { state: tableState, updateQuery } =
     useDataTableState(initialTableState);
   const [filterQuery, updateFilterQuery] = useDataTableFilterQuery(
@@ -75,85 +79,113 @@ export function ThemesPage() {
   const isFetching = themesQuery.isFetching || themeStocksQuery.isFetching;
 
   return (
-    <section className="flex flex-col gap-6 lg:h-[calc(100svh-7rem)] lg:min-h-[40rem]">
-      <DataPageHeader
-        actions={
-          <Button
-            disabled={isFetching}
-            type="button"
-            variant="outline"
-            onClick={() => {
-              void Promise.all([
-                themesQuery.refetch(),
-                selectedTheme ? themeStocksQuery.refetch() : Promise.resolve(),
-              ]);
-            }}
+    <>
+      <section className="flex flex-col gap-6 lg:h-[calc(100svh-7rem)] lg:min-h-[40rem]">
+        <DataPageHeader
+          actions={
+            <>
+              <Button
+                disabled={isFetching}
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  void Promise.all([
+                    themesQuery.refetch(),
+                    selectedTheme
+                      ? themeStocksQuery.refetch()
+                      : Promise.resolve(),
+                  ]);
+                }}
+              >
+                {isFetching ? (
+                  <Spinner data-icon="inline-start" />
+                ) : (
+                  <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
+                )}
+                새로고침
+              </Button>
+              <Button type="button" onClick={() => setCreateOpen(true)}>
+                <PlusIcon aria-hidden="true" data-icon="inline-start" />
+                테마 추가
+              </Button>
+            </>
+          }
+          description="시스템 테마를 선택해 연결된 KRX 종목을 조회합니다."
+          eyebrow="Theme listing"
+          recordCount={themesQuery.data.length}
+          title="테마 리스팅"
+        />
+        {themesQuery.data.length === 0 ? (
+          <DataTableCard
+            description="시스템에 등록된 전체 테마입니다."
+            recordCount={0}
+            title="시스템 테마"
           >
-            {isFetching ? (
-              <Spinner data-icon="inline-start" />
-            ) : (
-              <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
-            )}
-            새로고침
-          </Button>
-        }
-        description="시스템 테마를 선택해 연결된 KRX 종목을 조회합니다."
-        eyebrow="Theme listing"
-        recordCount={themesQuery.data.length}
-        title="테마 리스팅"
+            <ThemesEmptyState />
+          </DataTableCard>
+        ) : (
+          <>
+            <DataTableToolbar
+              label="테마 검색"
+              placeholder="테마 ID, 테마명, 상위 테마 검색"
+              query={tableState.q}
+              onFilterChange={updateFilterQuery}
+              onQueryChange={updateQuery}
+            />
+            <div className="grid min-w-0 items-start gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[22rem_minmax(0,1fr)]">
+              <DataTableCard
+                className="lg:h-full lg:min-h-0"
+                contentClassName="lg:min-h-0 lg:flex-1 lg:overflow-hidden"
+                description="테마를 선택하면 연결 종목을 표시합니다."
+                recordCount={filteredThemes.length}
+                title="시스템 테마"
+              >
+                {filteredThemes.length === 0 ? (
+                  <NoSearchResults
+                    query={filterQuery}
+                    onClear={() => updateQuery("")}
+                  />
+                ) : (
+                  <ThemeList
+                    selectedThemeId={selectedTheme?.id ?? 0}
+                    themes={filteredThemes}
+                    themesById={themesById}
+                    onSelect={setSelectedThemeId}
+                  />
+                )}
+              </DataTableCard>
+              {selectedTheme ? (
+                <ThemeStocksPanel
+                  onAddStock={() => setStockCreateOpen(true)}
+                  error={themeStocksQuery.error}
+                  isPending={themeStocksQuery.isPending}
+                  parentThemeName={selectedParentTheme?.name}
+                  stocks={themeStocksQuery.data}
+                  theme={selectedTheme}
+                  onRetry={() => void themeStocksQuery.refetch()}
+                />
+              ) : null}
+            </div>
+          </>
+        )}
+      </section>
+      <ThemeCreateDialog
+        open={createOpen}
+        themes={themesQuery.data}
+        onCreated={(theme) => {
+          setSelectedThemeId(theme.id);
+          setCreateOpen(false);
+        }}
+        onOpenChange={setCreateOpen}
       />
-      {themesQuery.data.length === 0 ? (
-        <DataTableCard
-          description="시스템에 등록된 전체 테마입니다."
-          recordCount={0}
-          title="시스템 테마"
-        >
-          <ThemesEmptyState />
-        </DataTableCard>
-      ) : (
-        <>
-          <DataTableToolbar
-            label="테마 검색"
-            placeholder="테마 ID, 테마명, 상위 테마 검색"
-            query={tableState.q}
-            onFilterChange={updateFilterQuery}
-            onQueryChange={updateQuery}
-          />
-          <div className="grid min-w-0 items-start gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[22rem_minmax(0,1fr)]">
-            <DataTableCard
-              className="lg:h-full lg:min-h-0"
-              contentClassName="lg:min-h-0 lg:flex-1 lg:overflow-hidden"
-              description="테마를 선택하면 연결 종목을 표시합니다."
-              recordCount={filteredThemes.length}
-              title="시스템 테마"
-            >
-              {filteredThemes.length === 0 ? (
-                <NoSearchResults
-                  query={filterQuery}
-                  onClear={() => updateQuery("")}
-                />
-              ) : (
-                <ThemeList
-                  selectedThemeId={selectedTheme?.id ?? 0}
-                  themes={filteredThemes}
-                  themesById={themesById}
-                  onSelect={setSelectedThemeId}
-                />
-              )}
-            </DataTableCard>
-            {selectedTheme ? (
-              <ThemeStocksPanel
-                error={themeStocksQuery.error}
-                isPending={themeStocksQuery.isPending}
-                parentThemeName={selectedParentTheme?.name}
-                stocks={themeStocksQuery.data}
-                theme={selectedTheme}
-                onRetry={() => void themeStocksQuery.refetch()}
-              />
-            ) : null}
-          </div>
-        </>
-      )}
-    </section>
+      {selectedTheme ? (
+        <ThemeStockCreateDialog
+          open={stockCreateOpen}
+          theme={selectedTheme}
+          themeStocks={themeStocksQuery.data ?? []}
+          onOpenChange={setStockCreateOpen}
+        />
+      ) : null}
+    </>
   );
 }

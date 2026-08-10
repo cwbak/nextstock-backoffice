@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 
 interface DataTableCardProps {
+  actions?: ReactNode;
   className?: string;
   contentClassName?: string;
   children: ReactNode;
@@ -21,6 +22,7 @@ interface DataTableCardProps {
 }
 
 export function DataTableCard({
+  actions,
   children,
   description,
   className,
@@ -33,8 +35,11 @@ export function DataTableCard({
       <CardHeader className="border-b py-4">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
-        <CardAction className="font-mono text-xs tabular-nums text-muted-foreground">
-          {recordCount.toLocaleString("ko-KR")}
+        <CardAction className="flex items-center gap-2">
+          <span className="font-mono text-xs tabular-nums text-muted-foreground">
+            {recordCount.toLocaleString("ko-KR")}
+          </span>
+          {actions}
         </CardAction>
       </CardHeader>
       <CardContent

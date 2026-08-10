@@ -8,6 +8,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
 import {
   themesQueryOptions,
   themeStocksQueryOptions,
@@ -65,6 +66,10 @@ function renderPage() {
   queryClient.setQueryData(themeStocksQueryOptions(childTheme.id).queryKey, [
     createStock("005490", "POSCO홀딩스"),
   ]);
+  queryClient.setQueryData(krxStocksQueryOptions.queryKey, [
+    createStock("006400", "삼성SDI"),
+    createStock("005930", "삼성전자"),
+  ]);
 
   render(
     <QueryClientProvider client={queryClient}>
@@ -117,5 +122,33 @@ describe("ThemesPage", () => {
         name: `${childTheme.name} 테마 선택`,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("테마 추가와 선택한 테마의 기업 추가 화면을 연다", async () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "테마 추가" }));
+
+    expect(
+      screen.getByRole("dialog", { name: "테마 추가" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "취소" }));
+    fireEvent.click(screen.getByRole("button", { name: "기업 추가" }));
+
+    expect(
+      await screen.findByRole("dialog", {
+        name: `${rootTheme.name}에 기업 추가`,
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("combobox", { name: "추가할 기업" }));
+
+    expect(
+      screen.getByRole("option", { name: /삼성전자/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: /삼성SDI/ }),
+    ).not.toBeInTheDocument();
   });
 });
