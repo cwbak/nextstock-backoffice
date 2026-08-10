@@ -15,7 +15,7 @@ export function ThemeList({
   themesById,
 }: ThemeListProps) {
   return (
-    <ul className="max-h-[42rem] divide-y overflow-y-auto">
+    <ul className="max-h-[50svh] divide-y overflow-y-auto lg:h-full lg:max-h-none">
       {themes.map((theme) => {
         const parentTheme =
           theme.parentThemeId === null

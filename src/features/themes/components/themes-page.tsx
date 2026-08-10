@@ -75,7 +75,7 @@ export function ThemesPage() {
   const isFetching = themesQuery.isFetching || themeStocksQuery.isFetching;
 
   return (
-    <section className="flex flex-col gap-6">
+    <section className="flex flex-col gap-6 lg:h-[calc(100svh-7rem)] lg:min-h-[40rem]">
       <DataPageHeader
         actions={
           <Button
@@ -119,8 +119,10 @@ export function ThemesPage() {
             onFilterChange={updateFilterQuery}
             onQueryChange={updateQuery}
           />
-          <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
+          <div className="grid min-w-0 items-start gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[22rem_minmax(0,1fr)]">
             <DataTableCard
+              className="lg:h-full lg:min-h-0"
+              contentClassName="lg:min-h-0 lg:flex-1 lg:overflow-hidden"
               description="테마를 선택하면 연결 종목을 표시합니다."
               recordCount={filteredThemes.length}
               title="시스템 테마"

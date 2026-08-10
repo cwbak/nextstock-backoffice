@@ -39,6 +39,8 @@ export function ThemeStocksPanel({
 
   return (
     <DataTableCard
+      className="lg:h-full lg:min-h-0"
+      contentClassName="lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
       description={description}
       recordCount={stocks?.length ?? 0}
       title={theme.name}
