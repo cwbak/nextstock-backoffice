@@ -11,7 +11,15 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -78,6 +86,16 @@ function renderWorkspace() {
 }
 
 describe("LnbWorkspace", () => {
+  beforeAll(() => {
+    HTMLElement.prototype.scrollIntoView = vi.fn();
+  });
+
+  afterAll(() => {
+    delete (
+      HTMLElement.prototype as Partial<Pick<HTMLElement, "scrollIntoView">>
+    ).scrollIntoView;
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
@@ -128,15 +146,20 @@ describe("LnbWorkspace", () => {
     fireEvent.change(krxStocksInput, { target: { value: "현대" } });
     fireEvent.click(
       screen.getByRole("link", {
-        name: "KRX 일봉",
+        name: "KRX 캔들",
       }),
     );
 
     const krxMarketDataFromInput = await screen.findByLabelText("시작일");
+    const krxMarketDataPeriodSelect = screen.getByRole("combobox", {
+      name: "캔들 주기",
+    });
 
     fireEvent.change(krxMarketDataFromInput, {
       target: { value: "2026-01-01" },
     });
+    fireEvent.keyDown(krxMarketDataPeriodSelect, { key: "ArrowDown" });
+    fireEvent.click(await screen.findByRole("option", { name: "주봉" }));
     fireEvent.click(
       screen.getByRole("link", {
         name: "테마 리스팅",
@@ -211,12 +234,13 @@ describe("LnbWorkspace", () => {
 
     fireEvent.click(
       screen.getByRole("link", {
-        name: "KRX 일봉",
+        name: "KRX 캔들",
       }),
     );
 
     await waitFor(() => expect(krxMarketDataFromInput).toBeVisible());
     expect(krxMarketDataFromInput).toHaveValue("2026-01-01");
+    expect(krxMarketDataPeriodSelect).toHaveTextContent("주봉");
 
     fireEvent.click(
       screen.getByRole("link", {

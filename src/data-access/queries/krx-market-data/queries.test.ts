@@ -5,6 +5,7 @@ import { krxMarketDataQueryOptions } from "@/data-access/queries/krx-market-data
 
 const marketData = [
   {
+    period: "weekly",
     date: "2026-08-10",
     open: 70_000,
     low: 69_500,
@@ -27,7 +28,7 @@ describe("KRX market data queries", () => {
     vi.restoreAllMocks();
   });
 
-  it("선택한 날짜 범위의 KRX 일봉을 조회한다", async () => {
+  it("선택한 주기와 날짜 범위의 KRX 캔들을 조회한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(marketData));
@@ -39,6 +40,7 @@ describe("KRX market data queries", () => {
       queryClient.fetchQuery(
         krxMarketDataQueryOptions({
           stockCode: "005930",
+          period: "weekly",
           from: "2026-01-01",
           to: "2026-08-10",
         }),
@@ -46,7 +48,7 @@ describe("KRX market data queries", () => {
     ).resolves.toEqual(marketData);
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/krx-stocks/005930/market-data?from=2026-01-01&to=2026-08-10",
+      "/admin/krx-stocks/005930/market-data?period=weekly&from=2026-01-01&to=2026-08-10",
     );
   });
 
@@ -61,13 +63,14 @@ describe("KRX market data queries", () => {
     await queryClient.fetchQuery(
       krxMarketDataQueryOptions({
         stockCode: "005930",
+        period: "daily",
         from: "",
         to: "",
       }),
     );
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/krx-stocks/005930/market-data",
+      "/admin/krx-stocks/005930/market-data?period=daily",
     );
   });
 });

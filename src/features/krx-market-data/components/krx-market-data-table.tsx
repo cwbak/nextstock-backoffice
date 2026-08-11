@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { KrxMarketData } from "@/data-access/schemas/krx-market-data";
+import { getKrxMarketDataPeriodLabel } from "@/features/krx-market-data/krx-market-data-period";
 import { formatDate } from "@/lib/format";
 
 const numberFormatter = new Intl.NumberFormat("ko-KR");
@@ -23,9 +24,10 @@ export function KrxMarketDataTable({
 }: KrxMarketDataTableProps) {
   return (
     <Table className="min-w-[64rem] table-fixed">
-      <TableCaption className="sr-only">{stockName} KRX 일봉</TableCaption>
+      <TableCaption className="sr-only">{stockName} KRX 캔들</TableCaption>
       <colgroup>
         <col className="w-36" />
+        <col className="w-24" />
         <col className="w-32" />
         <col className="w-32" />
         <col className="w-32" />
@@ -36,6 +38,7 @@ export function KrxMarketDataTable({
       <TableHeader>
         <TableRow className="bg-muted/35 hover:bg-muted/35">
           <TableHead className="pl-4">날짜</TableHead>
+          <TableHead>주기</TableHead>
           <TableHead className="text-right">시가</TableHead>
           <TableHead className="text-right">고가</TableHead>
           <TableHead className="text-right">저가</TableHead>
@@ -50,6 +53,7 @@ export function KrxMarketDataTable({
             <TableCell className="pl-4 font-medium tabular-nums">
               {formatDate(item.date)}
             </TableCell>
+            <TableCell>{getKrxMarketDataPeriodLabel(item.period)}</TableCell>
             <TableCell className="text-right font-mono text-xs tabular-nums">
               {numberFormatter.format(item.open)}
             </TableCell>

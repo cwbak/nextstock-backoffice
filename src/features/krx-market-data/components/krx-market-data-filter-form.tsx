@@ -16,6 +16,7 @@ import {
   krxMarketDataListParamsSchema,
   type KrxMarketDataListParams,
 } from "@/data-access/schemas/krx-market-data";
+import { KrxMarketDataPeriodSelect } from "@/features/krx-market-data/components/krx-market-data-period-select";
 
 interface KrxMarketDataFilterFormProps {
   onSearch: (params: KrxMarketDataListParams) => void;
@@ -24,6 +25,7 @@ interface KrxMarketDataFilterFormProps {
 
 const filterFieldNames = new Set<keyof KrxMarketDataListParams>([
   "stockCode",
+  "period",
   "from",
   "to",
 ]);
@@ -48,6 +50,7 @@ export function KrxMarketDataFilterForm({
   } = useForm<KrxMarketDataListParams>({
     defaultValues: {
       stockCode: "",
+      period: "daily",
       from: "",
       to: "",
     },
@@ -80,10 +83,10 @@ export function KrxMarketDataFilterForm({
       <div className="mb-4">
         <h2 className="font-semibold">조회 조건</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          종목은 필수이며 시작일과 종료일은 필요한 범위만 입력할 수 있습니다.
+          종목과 캔들 주기는 필수이며 날짜는 필요한 범위만 입력할 수 있습니다.
         </p>
       </div>
-      <FieldGroup className="grid grid-cols-1 items-start gap-4 md:grid-cols-[minmax(16rem,1.5fr)_minmax(10rem,1fr)_minmax(10rem,1fr)_auto]">
+      <FieldGroup className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(16rem,1.5fr)_minmax(8rem,0.7fr)_minmax(10rem,1fr)_minmax(10rem,1fr)_auto]">
         <Field data-invalid={Boolean(errors.stockCode)}>
           <FieldLabel htmlFor="market-data-stock-code">KRX 종목</FieldLabel>
           <Controller
@@ -100,6 +103,22 @@ export function KrxMarketDataFilterForm({
             )}
           />
           <FieldError errors={[errors.stockCode]} />
+        </Field>
+        <Field data-invalid={Boolean(errors.period)}>
+          <FieldLabel htmlFor="market-data-period">캔들 주기</FieldLabel>
+          <Controller
+            control={control}
+            name="period"
+            render={({ field }) => (
+              <KrxMarketDataPeriodSelect
+                aria-invalid={Boolean(errors.period)}
+                id="market-data-period"
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+          <FieldError errors={[errors.period]} />
         </Field>
         <Field data-invalid={Boolean(errors.from)}>
           <FieldLabel htmlFor="market-data-from">시작일</FieldLabel>
@@ -121,13 +140,13 @@ export function KrxMarketDataFilterForm({
           />
           <FieldError errors={[errors.to]} />
         </Field>
-        <Field className="md:pt-6">
-          <Button className="w-full md:w-auto" type="submit">
+        <Field className="sm:col-span-2 lg:col-span-1 lg:pt-6">
+          <Button className="w-full lg:w-auto" type="submit">
             <SearchIcon aria-hidden="true" data-icon="inline-start" />
             조회
           </Button>
           <FieldDescription className="sr-only">
-            선택한 조건으로 KRX 일봉을 조회합니다.
+            선택한 조건으로 KRX 캔들을 조회합니다.
           </FieldDescription>
         </Field>
       </FieldGroup>

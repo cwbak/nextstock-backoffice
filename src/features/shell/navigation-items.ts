@@ -49,7 +49,7 @@ export const navigationItems = [
   },
   {
     icon: ChartCandlestickIcon,
-    label: "KRX 일봉",
+    label: "KRX 캔들",
     to: "/krx-market-data",
   },
   {

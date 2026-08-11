@@ -9,9 +9,11 @@ import {
 } from "@/data-access/schemas/krx-market-data";
 
 function buildMarketDataPath(params: KrxMarketDataListParams) {
-  const { stockCode, from, to } = krxMarketDataListParamsSchema.parse(params);
+  const { stockCode, period, from, to } =
+    krxMarketDataListParamsSchema.parse(params);
   const searchParams = new URLSearchParams();
 
+  searchParams.set("period", period);
   if (from) {
     searchParams.set("from", from);
   }

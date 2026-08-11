@@ -29,10 +29,12 @@ import { KrxMarketDataFilterForm } from "@/features/krx-market-data/components/k
 import { KrxMarketDataSaveDialog } from "@/features/krx-market-data/components/krx-market-data-save-dialog";
 import { KrxMarketDataSaveSummary } from "@/features/krx-market-data/components/krx-market-data-save-summary";
 import { KrxMarketDataTable } from "@/features/krx-market-data/components/krx-market-data-table";
+import { getKrxMarketDataPeriodLabel } from "@/features/krx-market-data/krx-market-data-period";
 
 const pageSize = 50;
 const inactiveParams: KrxMarketDataListParams = {
   stockCode: "000000",
+  period: "daily",
   from: "",
   to: "",
 };
@@ -86,8 +88,8 @@ export function KrxMarketDataPage() {
     ? `${selectedStock.code} · ${selectedStock.name}`
     : (params?.stockCode ?? "KRX 종목");
   const tableDescription = params
-    ? `${stockLabel} · ${getRangeLabel(params)} · 날짜 오름차순`
-    : "종목을 선택해 ClickHouse에 저장된 일봉을 조회합니다.";
+    ? `${stockLabel} · ${getKrxMarketDataPeriodLabel(params.period)} · ${getRangeLabel(params)} · 날짜 오름차순`
+    : "종목과 주기를 선택해 ClickHouse에 저장된 캔들을 조회합니다.";
 
   return (
     <>
@@ -114,14 +116,14 @@ export function KrxMarketDataPage() {
                 onClick={() => setSaveOpen(true)}
               >
                 <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
-                일봉 저장
+                캔들 저장
               </Button>
             </>
           }
-          description="KRX 종목의 보정주가 일봉을 조회하고 한국투자증권에서 가져와 저장합니다."
-          eyebrow="KRX daily market data"
+          description="KRX 종목의 일봉·주봉·월봉을 조회하고 한국투자증권에서 가져와 저장합니다."
+          eyebrow="KRX candle market data"
           recordCount={totalRecords}
-          title="KRX 일봉"
+          title="KRX 캔들"
         />
         {saveSummary ? (
           <KrxMarketDataSaveSummary
@@ -146,14 +148,14 @@ export function KrxMarketDataPage() {
         <DataTableCard
           description={tableDescription}
           recordCount={totalRecords}
-          title="KRX 일봉 원장"
+          title="KRX 캔들 원장"
         >
           {params === null ? (
             <KrxMarketDataEmptyState mode="not-searched" />
           ) : marketDataQuery.isPending ? (
             <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-muted-foreground">
               <Spinner />
-              일봉을 불러오는 중입니다.
+              캔들을 불러오는 중입니다.
             </div>
           ) : marketDataQuery.isError ? (
             <Empty className="min-h-72 border-0">
@@ -161,7 +163,7 @@ export function KrxMarketDataPage() {
                 <EmptyMedia variant="icon">
                   <AlertTriangleIcon aria-hidden="true" />
                 </EmptyMedia>
-                <EmptyTitle>KRX 일봉을 불러오지 못했습니다</EmptyTitle>
+                <EmptyTitle>KRX 캔들을 불러오지 못했습니다</EmptyTitle>
                 <EmptyDescription>
                   {getErrorMessage(marketDataQuery.error)}
                 </EmptyDescription>
@@ -201,6 +203,7 @@ export function KrxMarketDataPage() {
           setSaveSummary({ payload, result });
           setParams({
             stockCode: payload.stockCode,
+            period: payload.period,
             from: payload.from,
             to: payload.to,
           });

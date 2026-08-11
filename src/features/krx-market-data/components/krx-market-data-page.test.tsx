@@ -6,7 +6,15 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
@@ -54,15 +62,26 @@ function renderPage() {
 }
 
 describe("KrxMarketDataPage", () => {
+  beforeAll(() => {
+    HTMLElement.prototype.scrollIntoView = vi.fn();
+  });
+
+  afterAll(() => {
+    delete (
+      HTMLElement.prototype as Partial<Pick<HTMLElement, "scrollIntoView">>
+    ).scrollIntoView;
+  });
+
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
   });
 
-  it("종목과 기간을 선택해 KRX 일봉을 조회한다", async () => {
+  it("종목, 주기와 기간을 선택해 KRX 캔들을 조회한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse([
         {
+          period: "weekly",
           date: "2026-08-10",
           open: 70_000,
           low: 69_500,
@@ -77,6 +96,10 @@ describe("KrxMarketDataPage", () => {
 
     fireEvent.click(screen.getByRole("combobox", { name: "KRX 종목" }));
     fireEvent.click(screen.getByRole("option", { name: /삼성전자/ }));
+    fireEvent.keyDown(screen.getByRole("combobox", { name: "캔들 주기" }), {
+      key: "ArrowDown",
+    });
+    fireEvent.click(await screen.findByRole("option", { name: "주봉" }));
     fireEvent.change(screen.getByLabelText("시작일"), {
       target: { value: "2026-01-01" },
     });
@@ -89,18 +112,18 @@ describe("KrxMarketDataPage", () => {
       expect(screen.getByText("70,500")).toBeInTheDocument();
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/krx-stocks/005930/market-data?from=2026-01-01&to=2026-08-10",
+      "/admin/krx-stocks/005930/market-data?period=weekly&from=2026-01-01&to=2026-08-10",
     );
     expect(screen.getByText("870,000,000,000")).toBeInTheDocument();
   });
 
-  it("일봉 저장 화면을 연다", () => {
+  it("캔들 저장 화면을 연다", () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: "일봉 저장" }));
+    fireEvent.click(screen.getByRole("button", { name: "캔들 저장" }));
 
     expect(
-      screen.getByRole("dialog", { name: "KRX 일봉 저장" }),
+      screen.getByRole("dialog", { name: "KRX 캔들 저장" }),
     ).toBeInTheDocument();
   });
 });

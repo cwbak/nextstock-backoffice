@@ -62,9 +62,9 @@ export function LnbWorkspace() {
       </Activity>
       <Activity
         mode={activePath === "/krx-market-data" ? "visible" : "hidden"}
-        name="KRX daily market data workspace"
+        name="KRX candle market data workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="KRX 일봉" />}>
+        <Suspense fallback={<ManagementPageLoading label="KRX 캔들" />}>
           <KrxMarketDataPage />
         </Suspense>
       </Activity>

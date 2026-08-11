@@ -11,12 +11,18 @@ const optionalMarketDataDateSchema = z.union([
 ]);
 const marketDataIntegerSchema = z.number().int().nonnegative();
 
+export const krxMarketDataPeriodSchema = z.enum(
+  ["daily", "weekly", "monthly"],
+  { error: "캔들 주기는 일봉, 주봉, 월봉 중에서 선택해 주세요." },
+);
+
 function isValidDateRange({ from, to }: { from: string; to: string }) {
   return !from || !to || from <= to;
 }
 
 export const krxMarketDataSchema = z
   .object({
+    period: krxMarketDataPeriodSchema,
     date: marketDataDateSchema,
     open: marketDataIntegerSchema,
     low: marketDataIntegerSchema,
@@ -32,6 +38,7 @@ export const krxMarketDataListSchema = z.array(krxMarketDataSchema);
 export const krxMarketDataListParamsSchema = z
   .object({
     stockCode: krxStockCodeSchema,
+    period: krxMarketDataPeriodSchema,
     from: optionalMarketDataDateSchema,
     to: optionalMarketDataDateSchema,
   })
@@ -44,6 +51,7 @@ export const krxMarketDataListParamsSchema = z
 export const krxMarketDataCreatePayloadSchema = z
   .object({
     stockCode: krxStockCodeSchema,
+    period: krxMarketDataPeriodSchema,
     from: marketDataDateSchema,
     to: marketDataDateSchema,
   })
@@ -55,12 +63,14 @@ export const krxMarketDataCreatePayloadSchema = z
 
 export const krxMarketDataCreateResultSchema = z
   .object({
+    period: krxMarketDataPeriodSchema,
     fetchedCount: z.number().int().nonnegative(),
     insertedCount: z.number().int().nonnegative(),
   })
   .strict();
 
 export type KrxMarketData = z.infer<typeof krxMarketDataSchema>;
+export type KrxMarketDataPeriod = z.infer<typeof krxMarketDataPeriodSchema>;
 export type KrxMarketDataListParams = z.infer<
   typeof krxMarketDataListParamsSchema
 >;

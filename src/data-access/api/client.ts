@@ -33,13 +33,15 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "KRX stock already exists": "이미 등록된 종목 코드입니다.",
   "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
   "korea investment market data lookup failed":
-    "한국투자증권에서 KRX 일봉을 조회하지 못했습니다.",
+    "한국투자증권에서 KRX 캔들을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",
   "parent theme id must be a positive integer":
     "상위 테마 ID는 양의 정수여야 합니다.",
   "parent theme id must differ from id":
     "상위 테마는 생성할 테마와 달라야 합니다.",
   "parent theme not found": "상위 테마를 찾을 수 없습니다.",
+  "period must be daily, weekly, or monthly":
+    "캔들 주기는 일봉, 주봉, 월봉 중에서 선택해 주세요.",
   "report code must be between 1 and 4": "보고서 구분을 선택해 주세요.",
   "theme id must be a positive integer": "테마 ID는 양의 정수여야 합니다.",
   "stock already exists in theme": "이미 이 테마에 포함된 종목입니다.",
