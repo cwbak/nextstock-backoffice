@@ -4,7 +4,7 @@ import {
   createTheme,
   createThemeStock,
 } from "@/data-access/queries/themes/mutations";
-import type { KrxStock } from "@/data-access/schemas/krx-stock";
+import type { KrStock } from "@/data-access/schemas/kr-stock";
 import type { Theme } from "@/data-access/schemas/theme";
 
 const theme: Theme = {
@@ -15,7 +15,7 @@ const theme: Theme = {
   updatedAt: "2026-08-10T10:00:00+09:00",
 };
 
-const stock: KrxStock = {
+const stock: KrStock = {
   code: "005930",
   corporationCode: "00126380",
   name: "삼성전자",
@@ -72,7 +72,7 @@ describe("theme mutations", () => {
     });
   });
 
-  it("선택한 테마에 KRX 종목을 추가한다", async () => {
+  it("선택한 테마에 KR 종목을 추가한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(stock));

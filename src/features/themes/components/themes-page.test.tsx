@@ -8,12 +8,12 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
+import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import {
   themesQueryOptions,
   themeStocksQueryOptions,
 } from "@/data-access/queries/themes/queries";
-import type { KrxStock } from "@/data-access/schemas/krx-stock";
+import type { KrStock } from "@/data-access/schemas/kr-stock";
 import type { Theme } from "@/data-access/schemas/theme";
 import { ThemesPage } from "@/features/themes/components/themes-page";
 
@@ -32,7 +32,7 @@ const childTheme: Theme = {
   name: "2차전지(소재)",
 };
 
-function createStock(code: string, name: string): KrxStock {
+function createStock(code: string, name: string): KrStock {
   return {
     code,
     corporationCode: "00126362",
@@ -66,7 +66,7 @@ function renderPage() {
   queryClient.setQueryData(themeStocksQueryOptions(childTheme.id).queryKey, [
     createStock("005490", "POSCO홀딩스"),
   ]);
-  queryClient.setQueryData(krxStocksQueryOptions.queryKey, [
+  queryClient.setQueryData(krStocksQueryOptions.queryKey, [
     createStock("006400", "삼성SDI"),
     createStock("005930", "삼성전자"),
   ]);
@@ -83,7 +83,7 @@ describe("ThemesPage", () => {
     cleanup();
   });
 
-  it("테마를 선택하면 연결된 KRX 종목을 표시한다", async () => {
+  it("테마를 선택하면 연결된 KR 종목을 표시한다", async () => {
     renderPage();
 
     expect(screen.getByText("삼성SDI")).toBeInTheDocument();

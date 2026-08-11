@@ -3,17 +3,17 @@ import { describe, expect, it } from "vitest";
 import { navigationItems } from "@/features/shell/navigation-items";
 
 describe("navigationItems", () => {
-  it("KRX 캔들과 테마 리스팅 메뉴를 주식과 일정 사이에 표시한다", () => {
+  it("KR 캔들과 테마 리스팅 메뉴를 주식과 일정 사이에 표시한다", () => {
     expect(navigationItems.map(({ label, to }) => ({ label, to }))).toEqual([
-      { label: "나스닥 정보", to: "/nasdaqs" },
+      { label: "US 종목 정보", to: "/us-stocks" },
       { label: "법인", to: "/corporations" },
       { label: "출자현황", to: "/corporation-investments" },
       { label: "주식", to: "/listed-stocks" },
-      { label: "KRX 캔들", to: "/krx-market-data" },
+      { label: "KR 캔들", to: "/kr-market-data" },
       { label: "테마 리스팅", to: "/themes" },
       { label: "일정", to: "/calendar-events" },
-      { label: "실적(NASDAQ)", to: "/calendar-earnings" },
-      { label: "실적(KRX)", to: "/calendar-earnings-krx" },
+      { label: "실적(US)", to: "/calendar-earnings-us" },
+      { label: "실적(KR)", to: "/calendar-earnings-kr" },
     ]);
   });
 });

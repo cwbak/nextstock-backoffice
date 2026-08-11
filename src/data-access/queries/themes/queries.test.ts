@@ -60,7 +60,7 @@ describe("theme queries", () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/themes");
   });
 
-  it("선택한 테마의 KRX 종목 목록을 조회한다", async () => {
+  it("선택한 테마의 KR 종목 목록을 조회한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(stocks));

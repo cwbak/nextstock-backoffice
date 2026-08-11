@@ -10,15 +10,15 @@ import {
 } from "lucide-react";
 
 export type NavigationPath =
-  | "/nasdaqs"
+  | "/us-stocks"
   | "/corporations"
   | "/corporation-investments"
   | "/listed-stocks"
-  | "/krx-market-data"
+  | "/kr-market-data"
   | "/themes"
   | "/calendar-events"
-  | "/calendar-earnings"
-  | "/calendar-earnings-krx";
+  | "/calendar-earnings-us"
+  | "/calendar-earnings-kr";
 
 export interface NavigationItem {
   icon: LucideIcon;
@@ -29,8 +29,8 @@ export interface NavigationItem {
 export const navigationItems = [
   {
     icon: Globe2Icon,
-    label: "나스닥 정보",
-    to: "/nasdaqs",
+    label: "US 종목 정보",
+    to: "/us-stocks",
   },
   {
     icon: Building2Icon,
@@ -49,8 +49,8 @@ export const navigationItems = [
   },
   {
     icon: ChartCandlestickIcon,
-    label: "KRX 캔들",
-    to: "/krx-market-data",
+    label: "KR 캔들",
+    to: "/kr-market-data",
   },
   {
     icon: TagsIcon,
@@ -64,13 +64,13 @@ export const navigationItems = [
   },
   {
     icon: CalendarClockIcon,
-    label: "실적(NASDAQ)",
-    to: "/calendar-earnings",
+    label: "실적(US)",
+    to: "/calendar-earnings-us",
   },
   {
     icon: CalendarClockIcon,
-    label: "실적(KRX)",
-    to: "/calendar-earnings-krx",
+    label: "실적(KR)",
+    to: "/calendar-earnings-kr",
   },
 ] as const satisfies ReadonlyArray<NavigationItem>;
 

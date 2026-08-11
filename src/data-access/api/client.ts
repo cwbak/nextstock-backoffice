@@ -10,12 +10,12 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "body code must match path code": "코드는 변경할 수 없습니다.",
   "business year must contain 4 digits": "사업연도는 숫자 4자리여야 합니다.",
   "corporation already exists": "이미 등록된 법인 코드입니다.",
-  "corporation or KRX stock already exists":
+  "corporation or KR stock already exists":
     "이미 등록된 법인 또는 종목 코드입니다.",
   "corporation code must contain 8 digits":
     "법인 코드는 숫자 8자리여야 합니다.",
-  "corporation has KRX stocks":
-    "연결된 KRX 종목이 있어 법인을 삭제할 수 없습니다.",
+  "corporation has KR stocks":
+    "연결된 KR 종목이 있어 법인을 삭제할 수 없습니다.",
   "corporation not found": "법인을 찾을 수 없습니다.",
   "code must contain 6 uppercase letters or digits":
     "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
@@ -32,10 +32,14 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "invalid dart corporation investments response":
     "DART 출자현황 응답 값이 올바르지 않습니다.",
   "id must be a positive integer": "ID는 양의 정수여야 합니다.",
-  "KRX stock already exists": "이미 등록된 종목 코드입니다.",
-  "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
+  "KR stock already exists": "이미 등록된 종목 코드입니다.",
+  "KR stock not found": "KR 종목을 찾을 수 없습니다.",
+  "kr stock code does not match request":
+    "요청한 종목 코드와 조회된 KR 종목 코드가 다릅니다.",
+  "kr stock lookup failed": "KR 종목 정보를 조회하지 못했습니다.",
+  "kr stock not found": "KR 종목을 찾을 수 없습니다.",
   "korea investment market data lookup failed":
-    "한국투자증권에서 KRX 일봉을 조회하지 못했습니다.",
+    "한국투자증권에서 KR 일봉을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",
   "limit must be between 1 and 1000":
     "캔들 조회 개수는 1개 이상 1,000개 이하여야 합니다.",

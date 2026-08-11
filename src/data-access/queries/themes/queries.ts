@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 
 import { apiRequest } from "@/data-access/api/client";
 import { themeKeys } from "@/data-access/queries/themes/keys";
-import { krxStockListSchema } from "@/data-access/schemas/krx-stock";
+import { krStockListSchema } from "@/data-access/schemas/kr-stock";
 import { themeListSchema } from "@/data-access/schemas/theme";
 
 export const themesQueryOptions = queryOptions({
@@ -18,7 +18,7 @@ export function themeStocksQueryOptions(themeId: number) {
     queryFn: ({ signal }) =>
       apiRequest(
         `/admin/themes/${encodeURIComponent(themeId)}/stocks`,
-        krxStockListSchema,
+        krStockListSchema,
         { signal },
       ),
     staleTime: 30 * 1000,

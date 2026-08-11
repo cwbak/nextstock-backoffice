@@ -8,11 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { KrxStock } from "@/data-access/schemas/krx-stock";
+import type { KrStock } from "@/data-access/schemas/kr-stock";
 import { formatDate } from "@/lib/format";
 
 interface ThemeStocksTableProps {
-  stocks: ReadonlyArray<KrxStock>;
+  stocks: ReadonlyArray<KrStock>;
   themeName: string;
 }
 
@@ -20,7 +20,7 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
   return (
     <Table className="min-w-[68rem] table-fixed">
       <TableCaption className="sr-only">
-        {themeName} 테마의 KRX 종목 목록
+        {themeName} 테마의 KR 종목 목록
       </TableCaption>
       <colgroup>
         <col className="w-28" />

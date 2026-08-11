@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
-import type { KrxStock } from "@/data-access/schemas/krx-stock";
+import type { KrStock } from "@/data-access/schemas/kr-stock";
 import type { Theme } from "@/data-access/schemas/theme";
 import { ThemeStocksTable } from "@/features/themes/components/theme-stocks-table";
 
@@ -26,7 +26,7 @@ interface ThemeStocksPanelProps {
   onAddStock: () => void;
   onRetry: () => void;
   parentThemeName: string | undefined;
-  stocks: ReadonlyArray<KrxStock> | undefined;
+  stocks: ReadonlyArray<KrStock> | undefined;
   theme: Theme;
 }
 
@@ -85,7 +85,7 @@ export function ThemeStocksPanel({
             <EmptyMedia variant="icon">
               <ChartCandlestickIcon aria-hidden="true" />
             </EmptyMedia>
-            <EmptyTitle>연결된 KRX 종목이 없습니다</EmptyTitle>
+            <EmptyTitle>연결된 KR 종목이 없습니다</EmptyTitle>
             <EmptyDescription>
               이 테마에 연결된 종목이 아직 등록되지 않았습니다.
             </EmptyDescription>

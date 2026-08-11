@@ -11,15 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspaceRouteImport } from './routes/_workspace'
-import { Route as WorkspaceCalendarEarningsRouteImport } from './routes/_workspace.calendar-earnings'
-import { Route as WorkspaceCalendarEarningsKrxRouteImport } from './routes/_workspace.calendar-earnings-krx'
+import { Route as WorkspaceCalendarEarningsKrRouteImport } from './routes/_workspace.calendar-earnings-kr'
+import { Route as WorkspaceCalendarEarningsUsRouteImport } from './routes/_workspace.calendar-earnings-us'
 import { Route as WorkspaceCalendarEventsRouteImport } from './routes/_workspace.calendar-events'
 import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_workspace.corporation-investments'
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
-import { Route as WorkspaceKrxMarketDataRouteImport } from './routes/_workspace.krx-market-data'
+import { Route as WorkspaceKrMarketDataRouteImport } from './routes/_workspace.kr-market-data'
 import { Route as WorkspaceListedStocksRouteImport } from './routes/_workspace.listed-stocks'
-import { Route as WorkspaceNasdaqsRouteImport } from './routes/_workspace.nasdaqs'
 import { Route as WorkspaceThemesRouteImport } from './routes/_workspace.themes'
+import { Route as WorkspaceUsStocksRouteImport } from './routes/_workspace.us-stocks'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,16 +30,16 @@ const WorkspaceRoute = WorkspaceRouteImport.update({
   id: '/_workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkspaceCalendarEarningsRoute =
-  WorkspaceCalendarEarningsRouteImport.update({
-    id: '/calendar-earnings',
-    path: '/calendar-earnings',
+const WorkspaceCalendarEarningsKrRoute =
+  WorkspaceCalendarEarningsKrRouteImport.update({
+    id: '/calendar-earnings-kr',
+    path: '/calendar-earnings-kr',
     getParentRoute: () => WorkspaceRoute,
   } as any)
-const WorkspaceCalendarEarningsKrxRoute =
-  WorkspaceCalendarEarningsKrxRouteImport.update({
-    id: '/calendar-earnings-krx',
-    path: '/calendar-earnings-krx',
+const WorkspaceCalendarEarningsUsRoute =
+  WorkspaceCalendarEarningsUsRouteImport.update({
+    id: '/calendar-earnings-us',
+    path: '/calendar-earnings-us',
     getParentRoute: () => WorkspaceRoute,
   } as any)
 const WorkspaceCalendarEventsRoute = WorkspaceCalendarEventsRouteImport.update({
@@ -58,9 +58,9 @@ const WorkspaceCorporationsRoute = WorkspaceCorporationsRouteImport.update({
   path: '/corporations',
   getParentRoute: () => WorkspaceRoute,
 } as any)
-const WorkspaceKrxMarketDataRoute = WorkspaceKrxMarketDataRouteImport.update({
-  id: '/krx-market-data',
-  path: '/krx-market-data',
+const WorkspaceKrMarketDataRoute = WorkspaceKrMarketDataRouteImport.update({
+  id: '/kr-market-data',
+  path: '/kr-market-data',
   getParentRoute: () => WorkspaceRoute,
 } as any)
 const WorkspaceListedStocksRoute = WorkspaceListedStocksRouteImport.update({
@@ -68,93 +68,93 @@ const WorkspaceListedStocksRoute = WorkspaceListedStocksRouteImport.update({
   path: '/listed-stocks',
   getParentRoute: () => WorkspaceRoute,
 } as any)
-const WorkspaceNasdaqsRoute = WorkspaceNasdaqsRouteImport.update({
-  id: '/nasdaqs',
-  path: '/nasdaqs',
-  getParentRoute: () => WorkspaceRoute,
-} as any)
 const WorkspaceThemesRoute = WorkspaceThemesRouteImport.update({
   id: '/themes',
   path: '/themes',
   getParentRoute: () => WorkspaceRoute,
 } as any)
+const WorkspaceUsStocksRoute = WorkspaceUsStocksRouteImport.update({
+  id: '/us-stocks',
+  path: '/us-stocks',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
-  '/calendar-earnings-krx': typeof WorkspaceCalendarEarningsKrxRoute
+  '/calendar-earnings-kr': typeof WorkspaceCalendarEarningsKrRoute
+  '/calendar-earnings-us': typeof WorkspaceCalendarEarningsUsRoute
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
-  '/krx-market-data': typeof WorkspaceKrxMarketDataRoute
+  '/kr-market-data': typeof WorkspaceKrMarketDataRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
-  '/nasdaqs': typeof WorkspaceNasdaqsRoute
   '/themes': typeof WorkspaceThemesRoute
+  '/us-stocks': typeof WorkspaceUsStocksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
-  '/calendar-earnings-krx': typeof WorkspaceCalendarEarningsKrxRoute
+  '/calendar-earnings-kr': typeof WorkspaceCalendarEarningsKrRoute
+  '/calendar-earnings-us': typeof WorkspaceCalendarEarningsUsRoute
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
-  '/krx-market-data': typeof WorkspaceKrxMarketDataRoute
+  '/kr-market-data': typeof WorkspaceKrMarketDataRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
-  '/nasdaqs': typeof WorkspaceNasdaqsRoute
   '/themes': typeof WorkspaceThemesRoute
+  '/us-stocks': typeof WorkspaceUsStocksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_workspace': typeof WorkspaceRouteWithChildren
-  '/_workspace/calendar-earnings': typeof WorkspaceCalendarEarningsRoute
-  '/_workspace/calendar-earnings-krx': typeof WorkspaceCalendarEarningsKrxRoute
+  '/_workspace/calendar-earnings-kr': typeof WorkspaceCalendarEarningsKrRoute
+  '/_workspace/calendar-earnings-us': typeof WorkspaceCalendarEarningsUsRoute
   '/_workspace/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/_workspace/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
-  '/_workspace/krx-market-data': typeof WorkspaceKrxMarketDataRoute
+  '/_workspace/kr-market-data': typeof WorkspaceKrMarketDataRoute
   '/_workspace/listed-stocks': typeof WorkspaceListedStocksRoute
-  '/_workspace/nasdaqs': typeof WorkspaceNasdaqsRoute
   '/_workspace/themes': typeof WorkspaceThemesRoute
+  '/_workspace/us-stocks': typeof WorkspaceUsStocksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/calendar-earnings'
-    | '/calendar-earnings-krx'
+    | '/calendar-earnings-kr'
+    | '/calendar-earnings-us'
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
-    | '/krx-market-data'
+    | '/kr-market-data'
     | '/listed-stocks'
-    | '/nasdaqs'
     | '/themes'
+    | '/us-stocks'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/calendar-earnings'
-    | '/calendar-earnings-krx'
+    | '/calendar-earnings-kr'
+    | '/calendar-earnings-us'
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
-    | '/krx-market-data'
+    | '/kr-market-data'
     | '/listed-stocks'
-    | '/nasdaqs'
     | '/themes'
+    | '/us-stocks'
   id:
     | '__root__'
     | '/'
     | '/_workspace'
-    | '/_workspace/calendar-earnings'
-    | '/_workspace/calendar-earnings-krx'
+    | '/_workspace/calendar-earnings-kr'
+    | '/_workspace/calendar-earnings-us'
     | '/_workspace/calendar-events'
     | '/_workspace/corporation-investments'
     | '/_workspace/corporations'
-    | '/_workspace/krx-market-data'
+    | '/_workspace/kr-market-data'
     | '/_workspace/listed-stocks'
-    | '/_workspace/nasdaqs'
     | '/_workspace/themes'
+    | '/_workspace/us-stocks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,18 +178,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_workspace/calendar-earnings': {
-      id: '/_workspace/calendar-earnings'
-      path: '/calendar-earnings'
-      fullPath: '/calendar-earnings'
-      preLoaderRoute: typeof WorkspaceCalendarEarningsRouteImport
+    '/_workspace/calendar-earnings-kr': {
+      id: '/_workspace/calendar-earnings-kr'
+      path: '/calendar-earnings-kr'
+      fullPath: '/calendar-earnings-kr'
+      preLoaderRoute: typeof WorkspaceCalendarEarningsKrRouteImport
       parentRoute: typeof WorkspaceRoute
     }
-    '/_workspace/calendar-earnings-krx': {
-      id: '/_workspace/calendar-earnings-krx'
-      path: '/calendar-earnings-krx'
-      fullPath: '/calendar-earnings-krx'
-      preLoaderRoute: typeof WorkspaceCalendarEarningsKrxRouteImport
+    '/_workspace/calendar-earnings-us': {
+      id: '/_workspace/calendar-earnings-us'
+      path: '/calendar-earnings-us'
+      fullPath: '/calendar-earnings-us'
+      preLoaderRoute: typeof WorkspaceCalendarEarningsUsRouteImport
       parentRoute: typeof WorkspaceRoute
     }
     '/_workspace/calendar-events': {
@@ -213,11 +213,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceCorporationsRouteImport
       parentRoute: typeof WorkspaceRoute
     }
-    '/_workspace/krx-market-data': {
-      id: '/_workspace/krx-market-data'
-      path: '/krx-market-data'
-      fullPath: '/krx-market-data'
-      preLoaderRoute: typeof WorkspaceKrxMarketDataRouteImport
+    '/_workspace/kr-market-data': {
+      id: '/_workspace/kr-market-data'
+      path: '/kr-market-data'
+      fullPath: '/kr-market-data'
+      preLoaderRoute: typeof WorkspaceKrMarketDataRouteImport
       parentRoute: typeof WorkspaceRoute
     }
     '/_workspace/listed-stocks': {
@@ -227,13 +227,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceListedStocksRouteImport
       parentRoute: typeof WorkspaceRoute
     }
-    '/_workspace/nasdaqs': {
-      id: '/_workspace/nasdaqs'
-      path: '/nasdaqs'
-      fullPath: '/nasdaqs'
-      preLoaderRoute: typeof WorkspaceNasdaqsRouteImport
-      parentRoute: typeof WorkspaceRoute
-    }
     '/_workspace/themes': {
       id: '/_workspace/themes'
       path: '/themes'
@@ -241,31 +234,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceThemesRouteImport
       parentRoute: typeof WorkspaceRoute
     }
+    '/_workspace/us-stocks': {
+      id: '/_workspace/us-stocks'
+      path: '/us-stocks'
+      fullPath: '/us-stocks'
+      preLoaderRoute: typeof WorkspaceUsStocksRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
   }
 }
 
 interface WorkspaceRouteChildren {
-  WorkspaceCalendarEarningsRoute: typeof WorkspaceCalendarEarningsRoute
-  WorkspaceCalendarEarningsKrxRoute: typeof WorkspaceCalendarEarningsKrxRoute
+  WorkspaceCalendarEarningsKrRoute: typeof WorkspaceCalendarEarningsKrRoute
+  WorkspaceCalendarEarningsUsRoute: typeof WorkspaceCalendarEarningsUsRoute
   WorkspaceCalendarEventsRoute: typeof WorkspaceCalendarEventsRoute
   WorkspaceCorporationInvestmentsRoute: typeof WorkspaceCorporationInvestmentsRoute
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
-  WorkspaceKrxMarketDataRoute: typeof WorkspaceKrxMarketDataRoute
+  WorkspaceKrMarketDataRoute: typeof WorkspaceKrMarketDataRoute
   WorkspaceListedStocksRoute: typeof WorkspaceListedStocksRoute
-  WorkspaceNasdaqsRoute: typeof WorkspaceNasdaqsRoute
   WorkspaceThemesRoute: typeof WorkspaceThemesRoute
+  WorkspaceUsStocksRoute: typeof WorkspaceUsStocksRoute
 }
 
 const WorkspaceRouteChildren: WorkspaceRouteChildren = {
-  WorkspaceCalendarEarningsRoute: WorkspaceCalendarEarningsRoute,
-  WorkspaceCalendarEarningsKrxRoute: WorkspaceCalendarEarningsKrxRoute,
+  WorkspaceCalendarEarningsKrRoute: WorkspaceCalendarEarningsKrRoute,
+  WorkspaceCalendarEarningsUsRoute: WorkspaceCalendarEarningsUsRoute,
   WorkspaceCalendarEventsRoute: WorkspaceCalendarEventsRoute,
   WorkspaceCorporationInvestmentsRoute: WorkspaceCorporationInvestmentsRoute,
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,
-  WorkspaceKrxMarketDataRoute: WorkspaceKrxMarketDataRoute,
+  WorkspaceKrMarketDataRoute: WorkspaceKrMarketDataRoute,
   WorkspaceListedStocksRoute: WorkspaceListedStocksRoute,
-  WorkspaceNasdaqsRoute: WorkspaceNasdaqsRoute,
   WorkspaceThemesRoute: WorkspaceThemesRoute,
+  WorkspaceUsStocksRoute: WorkspaceUsStocksRoute,
 }
 
 const WorkspaceRouteWithChildren = WorkspaceRoute._addFileChildren(

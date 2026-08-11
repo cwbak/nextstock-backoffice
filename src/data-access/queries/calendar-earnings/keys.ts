@@ -1,6 +1,6 @@
 export const calendarEarningKeys = {
   all: ["calendar-earnings"] as const,
   lists: () => [...calendarEarningKeys.all, "list"] as const,
-  nasdaq: () => [...calendarEarningKeys.lists(), "nasdaq"] as const,
-  krx: () => [...calendarEarningKeys.lists(), "krx"] as const,
+  us: () => [...calendarEarningKeys.lists(), "us"] as const,
+  kr: () => [...calendarEarningKeys.lists(), "kr"] as const,
 };

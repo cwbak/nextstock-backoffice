@@ -58,7 +58,7 @@ describe("themeCreatePayloadSchema", () => {
 });
 
 describe("themeStockCreatePayloadSchema", () => {
-  it("테마 ID와 KRX 종목 코드를 검증한다", () => {
+  it("테마 ID와 KR 종목 코드를 검증한다", () => {
     expect(
       themeStockCreatePayloadSchema.parse({
         themeId: 449,

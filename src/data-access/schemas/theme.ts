@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { krxStockCodeSchema } from "@/data-access/schemas/krx-stock";
+import { krStockCodeSchema } from "@/data-access/schemas/kr-stock";
 
 export const themeIdSchema = z.number().int().positive();
 
@@ -30,7 +30,7 @@ export const themeCreatePayloadSchema = z
 
 export const themeStockFormSchema = z
   .object({
-    stockCode: krxStockCodeSchema,
+    stockCode: krStockCodeSchema,
   })
   .strict();
 

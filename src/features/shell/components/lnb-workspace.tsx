@@ -4,15 +4,15 @@ import { Outlet, useRouterState } from "@tanstack/react-router";
 
 import { ManagementPageLoading } from "@/components/common/management-page-loading";
 import {
-  CalendarEarningsPage,
-  KrxCalendarEarningsPage,
+  UsCalendarEarningsPage,
+  KrCalendarEarningsPage,
 } from "@/features/calendar-earnings";
 import { CalendarEventsPage } from "@/features/calendar-events";
 import { CorporationInvestmentsPage } from "@/features/corporation-investments";
 import { CorporationsPage } from "@/features/corporations";
-import { KrxStocksPage } from "@/features/krx-stocks";
-import { KrxMarketDataPage } from "@/features/krx-market-data";
-import { NasdaqStocksPage } from "@/features/nasdaq-stocks";
+import { KrStocksPage } from "@/features/kr-stocks";
+import { KrMarketDataPage } from "@/features/kr-market-data";
+import { UsStocksPage } from "@/features/us-stocks";
 import { ThemesPage } from "@/features/themes";
 import { isNavigationPath } from "@/features/shell/navigation-items";
 
@@ -29,11 +29,11 @@ export function LnbWorkspace() {
   return (
     <>
       <Activity
-        mode={activePath === "/nasdaqs" ? "visible" : "hidden"}
-        name="NASDAQ stocks workspace"
+        mode={activePath === "/us-stocks" ? "visible" : "hidden"}
+        name="US stocks workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="나스닥 정보" />}>
-          <NasdaqStocksPage />
+        <Suspense fallback={<ManagementPageLoading label="US 종목 정보" />}>
+          <UsStocksPage />
         </Suspense>
       </Activity>
       <Activity
@@ -54,18 +54,18 @@ export function LnbWorkspace() {
       </Activity>
       <Activity
         mode={activePath === "/listed-stocks" ? "visible" : "hidden"}
-        name="KRX stocks workspace"
+        name="KR stocks workspace"
       >
         <Suspense fallback={<ManagementPageLoading label="상장 종목 목록" />}>
-          <KrxStocksPage />
+          <KrStocksPage />
         </Suspense>
       </Activity>
       <Activity
-        mode={activePath === "/krx-market-data" ? "visible" : "hidden"}
-        name="KRX candle market data workspace"
+        mode={activePath === "/kr-market-data" ? "visible" : "hidden"}
+        name="KR candle market data workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="KRX 캔들" />}>
-          <KrxMarketDataPage />
+        <Suspense fallback={<ManagementPageLoading label="KR 캔들" />}>
+          <KrMarketDataPage />
         </Suspense>
       </Activity>
       <Activity
@@ -85,19 +85,19 @@ export function LnbWorkspace() {
         </Suspense>
       </Activity>
       <Activity
-        mode={activePath === "/calendar-earnings" ? "visible" : "hidden"}
-        name="NASDAQ calendar earnings workspace"
+        mode={activePath === "/calendar-earnings-us" ? "visible" : "hidden"}
+        name="US calendar earnings workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="NASDAQ 실적 일정" />}>
-          <CalendarEarningsPage />
+        <Suspense fallback={<ManagementPageLoading label="US 실적 일정" />}>
+          <UsCalendarEarningsPage />
         </Suspense>
       </Activity>
       <Activity
-        mode={activePath === "/calendar-earnings-krx" ? "visible" : "hidden"}
-        name="KRX calendar earnings workspace"
+        mode={activePath === "/calendar-earnings-kr" ? "visible" : "hidden"}
+        name="KR calendar earnings workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="KRX 실적 일정" />}>
-          <KrxCalendarEarningsPage />
+        <Suspense fallback={<ManagementPageLoading label="KR 실적 일정" />}>
+          <KrCalendarEarningsPage />
         </Suspense>
       </Activity>
       <Outlet />

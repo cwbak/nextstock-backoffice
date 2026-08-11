@@ -1,5 +1,5 @@
 import { apiRequest } from "@/data-access/api/client";
-import { krxStockSchema, type KrxStock } from "@/data-access/schemas/krx-stock";
+import { krStockSchema, type KrStock } from "@/data-access/schemas/kr-stock";
 import {
   themeCreatePayloadSchema,
   themeSchema,
@@ -22,12 +22,12 @@ export async function createTheme(payload: ThemeCreatePayload): Promise<Theme> {
 
 export async function createThemeStock(
   payload: ThemeStockCreatePayload,
-): Promise<KrxStock> {
+): Promise<KrStock> {
   const { themeId, ...body } = themeStockCreatePayloadSchema.parse(payload);
 
   return apiRequest(
     `/admin/themes/${encodeURIComponent(themeId)}/stocks`,
-    krxStockSchema,
+    krStockSchema,
     { method: "POST" },
     body,
   );

@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 
-import { KrxStockCombobox } from "@/components/common/krx-stock-combobox";
+import { KrStockCombobox } from "@/components/common/kr-stock-combobox";
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,10 +22,10 @@ import {
 } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
-import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
+import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import { themeKeys } from "@/data-access/queries/themes/keys";
 import { createThemeStock } from "@/data-access/queries/themes/mutations";
-import type { KrxStock } from "@/data-access/schemas/krx-stock";
+import type { KrStock } from "@/data-access/schemas/kr-stock";
 import {
   themeStockFormSchema,
   type Theme,
@@ -36,11 +36,11 @@ interface ThemeStockCreateDialogProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   theme: Theme;
-  themeStocks: ReadonlyArray<KrxStock>;
+  themeStocks: ReadonlyArray<KrStock>;
 }
 
 interface ThemeStockCreateFormProps {
-  availableStocks: ReadonlyArray<KrxStock>;
+  availableStocks: ReadonlyArray<KrStock>;
   onCancel: () => void;
   onSaved: () => void;
   theme: Theme;
@@ -99,7 +99,7 @@ function ThemeStockCreateForm({
           control={control}
           name="stockCode"
           render={({ field }) => (
-            <KrxStockCombobox
+            <KrStockCombobox
               aria-invalid={Boolean(errors.stockCode)}
               emptyMessage="추가 가능한 기업이 없습니다."
               id="theme-stock-code"
@@ -111,7 +111,7 @@ function ThemeStockCreateForm({
           )}
         />
         <FieldDescription>
-          등록된 KRX 종목 중 이 테마에 연결할 기업을 선택합니다.
+          등록된 KR 종목 중 이 테마에 연결할 기업을 선택합니다.
         </FieldDescription>
         <FieldError errors={[errors.stockCode]} />
       </Field>
@@ -142,8 +142,8 @@ export function ThemeStockCreateDialog({
   theme,
   themeStocks,
 }: ThemeStockCreateDialogProps) {
-  const krxStocksQuery = useQuery({
-    ...krxStocksQueryOptions,
+  const krStocksQuery = useQuery({
+    ...krStocksQueryOptions,
     enabled: open,
   });
   const themeStockCodes = useMemo(
@@ -152,10 +152,9 @@ export function ThemeStockCreateDialog({
   );
   const availableStocks = useMemo(
     () =>
-      krxStocksQuery.data?.filter(
-        (stock) => !themeStockCodes.has(stock.code),
-      ) ?? [],
-    [krxStocksQuery.data, themeStockCodes],
+      krStocksQuery.data?.filter((stock) => !themeStockCodes.has(stock.code)) ??
+      [],
+    [krStocksQuery.data, themeStockCodes],
   );
 
   return (
@@ -164,25 +163,25 @@ export function ThemeStockCreateDialog({
         <DialogHeader>
           <DialogTitle>{theme.name}에 기업 추가</DialogTitle>
           <DialogDescription>
-            선택한 KRX 종목을 시스템 테마 #{theme.id}에 연결합니다.
+            선택한 KR 종목을 시스템 테마 #{theme.id}에 연결합니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (
-          krxStocksQuery.isPending ? (
+          krStocksQuery.isPending ? (
             <div className="flex min-h-32 items-center justify-center gap-2 text-sm text-muted-foreground">
               <Spinner />
               등록된 기업을 불러오는 중입니다.
             </div>
-          ) : krxStocksQuery.isError ? (
+          ) : krStocksQuery.isError ? (
             <div className="flex flex-col gap-3">
               <MutationErrorAlert
-                message={getErrorMessage(krxStocksQuery.error)}
+                message={getErrorMessage(krStocksQuery.error)}
               />
               <DialogFooter>
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => void krxStocksQuery.refetch()}
+                  onClick={() => void krStocksQuery.refetch()}
                 >
                   다시 시도
                 </Button>

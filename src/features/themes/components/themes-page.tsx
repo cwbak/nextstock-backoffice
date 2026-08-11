@@ -110,7 +110,7 @@ export function ThemesPage() {
               </Button>
             </>
           }
-          description="시스템 테마를 선택해 연결된 KRX 종목을 조회합니다."
+          description="시스템 테마를 선택해 연결된 KR 종목을 조회합니다."
           eyebrow="Theme listing"
           recordCount={themesQuery.data.length}
           title="테마 리스팅"
