@@ -16,16 +16,20 @@ const maximumVisibleStocks = 50;
 
 interface KrxStockComboboxProps {
   "aria-invalid"?: boolean;
+  emptyMessage?: string;
   id: string;
   onValueChange: (value: string) => void;
+  placeholder?: string;
   stocks: ReadonlyArray<KrxStock>;
   value: string;
 }
 
 export function KrxStockCombobox({
   "aria-invalid": ariaInvalid,
+  emptyMessage = "검색 결과가 없습니다.",
   id,
   onValueChange,
+  placeholder = "KRX 종목을 선택하세요",
   stocks,
   value,
 }: KrxStockComboboxProps) {
@@ -88,7 +92,7 @@ export function KrxStockCombobox({
           <span className="truncate">
             {selectedStock
               ? `${selectedStock.code} · ${selectedStock.name}`
-              : "기업(종목)을 선택하세요"}
+              : placeholder}
           </span>
           <ChevronsUpDownIcon aria-hidden="true" data-icon="inline-end" />
         </Button>
@@ -103,23 +107,23 @@ export function KrxStockCombobox({
             className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
           />
           <Input
-            aria-label="기업 검색"
+            aria-label="KRX 종목 검색"
             className="pl-8"
-            placeholder="종목 코드, 기업명, 법인 코드 검색"
+            placeholder="종목 코드, 종목명, 법인 코드 검색"
             type="search"
             value={query}
             onChange={(event) => setQuery(event.currentTarget.value)}
           />
         </div>
         <div
-          aria-label="기업 검색 결과"
+          aria-label="KRX 종목 검색 결과"
           className="flex max-h-64 flex-col gap-0.5 overflow-y-auto"
           id={`${id}-options`}
           role="listbox"
         >
           {matchingStocks.length === 0 ? (
             <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-              추가 가능한 기업이 없습니다.
+              {emptyMessage}
             </p>
           ) : (
             matchingStocks.map(({ stock }) => (
@@ -152,7 +156,7 @@ export function KrxStockCombobox({
         <p className="px-1 text-xs text-muted-foreground">
           {query.trim()
             ? `최대 ${maximumVisibleStocks}개 결과를 표시합니다.`
-            : "종목 코드 또는 기업명을 입력해 검색하세요."}
+            : "종목 코드 또는 종목명을 입력해 검색하세요."}
         </p>
       </PopoverContent>
     </Popover>

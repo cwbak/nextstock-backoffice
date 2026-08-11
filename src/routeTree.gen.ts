@@ -16,6 +16,7 @@ import { Route as WorkspaceCalendarEarningsKrxRouteImport } from './routes/_work
 import { Route as WorkspaceCalendarEventsRouteImport } from './routes/_workspace.calendar-events'
 import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_workspace.corporation-investments'
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
+import { Route as WorkspaceKrxMarketDataRouteImport } from './routes/_workspace.krx-market-data'
 import { Route as WorkspaceListedStocksRouteImport } from './routes/_workspace.listed-stocks'
 import { Route as WorkspaceNasdaqsRouteImport } from './routes/_workspace.nasdaqs'
 import { Route as WorkspaceThemesRouteImport } from './routes/_workspace.themes'
@@ -57,6 +58,11 @@ const WorkspaceCorporationsRoute = WorkspaceCorporationsRouteImport.update({
   path: '/corporations',
   getParentRoute: () => WorkspaceRoute,
 } as any)
+const WorkspaceKrxMarketDataRoute = WorkspaceKrxMarketDataRouteImport.update({
+  id: '/krx-market-data',
+  path: '/krx-market-data',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
 const WorkspaceListedStocksRoute = WorkspaceListedStocksRouteImport.update({
   id: '/listed-stocks',
   path: '/listed-stocks',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
+  '/krx-market-data': typeof WorkspaceKrxMarketDataRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
   '/nasdaqs': typeof WorkspaceNasdaqsRoute
   '/themes': typeof WorkspaceThemesRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/corporations': typeof WorkspaceCorporationsRoute
+  '/krx-market-data': typeof WorkspaceKrxMarketDataRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
   '/nasdaqs': typeof WorkspaceNasdaqsRoute
   '/themes': typeof WorkspaceThemesRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/_workspace/calendar-events': typeof WorkspaceCalendarEventsRoute
   '/_workspace/corporation-investments': typeof WorkspaceCorporationInvestmentsRoute
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
+  '/_workspace/krx-market-data': typeof WorkspaceKrxMarketDataRoute
   '/_workspace/listed-stocks': typeof WorkspaceListedStocksRoute
   '/_workspace/nasdaqs': typeof WorkspaceNasdaqsRoute
   '/_workspace/themes': typeof WorkspaceThemesRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
+    | '/krx-market-data'
     | '/listed-stocks'
     | '/nasdaqs'
     | '/themes'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/calendar-events'
     | '/corporation-investments'
     | '/corporations'
+    | '/krx-market-data'
     | '/listed-stocks'
     | '/nasdaqs'
     | '/themes'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/_workspace/calendar-events'
     | '/_workspace/corporation-investments'
     | '/_workspace/corporations'
+    | '/_workspace/krx-market-data'
     | '/_workspace/listed-stocks'
     | '/_workspace/nasdaqs'
     | '/_workspace/themes'
@@ -201,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceCorporationsRouteImport
       parentRoute: typeof WorkspaceRoute
     }
+    '/_workspace/krx-market-data': {
+      id: '/_workspace/krx-market-data'
+      path: '/krx-market-data'
+      fullPath: '/krx-market-data'
+      preLoaderRoute: typeof WorkspaceKrxMarketDataRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
     '/_workspace/listed-stocks': {
       id: '/_workspace/listed-stocks'
       path: '/listed-stocks'
@@ -231,6 +250,7 @@ interface WorkspaceRouteChildren {
   WorkspaceCalendarEventsRoute: typeof WorkspaceCalendarEventsRoute
   WorkspaceCorporationInvestmentsRoute: typeof WorkspaceCorporationInvestmentsRoute
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
+  WorkspaceKrxMarketDataRoute: typeof WorkspaceKrxMarketDataRoute
   WorkspaceListedStocksRoute: typeof WorkspaceListedStocksRoute
   WorkspaceNasdaqsRoute: typeof WorkspaceNasdaqsRoute
   WorkspaceThemesRoute: typeof WorkspaceThemesRoute
@@ -242,6 +262,7 @@ const WorkspaceRouteChildren: WorkspaceRouteChildren = {
   WorkspaceCalendarEventsRoute: WorkspaceCalendarEventsRoute,
   WorkspaceCorporationInvestmentsRoute: WorkspaceCorporationInvestmentsRoute,
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,
+  WorkspaceKrxMarketDataRoute: WorkspaceKrxMarketDataRoute,
   WorkspaceListedStocksRoute: WorkspaceListedStocksRoute,
   WorkspaceNasdaqsRoute: WorkspaceNasdaqsRoute,
   WorkspaceThemesRoute: WorkspaceThemesRoute,

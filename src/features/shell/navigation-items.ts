@@ -14,6 +14,7 @@ export type NavigationPath =
   | "/corporations"
   | "/corporation-investments"
   | "/listed-stocks"
+  | "/krx-market-data"
   | "/themes"
   | "/calendar-events"
   | "/calendar-earnings"
@@ -45,6 +46,11 @@ export const navigationItems = [
     icon: ChartCandlestickIcon,
     label: "주식",
     to: "/listed-stocks",
+  },
+  {
+    icon: ChartCandlestickIcon,
+    label: "KRX 일봉",
+    to: "/krx-market-data",
   },
   {
     icon: TagsIcon,

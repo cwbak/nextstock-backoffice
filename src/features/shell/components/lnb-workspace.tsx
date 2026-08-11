@@ -11,6 +11,7 @@ import { CalendarEventsPage } from "@/features/calendar-events";
 import { CorporationInvestmentsPage } from "@/features/corporation-investments";
 import { CorporationsPage } from "@/features/corporations";
 import { KrxStocksPage } from "@/features/krx-stocks";
+import { KrxMarketDataPage } from "@/features/krx-market-data";
 import { NasdaqStocksPage } from "@/features/nasdaq-stocks";
 import { ThemesPage } from "@/features/themes";
 import { isNavigationPath } from "@/features/shell/navigation-items";
@@ -57,6 +58,14 @@ export function LnbWorkspace() {
       >
         <Suspense fallback={<ManagementPageLoading label="상장 종목 목록" />}>
           <KrxStocksPage />
+        </Suspense>
+      </Activity>
+      <Activity
+        mode={activePath === "/krx-market-data" ? "visible" : "hidden"}
+        name="KRX daily market data workspace"
+      >
+        <Suspense fallback={<ManagementPageLoading label="KRX 일봉" />}>
+          <KrxMarketDataPage />
         </Suspense>
       </Activity>
       <Activity

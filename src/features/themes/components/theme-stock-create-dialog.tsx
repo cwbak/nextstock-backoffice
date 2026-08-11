@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 
+import { KrxStockCombobox } from "@/components/common/krx-stock-combobox";
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,6 @@ import {
   type Theme,
   type ThemeStockFormValues,
 } from "@/data-access/schemas/theme";
-import { KrxStockCombobox } from "@/features/themes/components/krx-stock-combobox";
 
 interface ThemeStockCreateDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -101,7 +101,9 @@ function ThemeStockCreateForm({
           render={({ field }) => (
             <KrxStockCombobox
               aria-invalid={Boolean(errors.stockCode)}
+              emptyMessage="추가 가능한 기업이 없습니다."
               id="theme-stock-code"
+              placeholder="기업(종목)을 선택하세요"
               stocks={availableStocks}
               value={field.value}
               onValueChange={field.onChange}

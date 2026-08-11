@@ -128,6 +128,17 @@ describe("LnbWorkspace", () => {
     fireEvent.change(krxStocksInput, { target: { value: "현대" } });
     fireEvent.click(
       screen.getByRole("link", {
+        name: "KRX 일봉",
+      }),
+    );
+
+    const krxMarketDataFromInput = await screen.findByLabelText("시작일");
+
+    fireEvent.change(krxMarketDataFromInput, {
+      target: { value: "2026-01-01" },
+    });
+    fireEvent.click(
+      screen.getByRole("link", {
         name: "테마 리스팅",
       }),
     );
@@ -197,6 +208,15 @@ describe("LnbWorkspace", () => {
 
     await waitFor(() => expect(krxStocksInput).toBeVisible());
     expect(krxStocksInput).toHaveValue("현대");
+
+    fireEvent.click(
+      screen.getByRole("link", {
+        name: "KRX 일봉",
+      }),
+    );
+
+    await waitFor(() => expect(krxMarketDataFromInput).toBeVisible());
+    expect(krxMarketDataFromInput).toHaveValue("2026-01-01");
 
     fireEvent.click(
       screen.getByRole("link", {

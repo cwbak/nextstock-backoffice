@@ -17,17 +17,23 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "corporation has KRX stocks":
     "연결된 KRX 종목이 있어 법인을 삭제할 수 없습니다.",
   "corporation not found": "법인을 찾을 수 없습니다.",
+  "code must contain 6 uppercase letters or digits":
+    "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
   "dart corporation investments lookup failed":
     "DART 출자현황을 조회하지 못했습니다.",
   "dart corporation investments not found":
     "DART에서 해당 출자현황을 찾을 수 없습니다.",
   "industry code not found": "업종 분류 정보를 찾을 수 없습니다.",
   "internal server error": "서버 내부 오류가 발생했습니다.",
+  "from must not be after to": "종료일은 시작일보다 빠를 수 없습니다.",
+  "from must use YYYY-MM-DD format": "시작일은 YYYY-MM-DD 형식이어야 합니다.",
   "invalid dart corporation investments response":
     "DART 출자현황 응답 값이 올바르지 않습니다.",
   "id must be a positive integer": "ID는 양의 정수여야 합니다.",
   "KRX stock already exists": "이미 등록된 종목 코드입니다.",
   "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
+  "korea investment market data lookup failed":
+    "한국투자증권에서 KRX 일봉을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",
   "parent theme id must be a positive integer":
     "상위 테마 ID는 양의 정수여야 합니다.",
@@ -41,6 +47,7 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
     "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
   "theme already exists": "같은 ID 또는 이름의 테마가 이미 있습니다.",
   "theme not found": "테마를 찾을 수 없습니다.",
+  "to must use YYYY-MM-DD format": "종료일은 YYYY-MM-DD 형식이어야 합니다.",
 };
 
 export class ApiError extends Error {
