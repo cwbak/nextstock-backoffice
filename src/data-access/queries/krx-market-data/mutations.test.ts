@@ -22,10 +22,9 @@ describe("KRX market data mutations", () => {
     vi.restoreAllMocks();
   });
 
-  it("선택한 주기의 한국투자증권 캔들을 조회해 저장한다", async () => {
+  it("한국투자증권 일봉을 조회해 저장한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({
-        period: "monthly",
         fetchedCount: 145,
         insertedCount: 140,
       }),
@@ -34,12 +33,10 @@ describe("KRX market data mutations", () => {
     await expect(
       createKrxMarketData({
         stockCode: "005930",
-        period: "monthly",
         from: "2026-01-01",
         to: "2026-08-10",
       }),
     ).resolves.toEqual({
-      period: "monthly",
       fetchedCount: 145,
       insertedCount: 140,
     });
@@ -51,7 +48,6 @@ describe("KRX market data mutations", () => {
     );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
-      period: "monthly",
       from: "2026-01-01",
       to: "2026-08-10",
     });

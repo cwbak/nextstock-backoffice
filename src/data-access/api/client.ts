@@ -23,6 +23,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
     "DART 출자현황을 조회하지 못했습니다.",
   "dart corporation investments not found":
     "DART에서 해당 출자현황을 찾을 수 없습니다.",
+  "end must use YYYY-MM-DD format":
+    "조회 기준일은 YYYY-MM-DD 형식이어야 합니다.",
   "industry code not found": "업종 분류 정보를 찾을 수 없습니다.",
   "internal server error": "서버 내부 오류가 발생했습니다.",
   "from must not be after to": "종료일은 시작일보다 빠를 수 없습니다.",
@@ -33,8 +35,10 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "KRX stock already exists": "이미 등록된 종목 코드입니다.",
   "KRX stock not found": "KRX 종목을 찾을 수 없습니다.",
   "korea investment market data lookup failed":
-    "한국투자증권에서 KRX 캔들을 조회하지 못했습니다.",
+    "한국투자증권에서 KRX 일봉을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",
+  "limit must be between 1 and 1000":
+    "캔들 조회 개수는 1개 이상 1,000개 이하여야 합니다.",
   "parent theme id must be a positive integer":
     "상위 테마 ID는 양의 정수여야 합니다.",
   "parent theme id must differ from id":

@@ -5,6 +5,6 @@ export const krxMarketDataKeys = {
   lists: () => [...krxMarketDataKeys.all, "list"] as const,
   stock: (stockCode: string) =>
     [...krxMarketDataKeys.lists(), stockCode] as const,
-  list: ({ stockCode, period, from, to }: KrxMarketDataListParams) =>
-    [...krxMarketDataKeys.stock(stockCode), { period, from, to }] as const,
+  list: ({ stockCode, period, end, limit }: KrxMarketDataListParams) =>
+    [...krxMarketDataKeys.stock(stockCode), { period, end, limit }] as const,
 };

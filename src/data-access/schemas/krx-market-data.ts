@@ -5,10 +5,6 @@ import { krxStockCodeSchema } from "@/data-access/schemas/krx-stock";
 const marketDataDateSchema = z.iso.date({
   error: "날짜는 YYYY-MM-DD 형식이어야 합니다.",
 });
-const optionalMarketDataDateSchema = z.union([
-  z.literal(""),
-  marketDataDateSchema,
-]);
 const marketDataIntegerSchema = z.number().int().nonnegative();
 
 export const krxMarketDataPeriodSchema = z.enum(
@@ -39,19 +35,21 @@ export const krxMarketDataListParamsSchema = z
   .object({
     stockCode: krxStockCodeSchema,
     period: krxMarketDataPeriodSchema,
-    from: optionalMarketDataDateSchema,
-    to: optionalMarketDataDateSchema,
+    end: marketDataDateSchema,
+    limit: z.number().int().min(1).max(1_000),
   })
-  .strict()
-  .refine(isValidDateRange, {
-    message: "종료일은 시작일보다 빠를 수 없습니다.",
-    path: ["to"],
-  });
+  .strict();
+
+export const krxMarketDataFilterSchema = z
+  .object({
+    stockCode: krxStockCodeSchema,
+    period: krxMarketDataPeriodSchema,
+  })
+  .strict();
 
 export const krxMarketDataCreatePayloadSchema = z
   .object({
     stockCode: krxStockCodeSchema,
-    period: krxMarketDataPeriodSchema,
     from: marketDataDateSchema,
     to: marketDataDateSchema,
   })
@@ -63,7 +61,6 @@ export const krxMarketDataCreatePayloadSchema = z
 
 export const krxMarketDataCreateResultSchema = z
   .object({
-    period: krxMarketDataPeriodSchema,
     fetchedCount: z.number().int().nonnegative(),
     insertedCount: z.number().int().nonnegative(),
   })
@@ -71,6 +68,9 @@ export const krxMarketDataCreateResultSchema = z
 
 export type KrxMarketData = z.infer<typeof krxMarketDataSchema>;
 export type KrxMarketDataPeriod = z.infer<typeof krxMarketDataPeriodSchema>;
+export type KrxMarketDataFilterValues = z.infer<
+  typeof krxMarketDataFilterSchema
+>;
 export type KrxMarketDataListParams = z.infer<
   typeof krxMarketDataListParamsSchema
 >;

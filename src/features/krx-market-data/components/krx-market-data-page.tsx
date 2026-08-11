@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { AlertTriangleIcon, DatabaseIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
-import { DataPagination } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,26 +16,31 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
-import { krxMarketDataQueryOptions } from "@/data-access/queries/krx-market-data/queries";
+import {
+  krxMarketDataInfiniteQueryOptions,
+  krxMarketDataPageLimit,
+} from "@/data-access/queries/krx-market-data/queries";
 import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
 import type {
   KrxMarketDataCreatePayload,
   KrxMarketDataCreateResult,
+  KrxMarketDataFilterValues,
   KrxMarketDataListParams,
 } from "@/data-access/schemas/krx-market-data";
 import { KrxMarketDataEmptyState } from "@/features/krx-market-data/components/krx-market-data-empty-state";
 import { KrxMarketDataFilterForm } from "@/features/krx-market-data/components/krx-market-data-filter-form";
+import { KrxMarketDataInfiniteLoader } from "@/features/krx-market-data/components/krx-market-data-infinite-loader";
 import { KrxMarketDataSaveDialog } from "@/features/krx-market-data/components/krx-market-data-save-dialog";
 import { KrxMarketDataSaveSummary } from "@/features/krx-market-data/components/krx-market-data-save-summary";
 import { KrxMarketDataTable } from "@/features/krx-market-data/components/krx-market-data-table";
+import { getCurrentLocalDate } from "@/features/krx-market-data/krx-market-data-date";
 import { getKrxMarketDataPeriodLabel } from "@/features/krx-market-data/krx-market-data-period";
 
-const pageSize = 50;
 const inactiveParams: KrxMarketDataListParams = {
   stockCode: "000000",
   period: "daily",
-  from: "",
-  to: "",
+  end: "1970-01-01",
+  limit: krxMarketDataPageLimit,
 };
 
 interface SaveSummary {
@@ -44,52 +48,69 @@ interface SaveSummary {
   result: KrxMarketDataCreateResult;
 }
 
-function getRangeLabel({ from, to }: KrxMarketDataListParams) {
-  if (from && to) {
-    return `${from}–${to}`;
-  }
-  if (from) {
-    return `${from} 이후`;
-  }
-  if (to) {
-    return `${to} 이전`;
-  }
-  return "전체 기간";
-}
-
 export function KrxMarketDataPage() {
   const krxStocksQuery = useSuspenseQuery(krxStocksQueryOptions);
-  const [params, setParams] = useState<KrxMarketDataListParams | null>(null);
-  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState<KrxMarketDataFilterValues | null>(
+    null,
+  );
+  const [queryEnd, setQueryEnd] = useState(getCurrentLocalDate);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveSummary, setSaveSummary] = useState<SaveSummary | null>(null);
-  const marketDataQuery = useQuery({
-    ...krxMarketDataQueryOptions(params ?? inactiveParams),
-    enabled: params !== null,
+  const marketDataQuery = useInfiniteQuery({
+    ...krxMarketDataInfiniteQueryOptions(
+      filters
+        ? {
+            ...filters,
+            end: queryEnd,
+            limit: krxMarketDataPageLimit,
+          }
+        : inactiveParams,
+    ),
+    enabled: filters !== null,
   });
   const selectedStock = useMemo(
     () =>
-      params
+      filters
         ? (krxStocksQuery.data.find(
-            (stock) => stock.code === params.stockCode,
+            (stock) => stock.code === filters.stockCode,
           ) ?? null)
         : null,
-    [krxStocksQuery.data, params],
+    [filters, krxStocksQuery.data],
   );
-  const totalRecords = marketDataQuery.data?.length ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize));
-  const currentPage = Math.min(page, totalPages);
-  const startIndex = (currentPage - 1) * pageSize;
-  const visibleItems = marketDataQuery.data?.slice(
-    startIndex,
-    startIndex + pageSize,
-  );
+  const marketDataPages = marketDataQuery.data?.pages;
+  const visibleItems = useMemo(() => {
+    const itemsByDate = new Map<
+      string,
+      NonNullable<typeof marketDataPages>[number][number]
+    >();
+
+    for (const page of marketDataPages ?? []) {
+      for (const item of page) {
+        itemsByDate.set(item.date, item);
+      }
+    }
+
+    return Array.from(itemsByDate.values()).sort((first, second) =>
+      second.date.localeCompare(first.date),
+    );
+  }, [marketDataPages]);
+  const totalRecords = visibleItems.length;
   const stockLabel = selectedStock
     ? `${selectedStock.code} · ${selectedStock.name}`
-    : (params?.stockCode ?? "KRX 종목");
-  const tableDescription = params
-    ? `${stockLabel} · ${getKrxMarketDataPeriodLabel(params.period)} · ${getRangeLabel(params)} · 날짜 오름차순`
+    : (filters?.stockCode ?? "KRX 종목");
+  const tableDescription = filters
+    ? `${stockLabel} · ${getKrxMarketDataPeriodLabel(filters.period)} · ${queryEnd} 기준 · 최신 날짜순`
     : "종목과 주기를 선택해 ClickHouse에 저장된 캔들을 조회합니다.";
+
+  const refresh = () => {
+    const currentDate = getCurrentLocalDate();
+
+    if (currentDate === queryEnd) {
+      void marketDataQuery.refetch();
+    } else {
+      setQueryEnd(currentDate);
+    }
+  };
 
   return (
     <>
@@ -98,10 +119,10 @@ export function KrxMarketDataPage() {
           actions={
             <>
               <Button
-                disabled={params === null || marketDataQuery.isFetching}
+                disabled={filters === null || marketDataQuery.isFetching}
                 type="button"
                 variant="outline"
-                onClick={() => void marketDataQuery.refetch()}
+                onClick={refresh}
               >
                 {marketDataQuery.isFetching ? (
                   <Spinner data-icon="inline-start" />
@@ -116,11 +137,11 @@ export function KrxMarketDataPage() {
                 onClick={() => setSaveOpen(true)}
               >
                 <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
-                캔들 저장
+                일봉 저장
               </Button>
             </>
           }
-          description="KRX 종목의 일봉·주봉·월봉을 조회하고 한국투자증권에서 가져와 저장합니다."
+          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고 한국투자증권에서 새 일봉을 가져와 저장합니다."
           eyebrow="KRX candle market data"
           recordCount={totalRecords}
           title="KRX 캔들"
@@ -139,10 +160,21 @@ export function KrxMarketDataPage() {
           />
         ) : null}
         <KrxMarketDataFilterForm
+          appliedFilters={filters}
           stocks={krxStocksQuery.data}
-          onSearch={(nextParams) => {
-            setParams(nextParams);
-            setPage(1);
+          onSearch={(nextFilters) => {
+            const currentDate = getCurrentLocalDate();
+            const sameQuery =
+              filters?.stockCode === nextFilters.stockCode &&
+              filters.period === nextFilters.period &&
+              queryEnd === currentDate;
+
+            setFilters(nextFilters);
+            setQueryEnd(currentDate);
+
+            if (sameQuery) {
+              void marketDataQuery.refetch();
+            }
           }}
         />
         <DataTableCard
@@ -150,14 +182,14 @@ export function KrxMarketDataPage() {
           recordCount={totalRecords}
           title="KRX 캔들 원장"
         >
-          {params === null ? (
+          {filters === null ? (
             <KrxMarketDataEmptyState mode="not-searched" />
           ) : marketDataQuery.isPending ? (
             <div className="flex min-h-72 items-center justify-center gap-2 text-sm text-muted-foreground">
               <Spinner />
               캔들을 불러오는 중입니다.
             </div>
-          ) : marketDataQuery.isError ? (
+          ) : marketDataQuery.isError && visibleItems.length === 0 ? (
             <Empty className="min-h-72 border-0">
               <EmptyHeader>
                 <EmptyMedia variant="icon">
@@ -178,36 +210,37 @@ export function KrxMarketDataPage() {
                 </Button>
               </EmptyContent>
             </Empty>
-          ) : !visibleItems?.length ? (
+          ) : visibleItems.length === 0 ? (
             <KrxMarketDataEmptyState mode="no-results" />
           ) : (
             <>
               <KrxMarketDataTable items={visibleItems} stockName={stockLabel} />
-              <DataPagination
-                endRecord={Math.min(startIndex + pageSize, totalRecords)}
-                page={currentPage}
-                startRecord={startIndex + 1}
-                totalPages={totalPages}
-                totalRecords={totalRecords}
-                onPageChange={setPage}
+              <KrxMarketDataInfiniteLoader
+                error={
+                  marketDataQuery.isFetchNextPageError
+                    ? marketDataQuery.error
+                    : null
+                }
+                hasNextPage={marketDataQuery.hasNextPage}
+                isFetchingNextPage={marketDataQuery.isFetchingNextPage}
+                onLoadMore={() => void marketDataQuery.fetchNextPage()}
+                onRetry={() => void marketDataQuery.fetchNextPage()}
               />
             </>
           )}
         </DataTableCard>
       </section>
       <KrxMarketDataSaveDialog
-        initialParams={params}
+        initialStockCode={filters?.stockCode}
         open={saveOpen}
         stocks={krxStocksQuery.data}
         onCreated={(result, payload) => {
           setSaveSummary({ payload, result });
-          setParams({
+          setFilters({
             stockCode: payload.stockCode,
-            period: payload.period,
-            from: payload.from,
-            to: payload.to,
+            period: "daily",
           });
-          setPage(1);
+          setQueryEnd(getCurrentLocalDate());
           setSaveOpen(false);
         }}
         onOpenChange={setSaveOpen}

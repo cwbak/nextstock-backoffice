@@ -34,8 +34,8 @@ export function KrxMarketDataEmptyState({
         </EmptyTitle>
         <EmptyDescription>
           {notSearched
-            ? "종목, 캔들 주기와 필요한 날짜 범위를 지정한 뒤 조회할 수 있습니다."
-            : "선택한 종목, 주기와 날짜 범위에 저장된 캔들이 없습니다."}
+            ? "종목과 캔들 주기를 선택하면 현재 일자 기준으로 조회합니다."
+            : "선택한 종목과 주기에 저장된 캔들이 없습니다."}
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

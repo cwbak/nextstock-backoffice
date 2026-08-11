@@ -1,7 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { krxMarketDataQueryOptions } from "@/data-access/queries/krx-market-data/queries";
+import {
+  getNextKrxMarketDataEnd,
+  krxMarketDataInfiniteQueryOptions,
+} from "@/data-access/queries/krx-market-data/queries";
 
 const marketData = [
   {
@@ -28,7 +31,7 @@ describe("KRX market data queries", () => {
     vi.restoreAllMocks();
   });
 
-  it("선택한 주기와 날짜 범위의 KRX 캔들을 조회한다", async () => {
+  it("선택한 주기와 기준일의 KRX 캔들을 조회한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(marketData));
@@ -36,41 +39,32 @@ describe("KRX market data queries", () => {
       defaultOptions: { queries: { retry: false } },
     });
 
-    await expect(
-      queryClient.fetchQuery(
-        krxMarketDataQueryOptions({
-          stockCode: "005930",
-          period: "weekly",
-          from: "2026-01-01",
-          to: "2026-08-10",
-        }),
-      ),
-    ).resolves.toEqual(marketData);
-
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/krx-stocks/005930/market-data?period=weekly&from=2026-01-01&to=2026-08-10",
-    );
-  });
-
-  it("비어 있는 날짜는 쿼리 파라미터에서 제외한다", async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(jsonResponse([]));
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
-
-    await queryClient.fetchQuery(
-      krxMarketDataQueryOptions({
+    const result = await queryClient.fetchInfiniteQuery(
+      krxMarketDataInfiniteQueryOptions({
         stockCode: "005930",
-        period: "daily",
-        from: "",
-        to: "",
+        period: "weekly",
+        end: "2026-08-11",
+        limit: 100,
       }),
     );
 
+    expect(result.pages[0]).toEqual(marketData);
+    expect(result.pageParams).toEqual(["2026-08-11"]);
+
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/krx-stocks/005930/market-data?period=daily",
+      "/admin/krx-stocks/005930/market-data?period=weekly&end=2026-08-11&limit=100",
+    );
+  });
+
+  it("가득 찬 페이지의 가장 이른 날짜 전날부터 다음 페이지를 조회한다", () => {
+    expect(
+      getNextKrxMarketDataEnd(
+        [{ date: "2026-08-03" }, { date: "2026-08-10" }],
+        2,
+      ),
+    ).toBe("2026-08-02");
+    expect(getNextKrxMarketDataEnd([{ date: "2026-08-10" }], 2)).toBe(
+      undefined,
     );
   });
 });

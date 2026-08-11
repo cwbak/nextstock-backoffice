@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -17,9 +18,11 @@ import {
 } from "vitest";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { krxMarketDataPageLimit } from "@/data-access/queries/krx-market-data/queries";
 import { krxStocksQueryOptions } from "@/data-access/queries/krx-stocks/queries";
 import type { KrxStock } from "@/data-access/schemas/krx-stock";
 import { KrxMarketDataPage } from "@/features/krx-market-data/components/krx-market-data-page";
+import { getCurrentLocalDate } from "@/features/krx-market-data/krx-market-data-date";
 
 const stock: KrxStock = {
   code: "005930",
@@ -77,7 +80,7 @@ describe("KrxMarketDataPage", () => {
     vi.restoreAllMocks();
   });
 
-  it("종목, 주기와 기간을 선택해 KRX 캔들을 조회한다", async () => {
+  it("종목과 주기를 선택하면 현재 일자 기준 KRX 캔들을 조회한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse([
         {
@@ -100,30 +103,32 @@ describe("KrxMarketDataPage", () => {
       key: "ArrowDown",
     });
     fireEvent.click(await screen.findByRole("option", { name: "주봉" }));
-    fireEvent.change(screen.getByLabelText("시작일"), {
-      target: { value: "2026-01-01" },
-    });
-    fireEvent.change(screen.getByLabelText("종료일"), {
-      target: { value: "2026-08-10" },
-    });
+    expect(screen.queryByLabelText("시작일")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("종료일")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "조회" }));
 
     await waitFor(() => {
       expect(screen.getByText("70,500")).toBeInTheDocument();
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/krx-stocks/005930/market-data?period=weekly&from=2026-01-01&to=2026-08-10",
+      `/admin/krx-stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krxMarketDataPageLimit}`,
     );
     expect(screen.getByText("870,000,000,000")).toBeInTheDocument();
   });
 
-  it("캔들 저장 화면을 연다", () => {
+  it("일봉 전용 저장 화면을 연다", () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: "캔들 저장" }));
+    fireEvent.click(screen.getByRole("button", { name: "일봉 저장" }));
 
+    const dialog = screen.getByRole("dialog", { name: "KRX 일봉 저장" });
+
+    expect(dialog).toBeInTheDocument();
     expect(
-      screen.getByRole("dialog", { name: "KRX 캔들 저장" }),
-    ).toBeInTheDocument();
+      within(dialog).queryByLabelText("캔들 주기"),
+    ).not.toBeInTheDocument();
+    expect(within(dialog).getByLabelText("시작일")).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("종료일")).toBeInTheDocument();
+    expect(within(dialog).getByText(/보정주가 일봉/)).toBeInTheDocument();
   });
 });

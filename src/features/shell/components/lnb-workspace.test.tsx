@@ -150,14 +150,10 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    const krxMarketDataFromInput = await screen.findByLabelText("시작일");
     const krxMarketDataPeriodSelect = screen.getByRole("combobox", {
       name: "캔들 주기",
     });
 
-    fireEvent.change(krxMarketDataFromInput, {
-      target: { value: "2026-01-01" },
-    });
     fireEvent.keyDown(krxMarketDataPeriodSelect, { key: "ArrowDown" });
     fireEvent.click(await screen.findByRole("option", { name: "주봉" }));
     fireEvent.click(
@@ -238,8 +234,7 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    await waitFor(() => expect(krxMarketDataFromInput).toBeVisible());
-    expect(krxMarketDataFromInput).toHaveValue("2026-01-01");
+    await waitFor(() => expect(krxMarketDataPeriodSelect).toBeVisible());
     expect(krxMarketDataPeriodSelect).toHaveTextContent("주봉");
 
     fireEvent.click(

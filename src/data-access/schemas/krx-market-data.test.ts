@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   krxMarketDataCreatePayloadSchema,
   krxMarketDataCreateResultSchema,
+  krxMarketDataFilterSchema,
   krxMarketDataListParamsSchema,
   krxMarketDataSchema,
 } from "@/data-access/schemas/krx-market-data";
@@ -35,27 +36,46 @@ describe("KRX market data schemas", () => {
     ).toThrow("캔들 주기는 일봉, 주봉, 월봉 중에서 선택해 주세요.");
   });
 
-  it("목록 조회 날짜는 한쪽만 지정할 수 있다", () => {
+  it("조회 필터와 현재 일자 기반 페이지 조건을 검증한다", () => {
     expect(
-      krxMarketDataListParamsSchema.parse({
+      krxMarketDataFilterSchema.parse({
         stockCode: "005930",
         period: "weekly",
-        from: "2026-01-01",
-        to: "",
       }),
     ).toEqual({
       stockCode: "005930",
       period: "weekly",
-      from: "2026-01-01",
-      to: "",
     });
+    expect(
+      krxMarketDataListParamsSchema.parse({
+        stockCode: "005930",
+        period: "weekly",
+        end: "2026-08-11",
+        limit: 100,
+      }),
+    ).toEqual({
+      stockCode: "005930",
+      period: "weekly",
+      end: "2026-08-11",
+      limit: 100,
+    });
+  });
+
+  it("목록 조회 limit이 API 상한을 넘으면 거부한다", () => {
+    expect(() =>
+      krxMarketDataListParamsSchema.parse({
+        stockCode: "005930",
+        period: "daily",
+        end: "2026-08-11",
+        limit: 1_001,
+      }),
+    ).toThrow();
   });
 
   it("저장 날짜가 역순이면 거부한다", () => {
     expect(() =>
       krxMarketDataCreatePayloadSchema.parse({
         stockCode: "005930",
-        period: "monthly",
         from: "2026-08-11",
         to: "2026-08-10",
       }),
@@ -65,12 +85,10 @@ describe("KRX market data schemas", () => {
   it("저장 결과 건수를 검증한다", () => {
     expect(
       krxMarketDataCreateResultSchema.parse({
-        period: "monthly",
         fetchedCount: 145,
         insertedCount: 140,
       }),
     ).toEqual({
-      period: "monthly",
       fetchedCount: 145,
       insertedCount: 140,
     });
