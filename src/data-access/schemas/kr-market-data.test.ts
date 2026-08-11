@@ -15,6 +15,7 @@ const dailyPrice = {
   low: 69_500,
   high: 71_000,
   close: 70_500,
+  priceChange: 500,
   volume: 12_345_678,
   value: 870_000_000_000,
 } as const;
@@ -28,6 +29,16 @@ describe("KR market data schemas", () => {
     expect(() =>
       krMarketDataSchema.parse({ ...dailyPrice, close: -1 }),
     ).toThrow();
+  });
+
+  it("전일대비는 음수와 0을 허용한다", () => {
+    expect(
+      krMarketDataSchema.parse({ ...dailyPrice, priceChange: -500 })
+        .priceChange,
+    ).toBe(-500);
+    expect(
+      krMarketDataSchema.parse({ ...dailyPrice, priceChange: 0 }).priceChange,
+    ).toBe(0);
   });
 
   it("지원하지 않는 캔들 주기는 거부한다", () => {

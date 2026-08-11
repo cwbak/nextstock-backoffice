@@ -90,6 +90,7 @@ describe("KrMarketDataPage", () => {
           low: 69_500,
           high: 71_000,
           close: 70_500,
+          priceChange: 500,
           volume: 12_345_678,
           value: 870_000_000_000,
         },
@@ -114,6 +115,10 @@ describe("KrMarketDataPage", () => {
       `/admin/kr-stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
     );
     expect(screen.getByText("870,000,000,000")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "전일대비" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("+500")).toBeInTheDocument();
   });
 
   it("일봉 전용 저장 화면을 연다", () => {

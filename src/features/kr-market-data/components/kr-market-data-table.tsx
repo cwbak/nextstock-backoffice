@@ -13,6 +13,11 @@ import { formatDate } from "@/lib/format";
 
 const numberFormatter = new Intl.NumberFormat("ko-KR");
 
+function formatPriceChange(priceChange: number) {
+  const formatted = numberFormatter.format(priceChange);
+  return priceChange > 0 ? `+${formatted}` : formatted;
+}
+
 interface KrMarketDataTableProps {
   items: ReadonlyArray<KrMarketData>;
   stockName: string;
@@ -23,11 +28,12 @@ export function KrMarketDataTable({
   stockName,
 }: KrMarketDataTableProps) {
   return (
-    <Table className="min-w-[64rem] table-fixed">
+    <Table className="min-w-[72rem] table-fixed">
       <TableCaption className="sr-only">{stockName} KR 캔들</TableCaption>
       <colgroup>
         <col className="w-36" />
         <col className="w-24" />
+        <col className="w-32" />
         <col className="w-32" />
         <col className="w-32" />
         <col className="w-32" />
@@ -43,6 +49,7 @@ export function KrMarketDataTable({
           <TableHead className="text-right">고가</TableHead>
           <TableHead className="text-right">저가</TableHead>
           <TableHead className="text-right">종가</TableHead>
+          <TableHead className="text-right">전일대비</TableHead>
           <TableHead className="text-right">거래량</TableHead>
           <TableHead className="pr-4 text-right">거래대금</TableHead>
         </TableRow>
@@ -65,6 +72,9 @@ export function KrMarketDataTable({
             </TableCell>
             <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
               {numberFormatter.format(item.close)}
+            </TableCell>
+            <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
+              {formatPriceChange(item.priceChange)}
             </TableCell>
             <TableCell className="text-right font-mono text-xs tabular-nums">
               {numberFormatter.format(item.volume)}

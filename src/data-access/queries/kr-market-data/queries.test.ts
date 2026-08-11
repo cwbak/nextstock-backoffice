@@ -14,6 +14,7 @@ const marketData = [
     low: 69_500,
     high: 71_000,
     close: 70_500,
+    priceChange: -500,
     volume: 12_345_678,
     value: 870_000_000_000,
   },
