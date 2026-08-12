@@ -4,9 +4,17 @@ import {
   corporationBasicPayloadSchema,
   corporationInfoPayloadSchema,
   corporationSchema,
+  corporationSyncResultSchema,
   type Corporation,
   type CorporationFormValues,
+  type CorporationSyncResult,
 } from "@/data-access/schemas/corporation";
+
+export function syncCorporations(): Promise<CorporationSyncResult> {
+  return apiRequest("/admin/corporations/sync", corporationSyncResultSchema, {
+    method: "POST",
+  });
+}
 
 export async function updateCorporation(
   payload: CorporationFormValues,

@@ -82,9 +82,6 @@ export const krStockUpdatePayloadSchema = krStockFormSchema.omit({
 
 export const krStockSyncResultSchema = z
   .object({
-    corporationNameFetchedCount: z.number().int().nonnegative(),
-    corporationNameInsertedCount: z.number().int().nonnegative(),
-    corporationUpdatedCount: z.number().int().nonnegative(),
     fetchedCount: z.number().int().nonnegative(),
     updatedCount: z.number().int().nonnegative(),
   })

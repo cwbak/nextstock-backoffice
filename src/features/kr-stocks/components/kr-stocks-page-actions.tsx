@@ -33,7 +33,7 @@ export function KrStocksPageActions({
       </Button>
       <Button type="button" onClick={onSync}>
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
-        KRX·DART 동기화
+        KRX 동기화
       </Button>
       <Button type="button" onClick={onCreate}>
         <PlusIcon aria-hidden="true" data-icon="inline-start" />

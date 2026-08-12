@@ -14,26 +14,26 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
-import { krStockKeys } from "@/data-access/queries/kr-stocks/keys";
-import { syncKrStocks } from "@/data-access/queries/kr-stocks/mutations";
-import type { KrStockSyncResult } from "@/data-access/schemas/kr-stock";
+import { corporationKeys } from "@/data-access/queries/corporations/keys";
+import { syncCorporations } from "@/data-access/queries/corporations/mutations";
+import type { CorporationSyncResult } from "@/data-access/schemas/corporation";
 
-interface KrStockSyncDialogProps {
+interface CorporationSyncDialogProps {
   onOpenChange: (open: boolean) => void;
-  onSynced: (result: KrStockSyncResult) => void;
+  onSynced: (result: CorporationSyncResult) => void;
   open: boolean;
 }
 
-export function KrStockSyncDialog({
+export function CorporationSyncDialog({
   onOpenChange,
   onSynced,
   open,
-}: KrStockSyncDialogProps) {
+}: CorporationSyncDialogProps) {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: syncKrStocks,
+    mutationFn: syncCorporations,
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({ queryKey: krStockKeys.all });
+      await queryClient.invalidateQueries({ queryKey: corporationKeys.all });
       onSynced(result);
     },
   });
@@ -53,18 +53,18 @@ export function KrStockSyncDialog({
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent showCloseButton={!mutation.isPending}>
         <DialogHeader>
-          <DialogTitle>KR 종목 KRX 동기화</DialogTitle>
+          <DialogTitle>DART 법인명 동기화</DialogTitle>
           <DialogDescription>
-            KRX KOSPI·KOSDAQ 기본정보로 등록된 KR 종목을 갱신합니다.
+            DART 고유번호 파일로 법인명 원장과 등록된 법인 정보를 갱신합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
           <CloudDownloadIcon aria-hidden="true" />
-          <AlertTitle>종목명·액면가·상장주식수를 동기화합니다</AlertTitle>
+          <AlertTitle>새 법인명을 추가하고 변경된 법인을 갱신합니다</AlertTitle>
           <AlertDescription>
-            DB에 이미 등록된 종목만 갱신하며, KRX에만 존재하는 종목은 새로
-            추가하지 않습니다. 두 시장의 전체 응답을 검증한 뒤 한 번에
-            반영합니다.
+            법인 코드와 정규화된 이름 조합이 없으면 법인명 원장에 추가합니다.
+            기존 법인의 이름이 변경된 경우 DART 기업개황으로 기본 정보를
+            갱신합니다.
           </AlertDescription>
         </Alert>
         {mutation.isError ? (

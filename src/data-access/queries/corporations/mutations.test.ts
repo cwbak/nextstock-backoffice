@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { updateCorporation } from "@/data-access/queries/corporations/mutations";
+import {
+  syncCorporations,
+  updateCorporation,
+} from "@/data-access/queries/corporations/mutations";
 import type {
   Corporation,
   CorporationFormValues,
@@ -50,9 +53,28 @@ function parseRequestBody(body: BodyInit | null | undefined): unknown {
   return JSON.parse(body) as unknown;
 }
 
-describe("updateCorporation", () => {
+describe("corporation mutations", () => {
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it("요청 본문 없이 DART 법인명 동기화를 요청한다", async () => {
+    const result = {
+      corporationNameFetchedCount: 108_251,
+      corporationNameInsertedCount: 37,
+      corporationUpdatedCount: 2,
+    };
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(result));
+
+    await expect(syncCorporations()).resolves.toEqual(result);
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations/sync");
+    expect(request?.method).toBe("POST");
+    expect(request?.body).toBeUndefined();
   });
 
   it("기본 정보 수정 후 새 info API에 줄 단위 배열을 저장한다", async () => {

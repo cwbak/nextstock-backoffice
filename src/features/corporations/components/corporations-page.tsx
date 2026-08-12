@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { RefreshCwIcon } from "lucide-react";
+import { CloudDownloadIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import {
@@ -18,10 +18,15 @@ import { useDataTableFilterQuery } from "@/components/common/use-data-table-filt
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
-import type { Corporation } from "@/data-access/schemas/corporation";
+import type {
+  Corporation,
+  CorporationSyncResult,
+} from "@/data-access/schemas/corporation";
 import { CorporationDeleteDialog } from "@/features/corporations/components/corporation-delete-dialog";
 import { CorporationDetailSheet } from "@/features/corporations/components/corporation-detail-sheet";
 import { CorporationEditDialog } from "@/features/corporations/components/corporation-edit-dialog";
+import { CorporationSyncDialog } from "@/features/corporations/components/corporation-sync-dialog";
+import { CorporationSyncSummary } from "@/features/corporations/components/corporation-sync-summary";
 import { CorporationsEmptyState } from "@/features/corporations/components/corporations-empty-state";
 import {
   type CorporationSortField,
@@ -58,6 +63,10 @@ export function CorporationsPage() {
     useState<Corporation | null>(null);
   const [deletingCorporation, setDeletingCorporation] =
     useState<Corporation | null>(null);
+  const [syncOpen, setSyncOpen] = useState(false);
+  const [syncResult, setSyncResult] = useState<CorporationSyncResult | null>(
+    null,
+  );
   const [viewingCorporation, setViewingCorporation] =
     useState<Corporation | null>(null);
   const filteredCorporations = useMemo(() => {
@@ -127,25 +136,40 @@ export function CorporationsPage() {
       <section className="flex flex-col gap-6">
         <DataPageHeader
           actions={
-            <Button
-              disabled={isFetching}
-              type="button"
-              variant="outline"
-              onClick={() => void refetch()}
-            >
-              {isFetching ? (
-                <Spinner data-icon="inline-start" />
-              ) : (
-                <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
-              )}
-              새로고침
-            </Button>
+            <>
+              <Button
+                disabled={isFetching}
+                type="button"
+                variant="outline"
+                onClick={() => void refetch()}
+              >
+                {isFetching ? (
+                  <Spinner data-icon="inline-start" />
+                ) : (
+                  <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
+                )}
+                새로고침
+              </Button>
+              <Button type="button" onClick={() => setSyncOpen(true)}>
+                <CloudDownloadIcon
+                  aria-hidden="true"
+                  data-icon="inline-start"
+                />
+                DART 동기화
+              </Button>
+            </>
           }
           description="상장 종목 등록으로 생성된 DART 법인의 기본 정보와 부가 정보를 관리합니다."
           eyebrow="Corporations"
           recordCount={data.length}
           title="Corporations"
         />
+        {syncResult ? (
+          <CorporationSyncSummary
+            result={syncResult}
+            onClose={() => setSyncResult(null)}
+          />
+        ) : null}
         <DataTableToolbar
           label="법인 검색"
           onFilterChange={updateFilterQuery}
@@ -203,6 +227,14 @@ export function CorporationsPage() {
       <CorporationDeleteDialog
         corporation={deletingCorporation}
         onClose={() => setDeletingCorporation(null)}
+      />
+      <CorporationSyncDialog
+        open={syncOpen}
+        onOpenChange={setSyncOpen}
+        onSynced={(result) => {
+          setSyncResult(result);
+          setSyncOpen(false);
+        }}
       />
       {viewingCorporation ? (
         <CorporationDetailSheet

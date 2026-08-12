@@ -50,18 +50,12 @@ describe("KR stock mutations", () => {
   it("요청 본문 없이 KRX 전체 종목 동기화를 요청한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({
-        corporationNameFetchedCount: 108_251,
-        corporationNameInsertedCount: 37,
-        corporationUpdatedCount: 2,
         fetchedCount: 2_785,
         updatedCount: 12,
       }),
     );
 
     await expect(syncKrStocks()).resolves.toEqual({
-      corporationNameFetchedCount: 108_251,
-      corporationNameInsertedCount: 37,
-      corporationUpdatedCount: 2,
       fetchedCount: 2_785,
       updatedCount: 12,
     });
