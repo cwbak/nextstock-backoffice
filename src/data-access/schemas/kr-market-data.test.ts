@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  krMarketDataCreateAllPayloadSchema,
   krMarketDataCreatePayloadSchema,
   krMarketDataCreateResultSchema,
   krMarketDataFilterSchema,
@@ -87,6 +88,24 @@ describe("KR market data schemas", () => {
     expect(() =>
       krMarketDataCreatePayloadSchema.parse({
         stockCode: "005930",
+        from: "2026-08-11",
+        to: "2026-08-10",
+      }),
+    ).toThrow("종료일은 시작일보다 빠를 수 없습니다.");
+  });
+
+  it("전체 종목 저장 날짜 구간을 검증한다", () => {
+    expect(
+      krMarketDataCreateAllPayloadSchema.parse({
+        from: "2026-08-01",
+        to: "2026-08-10",
+      }),
+    ).toEqual({
+      from: "2026-08-01",
+      to: "2026-08-10",
+    });
+    expect(() =>
+      krMarketDataCreateAllPayloadSchema.parse({
         from: "2026-08-11",
         to: "2026-08-10",
       }),

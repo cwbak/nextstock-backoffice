@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { useInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { AlertTriangleIcon, DatabaseIcon, RefreshCwIcon } from "lucide-react";
+import { AlertTriangleIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import { DataTableCard } from "@/components/common/data-table-card";
@@ -22,14 +22,15 @@ import {
 } from "@/data-access/queries/kr-market-data/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type {
-  KrMarketDataCreatePayload,
   KrMarketDataCreateResult,
   KrMarketDataFilterValues,
   KrMarketDataListParams,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataCreateAllDialog } from "@/features/kr-market-data/components/kr-market-data-create-all-dialog";
 import { KrMarketDataEmptyState } from "@/features/kr-market-data/components/kr-market-data-empty-state";
 import { KrMarketDataFilterForm } from "@/features/kr-market-data/components/kr-market-data-filter-form";
 import { KrMarketDataInfiniteLoader } from "@/features/kr-market-data/components/kr-market-data-infinite-loader";
+import { KrMarketDataPageActions } from "@/features/kr-market-data/components/kr-market-data-page-actions";
 import { KrMarketDataSaveDialog } from "@/features/kr-market-data/components/kr-market-data-save-dialog";
 import { KrMarketDataSaveSummary } from "@/features/kr-market-data/components/kr-market-data-save-summary";
 import { KrMarketDataTable } from "@/features/kr-market-data/components/kr-market-data-table";
@@ -44,8 +45,10 @@ const inactiveParams: KrMarketDataListParams = {
 };
 
 interface SaveSummary {
-  payload: KrMarketDataCreatePayload;
+  from: string;
   result: KrMarketDataCreateResult;
+  stockLabel: string;
+  to: string;
 }
 
 export function KrMarketDataPage() {
@@ -53,6 +56,7 @@ export function KrMarketDataPage() {
   const [filters, setFilters] = useState<KrMarketDataFilterValues | null>(null);
   const [queryEnd, setQueryEnd] = useState(getCurrentLocalDate);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [saveAllOpen, setSaveAllOpen] = useState(false);
   const [saveSummary, setSaveSummary] = useState<SaveSummary | null>(null);
   const marketDataQuery = useInfiniteQuery({
     ...krMarketDataInfiniteQueryOptions(
@@ -115,45 +119,26 @@ export function KrMarketDataPage() {
       <section className="flex flex-col gap-6">
         <DataPageHeader
           actions={
-            <>
-              <Button
-                disabled={filters === null || marketDataQuery.isFetching}
-                type="button"
-                variant="outline"
-                onClick={refresh}
-              >
-                {marketDataQuery.isFetching ? (
-                  <Spinner data-icon="inline-start" />
-                ) : (
-                  <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
-                )}
-                새로고침
-              </Button>
-              <Button
-                disabled={krStocksQuery.data.length === 0}
-                type="button"
-                onClick={() => setSaveOpen(true)}
-              >
-                <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
-                일봉 저장
-              </Button>
-            </>
+            <KrMarketDataPageActions
+              canRefresh={filters !== null}
+              canSaveStock={krStocksQuery.data.length > 0}
+              isRefreshing={marketDataQuery.isFetching}
+              onRefresh={refresh}
+              onSaveAll={() => setSaveAllOpen(true)}
+              onSaveStock={() => setSaveOpen(true)}
+            />
           }
-          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고 한국투자증권에서 새 일봉을 가져와 저장합니다."
+          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고 한국투자증권 또는 KRX에서 새 일봉을 가져와 저장합니다."
           eyebrow="KR candle market data"
           recordCount={totalRecords}
           title="KR 캔들"
         />
         {saveSummary ? (
           <KrMarketDataSaveSummary
-            from={saveSummary.payload.from}
+            from={saveSummary.from}
             result={saveSummary.result}
-            stockLabel={
-              krStocksQuery.data.find(
-                (stock) => stock.code === saveSummary.payload.stockCode,
-              )?.name ?? saveSummary.payload.stockCode
-            }
-            to={saveSummary.payload.to}
+            stockLabel={saveSummary.stockLabel}
+            to={saveSummary.to}
             onClose={() => setSaveSummary(null)}
           />
         ) : null}
@@ -233,7 +218,15 @@ export function KrMarketDataPage() {
         open={saveOpen}
         stocks={krStocksQuery.data}
         onCreated={(result, payload) => {
-          setSaveSummary({ payload, result });
+          setSaveSummary({
+            from: payload.from,
+            result,
+            stockLabel:
+              krStocksQuery.data.find(
+                (stock) => stock.code === payload.stockCode,
+              )?.name ?? payload.stockCode,
+            to: payload.to,
+          });
           setFilters({
             stockCode: payload.stockCode,
             period: "daily",
@@ -242,6 +235,19 @@ export function KrMarketDataPage() {
           setSaveOpen(false);
         }}
         onOpenChange={setSaveOpen}
+      />
+      <KrMarketDataCreateAllDialog
+        open={saveAllOpen}
+        onCreated={(result, payload) => {
+          setSaveSummary({
+            from: payload.from,
+            result,
+            stockLabel: "전체 KR 종목",
+            to: payload.to,
+          });
+          setSaveAllOpen(false);
+        }}
+        onOpenChange={setSaveAllOpen}
       />
     </>
   );
