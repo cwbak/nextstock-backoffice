@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { CloudDownloadIcon, RefreshCwIcon } from "lucide-react";
+import { CloudDownloadIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import {
@@ -27,6 +27,7 @@ import { CorporationDetailSheet } from "@/features/corporations/components/corpo
 import { CorporationEditDialog } from "@/features/corporations/components/corporation-edit-dialog";
 import { CorporationSyncDialog } from "@/features/corporations/components/corporation-sync-dialog";
 import { CorporationSyncSummary } from "@/features/corporations/components/corporation-sync-summary";
+import { CorporationUpsertDialog } from "@/features/corporations/components/corporation-upsert-dialog";
 import { CorporationsEmptyState } from "@/features/corporations/components/corporations-empty-state";
 import {
   type CorporationSortField,
@@ -67,6 +68,7 @@ export function CorporationsPage() {
   const [syncResult, setSyncResult] = useState<CorporationSyncResult | null>(
     null,
   );
+  const [upsertOpen, setUpsertOpen] = useState(false);
   const [viewingCorporation, setViewingCorporation] =
     useState<Corporation | null>(null);
   const filteredCorporations = useMemo(() => {
@@ -155,11 +157,15 @@ export function CorporationsPage() {
                   aria-hidden="true"
                   data-icon="inline-start"
                 />
-                DART 동기화
+                법인명 동기화
+              </Button>
+              <Button type="button" onClick={() => setUpsertOpen(true)}>
+                <PlusIcon aria-hidden="true" data-icon="inline-start" />
+                법인 생성·갱신
               </Button>
             </>
           }
-          description="상장 종목 등록으로 생성된 DART 법인의 기본 정보와 부가 정보를 관리합니다."
+          description="DART 기업개황 기반 법인의 기본 정보와 부가 정보를 관리합니다."
           eyebrow="Corporations"
           recordCount={data.length}
           title="Corporations"
@@ -183,7 +189,7 @@ export function CorporationsPage() {
           title="법인 원장"
         >
           {data.length === 0 ? (
-            <CorporationsEmptyState />
+            <CorporationsEmptyState onUpsert={() => setUpsertOpen(true)} />
           ) : filteredCorporations.length === 0 ? (
             <NoSearchResults
               query={filterQuery}
@@ -236,6 +242,7 @@ export function CorporationsPage() {
           setSyncOpen(false);
         }}
       />
+      <CorporationUpsertDialog open={upsertOpen} onOpenChange={setUpsertOpen} />
       {viewingCorporation ? (
         <CorporationDetailSheet
           corporation={viewingCorporation}

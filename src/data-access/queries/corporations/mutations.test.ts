@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   syncCorporations,
+  upsertCorporation,
   updateCorporation,
 } from "@/data-access/queries/corporations/mutations";
 import type {
@@ -62,7 +63,6 @@ describe("corporation mutations", () => {
     const result = {
       corporationNameFetchedCount: 108_251,
       corporationNameInsertedCount: 37,
-      corporationUpdatedCount: 2,
     };
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
@@ -75,6 +75,22 @@ describe("corporation mutations", () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations/sync");
     expect(request?.method).toBe("POST");
     expect(request?.body).toBeUndefined();
+  });
+
+  it("법인 코드로 DART 법인을 생성·갱신한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(corporation));
+
+    await expect(upsertCorporation({ code: "00126380" })).resolves.toEqual(
+      corporation,
+    );
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations");
+    expect(request?.method).toBe("POST");
+    expect(parseRequestBody(request?.body)).toEqual({ code: "00126380" });
   });
 
   it("기본 정보 수정 후 새 info API에 줄 단위 배열을 저장한다", async () => {

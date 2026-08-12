@@ -9,13 +9,13 @@ const apiErrorResponseSchema = z.object({
 const serverErrorMessages: Readonly<Record<string, string>> = {
   "body code must match path code": "코드는 변경할 수 없습니다.",
   "business year must contain 4 digits": "사업연도는 숫자 4자리여야 합니다.",
-  "corporation already exists": "이미 등록된 법인 코드입니다.",
-  "corporation or KR stock already exists":
-    "이미 등록된 법인 또는 종목 코드입니다.",
+  "code must contain 8 digits": "법인 코드는 숫자 8자리여야 합니다.",
   "corporation code must contain 8 digits":
     "법인 코드는 숫자 8자리여야 합니다.",
   "corporation has KR stocks":
     "연결된 KR 종목이 있어 법인을 삭제할 수 없습니다.",
+  "corporation is not listed on kospi or kosdaq":
+    "KOSPI 또는 KOSDAQ 상장 법인이 아닙니다.",
   "corporation not found": "법인을 찾을 수 없습니다.",
   "code must contain 6 uppercase letters or digits":
     "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
@@ -26,6 +26,7 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "dart corporation codes lookup failed":
     "DART 고유번호를 조회하지 못했습니다.",
   "dart company lookup failed": "DART 기업개황을 조회하지 못했습니다.",
+  "dart company not found": "DART에서 해당 법인을 찾을 수 없습니다.",
   "end must use YYYY-MM-DD format":
     "조회 기준일은 YYYY-MM-DD 형식이어야 합니다.",
   "industry code not found": "업종 분류 정보를 찾을 수 없습니다.",
@@ -37,8 +38,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "invalid dart corporation codes response":
     "DART 고유번호 응답 값이 올바르지 않습니다.",
   "invalid dart company response": "DART 기업개황 응답 값이 올바르지 않습니다.",
+  "invalid kis response": "한국투자증권 종목 응답 값이 올바르지 않습니다.",
   "id must be a positive integer": "ID는 양의 정수여야 합니다.",
-  "KR stock already exists": "이미 등록된 종목 코드입니다.",
   "KR stock not found": "KR 종목을 찾을 수 없습니다.",
   "kr stock code does not match request":
     "요청한 종목 코드와 조회된 KR 종목 코드가 다릅니다.",

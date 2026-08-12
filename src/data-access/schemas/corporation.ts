@@ -36,11 +36,16 @@ export const corporationSchema = z
 
 export const corporationListSchema = z.array(corporationSchema);
 
+export const corporationUpsertPayloadSchema = z
+  .object({
+    code: corporationCodeSchema,
+  })
+  .strict();
+
 export const corporationSyncResultSchema = z
   .object({
     corporationNameFetchedCount: z.number().int().nonnegative(),
     corporationNameInsertedCount: z.number().int().nonnegative(),
-    corporationUpdatedCount: z.number().int().nonnegative(),
   })
   .strict();
 
@@ -109,6 +114,9 @@ export function buildCorporationInfo(
 
 export type CorporationInfo = z.infer<typeof corporationInfoSchema>;
 export type Corporation = z.infer<typeof corporationSchema>;
+export type CorporationUpsertPayload = z.infer<
+  typeof corporationUpsertPayloadSchema
+>;
 export type CorporationSyncResult = z.infer<typeof corporationSyncResultSchema>;
 export type CorporationFormValues = z.infer<typeof corporationFormSchema>;
 export type CorporationBasicPayload = z.infer<

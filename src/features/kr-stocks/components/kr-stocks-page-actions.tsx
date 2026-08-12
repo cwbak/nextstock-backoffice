@@ -5,16 +5,16 @@ import { Spinner } from "@/components/ui/spinner";
 
 interface KrStocksPageActionsProps {
   isFetching: boolean;
-  onCreate: () => void;
   onRefresh: () => void;
   onSync: () => void;
+  onUpsert: () => void;
 }
 
 export function KrStocksPageActions({
   isFetching,
-  onCreate,
   onRefresh,
   onSync,
+  onUpsert,
 }: KrStocksPageActionsProps) {
   return (
     <>
@@ -35,9 +35,9 @@ export function KrStocksPageActions({
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
         KRX 동기화
       </Button>
-      <Button type="button" onClick={onCreate}>
+      <Button type="button" onClick={onUpsert}>
         <PlusIcon aria-hidden="true" data-icon="inline-start" />
-        종목 등록
+        종목 생성·갱신
       </Button>
     </>
   );

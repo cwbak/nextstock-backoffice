@@ -5,10 +5,25 @@ import {
   corporationInfoPayloadSchema,
   corporationSchema,
   corporationSyncResultSchema,
+  corporationUpsertPayloadSchema,
   type Corporation,
   type CorporationFormValues,
   type CorporationSyncResult,
+  type CorporationUpsertPayload,
 } from "@/data-access/schemas/corporation";
+
+export function upsertCorporation(
+  payload: CorporationUpsertPayload,
+): Promise<Corporation> {
+  const parsedPayload = corporationUpsertPayloadSchema.parse(payload);
+
+  return apiRequest(
+    "/admin/corporations",
+    corporationSchema,
+    { method: "POST" },
+    parsedPayload,
+  );
+}
 
 export function syncCorporations(): Promise<CorporationSyncResult> {
   return apiRequest("/admin/corporations/sync", corporationSyncResultSchema, {

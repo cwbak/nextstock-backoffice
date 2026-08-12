@@ -1,13 +1,13 @@
 import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
 import {
-  krStockCreatePayloadSchema,
   krStockSchema,
   krStockSyncResultSchema,
+  krStockUpsertPayloadSchema,
   krStockUpdatePayloadSchema,
   type KrStock,
-  type KrStockCreatePayload,
   type KrStockFormValues,
   type KrStockSyncResult,
+  type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
 
 export function syncKrStocks(): Promise<KrStockSyncResult> {
@@ -16,10 +16,10 @@ export function syncKrStocks(): Promise<KrStockSyncResult> {
   });
 }
 
-export async function createKrStock(
-  payload: KrStockCreatePayload,
+export async function upsertKrStock(
+  payload: KrStockUpsertPayload,
 ): Promise<KrStock> {
-  const parsedPayload = krStockCreatePayloadSchema.parse(payload);
+  const parsedPayload = krStockUpsertPayloadSchema.parse(payload);
 
   return apiRequest(
     "/admin/kr-stocks",

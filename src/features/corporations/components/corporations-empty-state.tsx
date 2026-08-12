@@ -1,14 +1,22 @@
-import { Building2Icon } from "lucide-react";
+import { Building2Icon, PlusIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
 
-export function CorporationsEmptyState() {
+interface CorporationsEmptyStateProps {
+  onUpsert: () => void;
+}
+
+export function CorporationsEmptyState({
+  onUpsert,
+}: CorporationsEmptyStateProps) {
   return (
     <Empty className="min-h-72 border-0">
       <EmptyHeader>
@@ -17,9 +25,15 @@ export function CorporationsEmptyState() {
         </EmptyMedia>
         <EmptyTitle>등록된 법인이 없습니다</EmptyTitle>
         <EmptyDescription>
-          주식 메뉴에서 종목을 등록하면 연결 법인도 함께 생성됩니다.
+          DART 법인 코드를 입력해 기업개황으로 법인을 생성하세요.
         </EmptyDescription>
       </EmptyHeader>
+      <EmptyContent>
+        <Button type="button" onClick={onUpsert}>
+          <PlusIcon aria-hidden="true" data-icon="inline-start" />
+          법인 생성·갱신
+        </Button>
+      </EmptyContent>
     </Empty>
   );
 }

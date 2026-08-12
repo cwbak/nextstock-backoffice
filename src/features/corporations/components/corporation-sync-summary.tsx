@@ -26,9 +26,7 @@ export function CorporationSyncSummary({
         DART 법인명 {result.corporationNameFetchedCount.toLocaleString("ko-KR")}
         건을 확인해 새 이름{" "}
         {result.corporationNameInsertedCount.toLocaleString("ko-KR")}건을
-        추가하고, 변경된{" "}
-        {result.corporationUpdatedCount.toLocaleString("ko-KR")}개 법인을
-        갱신했습니다.
+        추가했습니다.
       </AlertDescription>
       <AlertAction>
         <Button

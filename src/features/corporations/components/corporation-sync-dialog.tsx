@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { CloudDownloadIcon } from "lucide-react";
 
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
-import { corporationKeys } from "@/data-access/queries/corporations/keys";
 import { syncCorporations } from "@/data-access/queries/corporations/mutations";
 import type { CorporationSyncResult } from "@/data-access/schemas/corporation";
 
@@ -29,11 +28,9 @@ export function CorporationSyncDialog({
   onSynced,
   open,
 }: CorporationSyncDialogProps) {
-  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: syncCorporations,
-    onSuccess: async (result) => {
-      await queryClient.invalidateQueries({ queryKey: corporationKeys.all });
+    onSuccess: (result) => {
       onSynced(result);
     },
   });
@@ -55,16 +52,15 @@ export function CorporationSyncDialog({
         <DialogHeader>
           <DialogTitle>DART 법인명 동기화</DialogTitle>
           <DialogDescription>
-            DART 고유번호 파일로 법인명 원장과 등록된 법인 정보를 갱신합니다.
+            DART 고유번호 파일로 법인명 원장을 동기화합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
           <CloudDownloadIcon aria-hidden="true" />
-          <AlertTitle>새 법인명을 추가하고 변경된 법인을 갱신합니다</AlertTitle>
+          <AlertTitle>새 법인명을 법인명 원장에 추가합니다</AlertTitle>
           <AlertDescription>
             법인 코드와 정규화된 이름 조합이 없으면 법인명 원장에 추가합니다.
-            기존 법인의 이름이 변경된 경우 DART 기업개황으로 기본 정보를
-            갱신합니다.
+            등록된 법인 기본정보는 변경하지 않습니다.
           </AlertDescription>
         </Alert>
         {mutation.isError ? (

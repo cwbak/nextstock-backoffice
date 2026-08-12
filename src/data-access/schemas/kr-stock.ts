@@ -69,7 +69,7 @@ export const krStockFormSchema = z
   })
   .strict();
 
-export const krStockCreatePayloadSchema = z
+export const krStockUpsertPayloadSchema = z
   .object({
     corporationCode: corporationCodeSchema,
     stockCode: krStockCodeSchema,
@@ -89,6 +89,6 @@ export const krStockSyncResultSchema = z
 
 export type KrStock = z.infer<typeof krStockSchema>;
 export type KrStockFormValues = z.infer<typeof krStockFormSchema>;
-export type KrStockCreatePayload = z.infer<typeof krStockCreatePayloadSchema>;
+export type KrStockUpsertPayload = z.infer<typeof krStockUpsertPayloadSchema>;
 export type KrStockUpdatePayload = z.infer<typeof krStockUpdatePayloadSchema>;
 export type KrStockSyncResult = z.infer<typeof krStockSyncResultSchema>;

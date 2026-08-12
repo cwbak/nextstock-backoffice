@@ -21,36 +21,35 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
-import { corporationKeys } from "@/data-access/queries/corporations/keys";
 import { krStockKeys } from "@/data-access/queries/kr-stocks/keys";
-import { createKrStock } from "@/data-access/queries/kr-stocks/mutations";
+import { upsertKrStock } from "@/data-access/queries/kr-stocks/mutations";
 import {
-  krStockCreatePayloadSchema,
-  type KrStockCreatePayload,
+  krStockUpsertPayloadSchema,
+  type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
 
-interface KrStockCreateDialogProps {
+interface KrStockUpsertDialogProps {
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
 
-const createFieldNames = new Set<keyof KrStockCreatePayload>([
+const upsertFieldNames = new Set<keyof KrStockUpsertPayload>([
   "corporationCode",
   "stockCode",
 ]);
 
 function isCreateFieldName(
   value: PropertyKey,
-): value is keyof KrStockCreatePayload {
-  return createFieldNames.has(value as keyof KrStockCreatePayload);
+): value is keyof KrStockUpsertPayload {
+  return upsertFieldNames.has(value as keyof KrStockUpsertPayload);
 }
 
-interface KrStockCreateFormProps {
+interface KrStockUpsertFormProps {
   onCancel: () => void;
   onSaved: () => void;
 }
 
-function KrStockCreateForm({ onCancel, onSaved }: KrStockCreateFormProps) {
+function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
   const queryClient = useQueryClient();
   const {
     clearErrors,
@@ -58,19 +57,16 @@ function KrStockCreateForm({ onCancel, onSaved }: KrStockCreateFormProps) {
     handleSubmit,
     register,
     setError,
-  } = useForm<KrStockCreatePayload>({
+  } = useForm<KrStockUpsertPayload>({
     defaultValues: {
       corporationCode: "",
       stockCode: "",
     },
   });
   const mutation = useMutation({
-    mutationFn: createKrStock,
+    mutationFn: upsertKrStock,
     onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: krStockKeys.all }),
-        queryClient.invalidateQueries({ queryKey: corporationKeys.all }),
-      ]);
+      await queryClient.invalidateQueries({ queryKey: krStockKeys.all });
       onSaved();
     },
   });
@@ -78,7 +74,7 @@ function KrStockCreateForm({ onCancel, onSaved }: KrStockCreateFormProps) {
 
   const submitForm = handleSubmit((values) => {
     clearErrors();
-    const result = krStockCreatePayloadSchema.safeParse(values);
+    const result = krStockUpsertPayloadSchema.safeParse(values);
 
     if (!result.success) {
       for (const issue of result.error.issues) {
@@ -148,29 +144,29 @@ function KrStockCreateForm({ onCancel, onSaved }: KrStockCreateFormProps) {
         </Button>
         <Button disabled={mutation.isPending} type="submit">
           {mutation.isPending ? <Spinner data-icon="inline-start" /> : null}
-          {mutation.isPending ? "등록 중" : "등록"}
+          {mutation.isPending ? "저장 중" : "저장"}
         </Button>
       </DialogFooter>
     </form>
   );
 }
 
-export function KrStockCreateDialog({
+export function KrStockUpsertDialog({
   onOpenChange,
   open,
-}: KrStockCreateDialogProps) {
+}: KrStockUpsertDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>상장 종목 등록</DialogTitle>
+          <DialogTitle>상장 종목 생성·갱신</DialogTitle>
           <DialogDescription>
-            DART 법인 코드와 종목 코드를 입력하면 DART·KR 정보를 조회해 법인과
-            종목을 함께 등록합니다.
+            등록된 DART 법인 코드와 종목 코드를 입력하면 DART·한국투자증권 최신
+            정보로 종목을 생성하거나 갱신합니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (
-          <KrStockCreateForm
+          <KrStockUpsertForm
             onCancel={() => onOpenChange(false)}
             onSaved={() => onOpenChange(false)}
           />

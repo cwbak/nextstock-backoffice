@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  createKrStock,
   syncKrStocks,
+  upsertKrStock,
   updateKrStock,
 } from "@/data-access/queries/kr-stocks/mutations";
 import type {
@@ -67,16 +67,16 @@ describe("KR stock mutations", () => {
     expect(request?.body).toBeUndefined();
   });
 
-  it("생성 요청에는 DART 법인 코드와 종목 코드만 전송한다", async () => {
+  it("생성·갱신 요청에는 DART 법인 코드와 종목 코드만 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(krStock), {
         headers: { "Content-Type": "application/json" },
-        status: 201,
+        status: 200,
       }),
     );
 
     await expect(
-      createKrStock({
+      upsertKrStock({
         corporationCode: "00126380",
         stockCode: "005930",
       }),

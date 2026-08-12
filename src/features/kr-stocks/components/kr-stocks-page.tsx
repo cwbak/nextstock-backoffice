@@ -22,7 +22,7 @@ import type {
   KrStockSyncResult,
 } from "@/data-access/schemas/kr-stock";
 import { CorporationDetailSheet } from "@/features/corporations";
-import { KrStockCreateDialog } from "@/features/kr-stocks/components/kr-stock-create-dialog";
+import { KrStockUpsertDialog } from "@/features/kr-stocks/components/kr-stock-create-dialog";
 import { KrStockDeleteDialog } from "@/features/kr-stocks/components/kr-stock-delete-dialog";
 import { KrStockEditDialog } from "@/features/kr-stocks/components/kr-stock-edit-dialog";
 import { KrStockSyncDialog } from "@/features/kr-stocks/components/kr-stock-sync-dialog";
@@ -59,7 +59,7 @@ export function KrStocksPage() {
     tableState.q,
   );
   const { sortBy, sortDirection } = tableState;
-  const [createOpen, setCreateOpen] = useState(false);
+  const [upsertOpen, setUpsertOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
   const [syncResult, setSyncResult] = useState<KrStockSyncResult | null>(null);
   const [editingKrStock, setEditingKrStock] = useState<KrStock | null>(null);
@@ -154,12 +154,12 @@ export function KrStocksPage() {
           actions={
             <KrStocksPageActions
               isFetching={isFetching}
-              onCreate={() => setCreateOpen(true)}
               onRefresh={() => void refresh()}
               onSync={() => setSyncOpen(true)}
+              onUpsert={() => setUpsertOpen(true)}
             />
           }
-          description="DART·KRX에서 법인과 종목을 등록하고 상장 정보를 동기화·관리합니다."
+          description="DART·한국투자증권으로 종목을 생성·갱신하고 KRX 상장 정보를 동기화·관리합니다."
           eyebrow="KR stocks"
           recordCount={krStocksQuery.data.length}
           title="KR 종목"
@@ -183,7 +183,7 @@ export function KrStocksPage() {
           title="KR 종목 원장"
         >
           {krStocksQuery.data.length === 0 ? (
-            <KrStocksEmptyState onCreate={() => setCreateOpen(true)} />
+            <KrStocksEmptyState onUpsert={() => setUpsertOpen(true)} />
           ) : filteredKrStocks.length === 0 ? (
             <NoSearchResults
               query={filterQuery}
@@ -216,7 +216,7 @@ export function KrStocksPage() {
           )}
         </DataTableCard>
       </section>
-      <KrStockCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <KrStockUpsertDialog open={upsertOpen} onOpenChange={setUpsertOpen} />
       <KrStockSyncDialog
         open={syncOpen}
         onOpenChange={setSyncOpen}

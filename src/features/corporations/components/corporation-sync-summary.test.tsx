@@ -14,7 +14,6 @@ describe("CorporationSyncSummary", () => {
         result={{
           corporationNameFetchedCount: 108_251,
           corporationNameInsertedCount: 37,
-          corporationUpdatedCount: 2,
         }}
         onClose={onClose}
       />,
@@ -22,7 +21,6 @@ describe("CorporationSyncSummary", () => {
 
     expect(screen.getByText(/DART 법인명 108,251건/)).toBeInTheDocument();
     expect(screen.getByText(/새 이름 37건/)).toBeInTheDocument();
-    expect(screen.getByText(/변경된 2개 법인/)).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {
