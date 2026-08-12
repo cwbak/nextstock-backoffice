@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { PlusIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import {
@@ -15,16 +14,20 @@ import {
   useDataTableState,
 } from "@/components/common/use-data-table-state";
 import { useDataTableFilterQuery } from "@/components/common/use-data-table-filter-query";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type { Corporation } from "@/data-access/schemas/corporation";
-import type { KrStock } from "@/data-access/schemas/kr-stock";
+import type {
+  KrStock,
+  KrStockSyncResult,
+} from "@/data-access/schemas/kr-stock";
 import { CorporationDetailSheet } from "@/features/corporations";
 import { KrStockCreateDialog } from "@/features/kr-stocks/components/kr-stock-create-dialog";
 import { KrStockDeleteDialog } from "@/features/kr-stocks/components/kr-stock-delete-dialog";
 import { KrStockEditDialog } from "@/features/kr-stocks/components/kr-stock-edit-dialog";
+import { KrStockSyncDialog } from "@/features/kr-stocks/components/kr-stock-sync-dialog";
+import { KrStockSyncSummary } from "@/features/kr-stocks/components/kr-stock-sync-summary";
+import { KrStocksPageActions } from "@/features/kr-stocks/components/kr-stocks-page-actions";
 import { KrStocksEmptyState } from "@/features/kr-stocks/components/kr-stocks-empty-state";
 import {
   type KrStockSortField,
@@ -57,6 +60,8 @@ export function KrStocksPage() {
   );
   const { sortBy, sortDirection } = tableState;
   const [createOpen, setCreateOpen] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
+  const [syncResult, setSyncResult] = useState<KrStockSyncResult | null>(null);
   const [editingKrStock, setEditingKrStock] = useState<KrStock | null>(null);
   const [deletingKrStock, setDeletingKrStock] = useState<KrStock | null>(null);
   const [viewingCorporation, setViewingCorporation] =
@@ -147,31 +152,24 @@ export function KrStocksPage() {
       <section className="flex flex-col gap-6">
         <DataPageHeader
           actions={
-            <>
-              <Button
-                disabled={isFetching}
-                type="button"
-                variant="outline"
-                onClick={() => void refresh()}
-              >
-                {isFetching ? (
-                  <Spinner data-icon="inline-start" />
-                ) : (
-                  <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
-                )}
-                새로고침
-              </Button>
-              <Button type="button" onClick={() => setCreateOpen(true)}>
-                <PlusIcon aria-hidden="true" data-icon="inline-start" />
-                종목 등록
-              </Button>
-            </>
+            <KrStocksPageActions
+              isFetching={isFetching}
+              onCreate={() => setCreateOpen(true)}
+              onRefresh={() => void refresh()}
+              onSync={() => setSyncOpen(true)}
+            />
           }
-          description="DART·KR에서 법인과 종목을 함께 등록하고 상장 정보를 관리합니다."
+          description="DART·KRX에서 법인과 종목을 등록하고 상장 정보를 동기화·관리합니다."
           eyebrow="KR stocks"
           recordCount={krStocksQuery.data.length}
           title="KR 종목"
         />
+        {syncResult ? (
+          <KrStockSyncSummary
+            result={syncResult}
+            onClose={() => setSyncResult(null)}
+          />
+        ) : null}
         <DataTableToolbar
           label="KR 종목 검색"
           onFilterChange={updateFilterQuery}
@@ -219,6 +217,14 @@ export function KrStocksPage() {
         </DataTableCard>
       </section>
       <KrStockCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <KrStockSyncDialog
+        open={syncOpen}
+        onOpenChange={setSyncOpen}
+        onSynced={(result) => {
+          setSyncResult(result);
+          setSyncOpen(false);
+        }}
+      />
       <KrStockEditDialog
         corporations={corporationsQuery.data}
         krStock={editingKrStock ?? undefined}

@@ -80,7 +80,18 @@ export const krStockUpdatePayloadSchema = krStockFormSchema.omit({
   code: true,
 });
 
+export const krStockSyncResultSchema = z
+  .object({
+    corporationNameFetchedCount: z.number().int().nonnegative(),
+    corporationNameInsertedCount: z.number().int().nonnegative(),
+    corporationUpdatedCount: z.number().int().nonnegative(),
+    fetchedCount: z.number().int().nonnegative(),
+    updatedCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
 export type KrStock = z.infer<typeof krStockSchema>;
 export type KrStockFormValues = z.infer<typeof krStockFormSchema>;
 export type KrStockCreatePayload = z.infer<typeof krStockCreatePayloadSchema>;
 export type KrStockUpdatePayload = z.infer<typeof krStockUpdatePayloadSchema>;
+export type KrStockSyncResult = z.infer<typeof krStockSyncResultSchema>;

@@ -23,6 +23,9 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
     "DART 출자현황을 조회하지 못했습니다.",
   "dart corporation investments not found":
     "DART에서 해당 출자현황을 찾을 수 없습니다.",
+  "dart corporation codes lookup failed":
+    "DART 고유번호를 조회하지 못했습니다.",
+  "dart company lookup failed": "DART 기업개황을 조회하지 못했습니다.",
   "end must use YYYY-MM-DD format":
     "조회 기준일은 YYYY-MM-DD 형식이어야 합니다.",
   "industry code not found": "업종 분류 정보를 찾을 수 없습니다.",
@@ -31,6 +34,9 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "from must use YYYY-MM-DD format": "시작일은 YYYY-MM-DD 형식이어야 합니다.",
   "invalid dart corporation investments response":
     "DART 출자현황 응답 값이 올바르지 않습니다.",
+  "invalid dart corporation codes response":
+    "DART 고유번호 응답 값이 올바르지 않습니다.",
+  "invalid dart company response": "DART 기업개황 응답 값이 올바르지 않습니다.",
   "id must be a positive integer": "ID는 양의 정수여야 합니다.",
   "KR stock already exists": "이미 등록된 종목 코드입니다.",
   "KR stock not found": "KR 종목을 찾을 수 없습니다.",
@@ -40,6 +46,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "kr stock not found": "KR 종목을 찾을 수 없습니다.",
   "krx website market data lookup failed":
     "KRX 정보데이터시스템에서 전체 종목 일봉을 조회하지 못했습니다.",
+  "krx stocks lookup failed": "KRX 전체 종목을 조회하지 못했습니다.",
+  "invalid krx stocks response": "KRX 종목 응답 값이 올바르지 않습니다.",
   "korea investment market data lookup failed":
     "한국투자증권에서 KR 일봉을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",

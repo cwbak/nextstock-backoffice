@@ -2,11 +2,19 @@ import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
 import {
   krStockCreatePayloadSchema,
   krStockSchema,
+  krStockSyncResultSchema,
   krStockUpdatePayloadSchema,
   type KrStock,
   type KrStockCreatePayload,
   type KrStockFormValues,
+  type KrStockSyncResult,
 } from "@/data-access/schemas/kr-stock";
+
+export function syncKrStocks(): Promise<KrStockSyncResult> {
+  return apiRequest("/admin/kr-stocks/sync", krStockSyncResultSchema, {
+    method: "POST",
+  });
+}
 
 export async function createKrStock(
   payload: KrStockCreatePayload,

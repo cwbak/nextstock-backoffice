@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   createKrStock,
+  syncKrStocks,
   updateKrStock,
 } from "@/data-access/queries/kr-stocks/mutations";
 import type {
@@ -44,6 +45,32 @@ function parseRequestBody(body: BodyInit | null | undefined): unknown {
 describe("KR stock mutations", () => {
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it("요청 본문 없이 KRX 전체 종목 동기화를 요청한다", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      jsonResponse({
+        corporationNameFetchedCount: 108_251,
+        corporationNameInsertedCount: 37,
+        corporationUpdatedCount: 2,
+        fetchedCount: 2_785,
+        updatedCount: 12,
+      }),
+    );
+
+    await expect(syncKrStocks()).resolves.toEqual({
+      corporationNameFetchedCount: 108_251,
+      corporationNameInsertedCount: 37,
+      corporationUpdatedCount: 2,
+      fetchedCount: 2_785,
+      updatedCount: 12,
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/sync");
+    expect(request?.method).toBe("POST");
+    expect(request?.body).toBeUndefined();
   });
 
   it("생성 요청에는 DART 법인 코드와 종목 코드만 전송한다", async () => {

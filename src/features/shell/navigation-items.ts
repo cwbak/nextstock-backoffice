@@ -33,14 +33,14 @@ export const navigationItems = [
     to: "/us-stocks",
   },
   {
-    icon: Building2Icon,
-    label: "법인",
-    to: "/corporations",
-  },
-  {
     icon: NetworkIcon,
     label: "출자현황",
     to: "/corporation-investments",
+  },
+  {
+    icon: Building2Icon,
+    label: "법인",
+    to: "/corporations",
   },
   {
     icon: ChartCandlestickIcon,

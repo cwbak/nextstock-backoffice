@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { krStockSchema } from "@/data-access/schemas/kr-stock";
+import {
+  krStockSchema,
+  krStockSyncResultSchema,
+} from "@/data-access/schemas/kr-stock";
 
 const krStockResponse = {
   code: "005930",
@@ -47,5 +50,32 @@ describe("krStockSchema", () => {
         stockType: " 보통주 ",
       }).stockType,
     ).toBe("보통주");
+  });
+
+  it("KRX 전체 종목 동기화 결과를 검증한다", () => {
+    expect(
+      krStockSyncResultSchema.parse({
+        corporationNameFetchedCount: 108_251,
+        corporationNameInsertedCount: 37,
+        corporationUpdatedCount: 2,
+        fetchedCount: 2_785,
+        updatedCount: 12,
+      }),
+    ).toEqual({
+      corporationNameFetchedCount: 108_251,
+      corporationNameInsertedCount: 37,
+      corporationUpdatedCount: 2,
+      fetchedCount: 2_785,
+      updatedCount: 12,
+    });
+  });
+
+  it("법인명 동기화 결과가 누락되면 거부한다", () => {
+    expect(() =>
+      krStockSyncResultSchema.parse({
+        fetchedCount: 2_785,
+        updatedCount: 12,
+      }),
+    ).toThrow();
   });
 });
