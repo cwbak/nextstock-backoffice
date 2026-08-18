@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   equityInvestmentBulkCreateResultSchema,
   equityInvestmentCreatePayloadSchema,
+  equityInvestmentCreateResultSchema,
   equityInvestmentSchema,
 } from "@/data-access/schemas/equity-investment";
 
@@ -63,13 +64,25 @@ describe("equity investment schemas", () => {
         failedCount: 200,
         fetchedCount: 15_000,
         upsertedCount: 14_000,
-        unmatchedCount: 1_000,
       }),
     ).toMatchObject({
       corporationCount: 2_400,
       processedCount: 2_200,
       failedCount: 200,
     });
+  });
+
+  it("삭제된 미매칭 건수를 포함한 이전 생성 응답을 거부한다", () => {
+    expect(
+      equityInvestmentCreateResultSchema.safeParse({
+        corpCode: "00126380",
+        bsnsYear: "2025",
+        reprtCode: 4,
+        fetchedCount: 12,
+        upsertedCount: 12,
+        unmatchedCount: 0,
+      }).success,
+    ).toBe(false);
   });
 
   it("목록 응답은 사업연도와 OK 상태를 필수로 검증한다", () => {

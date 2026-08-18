@@ -26,7 +26,6 @@ describe("CorporationInvestmentsBulkCreateDialog", () => {
       failedCount: 2,
       fetchedCount: 1_200,
       upsertedCount: 1_100,
-      unmatchedCount: 100,
     };
     const registration = {
       jobId: 43,

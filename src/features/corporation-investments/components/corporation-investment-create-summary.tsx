@@ -28,8 +28,7 @@ export function CorporationInvestmentCreateSummary({
       <AlertDescription>
         {corporation?.name ?? result.corpCode} · {result.bsnsYear}년 · 조회{" "}
         {result.fetchedCount.toLocaleString("ko-KR")}건 중{" "}
-        {result.upsertedCount.toLocaleString("ko-KR")}건 생성,{" "}
-        {result.unmatchedCount.toLocaleString("ko-KR")}건 미매칭
+        {result.upsertedCount.toLocaleString("ko-KR")}건 생성
       </AlertDescription>
       <AlertAction>
         <Button

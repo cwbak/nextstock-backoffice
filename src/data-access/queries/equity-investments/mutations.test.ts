@@ -11,7 +11,6 @@ const createResult = {
   reprtCode: 4,
   fetchedCount: 12,
   upsertedCount: 10,
-  unmatchedCount: 2,
 } as const;
 
 const bulkCreateRegistration = {

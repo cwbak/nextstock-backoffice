@@ -30,7 +30,6 @@ const equityInvestmentCountsSchema = z
   .object({
     fetchedCount: z.number().int().min(0),
     upsertedCount: z.number().int().min(0),
-    unmatchedCount: z.number().int().min(0),
   })
   .strict();
 

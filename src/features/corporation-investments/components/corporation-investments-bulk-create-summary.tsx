@@ -41,8 +41,7 @@ export function CorporationInvestmentsBulkCreateSummary({
         </span>
         <span>
           DART 조회 {result.fetchedCount.toLocaleString("ko-KR")}건 · 생성{" "}
-          {result.upsertedCount.toLocaleString("ko-KR")}건 · 미매칭{" "}
-          {result.unmatchedCount.toLocaleString("ko-KR")}건
+          {result.upsertedCount.toLocaleString("ko-KR")}건
         </span>
       </AlertDescription>
       <AlertAction>
