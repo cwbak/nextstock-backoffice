@@ -8,7 +8,6 @@ export const equityInvestmentSchema = z
     invName: z.string().min(1),
     bsnsYear: z.number().int(),
     status: z.literal("OK"),
-    invstmntPurps: z.string().nullable(),
     trmendBlceQotaRt: z.string().min(1).nullable(),
   })
   .strict();

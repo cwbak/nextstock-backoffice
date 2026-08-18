@@ -9,7 +9,6 @@ const listResult = [
     invName: "삼성디스플레이",
     bsnsYear: 2026,
     status: "OK",
-    invstmntPurps: "경영참여",
     trmendBlceQotaRt: "84.80",
   },
 ] as const;

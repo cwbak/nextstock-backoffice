@@ -15,7 +15,6 @@ describe("equity investment schemas", () => {
         invName: "삼성디스플레이",
         bsnsYear: 2026,
         status: "OK",
-        invstmntPurps: "경영참여",
         trmendBlceQotaRt: "84.80",
       }),
     ).toMatchObject({
@@ -23,23 +22,20 @@ describe("equity investment schemas", () => {
       invName: "삼성디스플레이",
       bsnsYear: 2026,
       status: "OK",
-      invstmntPurps: "경영참여",
       trmendBlceQotaRt: "84.80",
     });
   });
 
-  it("확보하지 못한 출자목적과 숫자가 아닌 지분율의 null을 허용한다", () => {
+  it("숫자가 아닌 지분율의 null을 허용한다", () => {
     expect(
       equityInvestmentSchema.parse({
         corpCode: "00126380",
         invName: "비상장기업",
         bsnsYear: 2026,
         status: "OK",
-        invstmntPurps: null,
         trmendBlceQotaRt: null,
       }),
     ).toMatchObject({
-      invstmntPurps: null,
       trmendBlceQotaRt: null,
     });
   });
@@ -91,7 +87,6 @@ describe("equity investment schemas", () => {
       invName: "삼성디스플레이",
       bsnsYear: 2026,
       status: "OK",
-      invstmntPurps: "경영참여",
       trmendBlceQotaRt: "84.80",
     } as const;
 
@@ -113,6 +108,18 @@ describe("equity investment schemas", () => {
         corpCode: "00126380",
         invName: "삼성디스플레이",
         invListed: true,
+        bsnsYear: 2026,
+        status: "OK",
+        trmendBlceQotaRt: "84.80",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("삭제된 출자목적 필드를 포함한 이전 응답 형식을 거부한다", () => {
+    expect(
+      equityInvestmentSchema.safeParse({
+        corpCode: "00126380",
+        invName: "삼성디스플레이",
         bsnsYear: 2026,
         status: "OK",
         invstmntPurps: "경영참여",

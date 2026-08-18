@@ -87,7 +87,6 @@ export function CorporationInvestmentsPage() {
         corporation?.name ?? "",
         corporation?.nameEn ?? "",
         investment.invName,
-        investment.invstmntPurps ?? "",
         investment.trmendBlceQotaRt ?? "",
         investment.bsnsYear.toString(),
         investment.status,
@@ -160,7 +159,7 @@ export function CorporationInvestmentsPage() {
         ) : null}
         <DataTableToolbar
           label="출자현황 검색"
-          placeholder="보유 법인, 투자 대상, 사업연도, 상태, 출자목적, 지분율 검색"
+          placeholder="보유 법인, 투자 대상, 사업연도, 상태, 지분율 검색"
           query={tableState.q}
           onFilterChange={updateFilterQuery}
           onQueryChange={updateQuery}

@@ -39,14 +39,13 @@ export function CorporationInvestmentsTable({
   investments,
 }: CorporationInvestmentsTableProps) {
   return (
-    <Table className="min-w-[72rem] table-fixed">
+    <Table className="min-w-[56rem] table-fixed">
       <TableCaption className="sr-only">등록된 법인 지분투자 목록</TableCaption>
       <colgroup>
         <col className="w-72" />
         <col className="w-72" />
         <col className="w-24" />
         <col className="w-20" />
-        <col className="w-64" />
         <col className="w-36" />
       </colgroup>
       <TableHeader>
@@ -55,7 +54,6 @@ export function CorporationInvestmentsTable({
           <TableHead>투자 대상</TableHead>
           <TableHead>사업연도</TableHead>
           <TableHead>상태</TableHead>
-          <TableHead>출자목적</TableHead>
           <TableHead className="text-right">기말 지분율</TableHead>
         </TableRow>
       </TableHeader>
@@ -83,14 +81,6 @@ export function CorporationInvestmentsTable({
             </TableCell>
             <TableCell>
               <Badge variant="secondary">{investment.status}</Badge>
-            </TableCell>
-            <TableCell className="overflow-hidden text-muted-foreground">
-              <span
-                className="block truncate"
-                title={investment.invstmntPurps ?? undefined}
-              >
-                {investment.invstmntPurps ?? "-"}
-              </span>
             </TableCell>
             <TableCell className="text-right font-medium tabular-nums">
               {investment.trmendBlceQotaRt === null
