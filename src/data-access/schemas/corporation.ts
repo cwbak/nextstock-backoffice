@@ -44,8 +44,8 @@ export const corporationUpsertPayloadSchema = z
 
 export const corporationSyncResultSchema = z
   .object({
-    corporationFetchedCount: z.number().int().nonnegative(),
-    corporationUpdatedCount: z.number().int().nonnegative(),
+    fetchedCount: z.number().int().nonnegative(),
+    updatedCount: z.number().int().nonnegative(),
   })
   .strict();
 

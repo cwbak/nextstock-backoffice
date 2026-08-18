@@ -8,8 +8,8 @@ import {
 describe("corporation schemas", () => {
   it("법인 전체 동기화 결과를 검증한다", () => {
     const result = {
-      corporationFetchedCount: 2_850,
-      corporationUpdatedCount: 12,
+      fetchedCount: 2_850,
+      updatedCount: 12,
     };
 
     expect(corporationSyncResultSchema.parse(result)).toEqual(result);

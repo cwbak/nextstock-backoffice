@@ -12,8 +12,8 @@ describe("CorporationSyncSummary", () => {
     render(
       <CorporationSyncSummary
         result={{
-          corporationFetchedCount: 2_850,
-          corporationUpdatedCount: 12,
+          fetchedCount: 2_850,
+          updatedCount: 12,
         }}
         onClose={onClose}
       />,

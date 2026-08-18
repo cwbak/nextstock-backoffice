@@ -24,10 +24,9 @@ export function CorporationSyncSummary({
       <AlertTitle>DART 법인 전체 동기화를 완료했습니다</AlertTitle>
       <AlertDescription>
         <p>
-          등록된 법인 {result.corporationFetchedCount.toLocaleString("ko-KR")}
-          개의 기업개황을 확인해 변경된{" "}
-          {result.corporationUpdatedCount.toLocaleString("ko-KR")}개 법인을
-          갱신했습니다.
+          등록된 법인 {result.fetchedCount.toLocaleString("ko-KR")}개의
+          기업개황을 확인해 변경된 {result.updatedCount.toLocaleString("ko-KR")}
+          개 법인을 갱신했습니다.
         </p>
       </AlertDescription>
       <AlertAction>
