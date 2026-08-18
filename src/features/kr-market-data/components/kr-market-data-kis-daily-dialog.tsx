@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock3Icon } from "lucide-react";
 
+import { BackgroundJobStatusAlert } from "@/components/common/background-job-status-alert";
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
+import { useBackgroundJob } from "@/components/common/use-background-job";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,50 +17,54 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { krMarketDataKeys } from "@/data-access/queries/kr-market-data/keys";
-import { createKrxDailyMarketData } from "@/data-access/queries/kr-market-data/mutations";
+import { createKisDailyMarketData } from "@/data-access/queries/kr-market-data/mutations";
 import {
-  type KrMarketDataCreateAllPayload,
-  type KrMarketDataCreateResult,
+  krMarketDataKisDailyResultSchema,
+  type KrMarketDataKisDailyResult,
 } from "@/data-access/schemas/kr-market-data";
 import { KrMarketDataDateRangeFields } from "@/features/kr-market-data/components/kr-market-data-date-range-fields";
 import { useKrMarketDataDateRangeForm } from "@/features/kr-market-data/hooks/use-kr-market-data-date-range-form";
 
-interface KrMarketDataCreateAllDialogProps {
-  onCreated: (
-    result: KrMarketDataCreateResult,
-    payload: KrMarketDataCreateAllPayload,
-  ) => void;
+interface KrMarketDataKisDailyDialogProps {
+  onCreated: (result: KrMarketDataKisDailyResult) => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
 
-export function KrMarketDataCreateAllDialog({
+export function KrMarketDataKisDailyDialog({
   onCreated,
   onOpenChange,
   open,
-}: KrMarketDataCreateAllDialogProps) {
+}: KrMarketDataKisDailyDialogProps) {
   const queryClient = useQueryClient();
   const { createSubmit, errors, register, resetForm } =
     useKrMarketDataDateRangeForm();
-  const mutation = useMutation({
-    mutationFn: createKrxDailyMarketData,
-    onSuccess: async (result, payload) => {
+  const jobTracker = useBackgroundJob({
+    expectedType: "kr_stocks_kis_daily",
+    resultSchema: krMarketDataKisDailyResultSchema,
+    onCompleted: async (result) => {
       await queryClient.invalidateQueries({
         queryKey: krMarketDataKeys.lists(),
       });
       resetForm();
-      onCreated(result, payload);
+      onCreated(result);
     },
   });
-  const submitForm = createSubmit((payload) => mutation.mutate(payload));
+  const mutation = useMutation({
+    mutationFn: createKisDailyMarketData,
+    onSuccess: jobTracker.track,
+  });
+  const isBusy = mutation.isPending || jobTracker.isTracking;
+  const submitForm = createSubmit((payload) => {
+    jobTracker.reset();
+    mutation.reset();
+    mutation.mutate(payload);
+  });
 
   const changeOpen = (nextOpen: boolean) => {
-    if (mutation.isPending) {
-      return;
-    }
-
-    if (!nextOpen) {
+    if (!nextOpen && !isBusy) {
       mutation.reset();
+      jobTracker.reset();
       resetForm();
     }
     onOpenChange(nextOpen);
@@ -66,26 +72,28 @@ export function KrMarketDataCreateAllDialog({
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
-      <DialogContent
-        className="sm:max-w-xl"
-        showCloseButton={!mutation.isPending}
-      >
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>KRX 일자별 전 종목 일봉 저장</DialogTitle>
+          <DialogTitle>KIS 전 종목 기간 일봉 저장</DialogTitle>
           <DialogDescription>
-            날짜 구간을 하루씩 순회해 각 거래일의 KRX 전 종목 일봉을
-            ClickHouse에 저장합니다.
+            등록된 모든 KR 종목에 같은 기간을 적용해 KIS 일봉을 ClickHouse에
+            저장합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
           <Clock3Icon aria-hidden="true" />
-          <AlertTitle>각 날짜마다 KRX 전 종목 시세를 조회합니다</AlertTitle>
+          <AlertTitle>Worker가 종목 코드순으로 처리합니다</AlertTitle>
           <AlertDescription>
-            기간이 길면 오래 걸릴 수 있으며 휴장일은 건너뜁니다. 같은
-            종목·날짜가 있어도 새 버전으로 저장하고, 조회에는 최신 버전을
-            사용합니다. 처리 중에는 이 창을 닫을 수 없습니다.
+            한 종목이 실패해도 다음 종목을 계속 처리합니다. 진행 상태를 2초마다
+            확인하며, 창을 닫아도 백그라운드 작업은 계속됩니다.
           </AlertDescription>
         </Alert>
+        {jobTracker.jobId !== null && jobTracker.isTracking ? (
+          <BackgroundJobStatusAlert
+            job={jobTracker.job}
+            jobId={jobTracker.jobId}
+          />
+        ) : null}
         <form
           className="flex flex-col gap-4"
           noValidate
@@ -94,25 +102,28 @@ export function KrMarketDataCreateAllDialog({
           <KrMarketDataDateRangeFields
             fromError={errors.from}
             fromRegistration={register("from")}
-            idPrefix="save-all-market-data"
+            idPrefix="save-kis-daily-market-data"
             toError={errors.to}
             toRegistration={register("to")}
           />
-          {mutation.isError ? (
-            <MutationErrorAlert message={getErrorMessage(mutation.error)} />
+          {jobTracker.errorMessage || mutation.isError ? (
+            <MutationErrorAlert
+              message={
+                jobTracker.errorMessage ?? getErrorMessage(mutation.error)
+              }
+            />
           ) : null}
           <DialogFooter>
             <Button
-              disabled={mutation.isPending}
               type="button"
               variant="outline"
               onClick={() => changeOpen(false)}
             >
-              취소
+              {isBusy ? "닫기" : "취소"}
             </Button>
-            <Button disabled={mutation.isPending} type="submit">
-              {mutation.isPending ? <Spinner data-icon="inline-start" /> : null}
-              {mutation.isPending ? "KRX 일봉 저장 중" : "KRX 일봉 저장"}
+            <Button disabled={isBusy} type="submit">
+              {isBusy ? <Spinner data-icon="inline-start" /> : null}
+              {isBusy ? "KIS 작업 처리 중" : "KIS 전 종목 저장"}
             </Button>
           </DialogFooter>
         </form>

@@ -9,6 +9,7 @@ interface KrMarketDataPageActionsProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   onSaveAll: () => void;
+  onSaveKisDaily: () => void;
   onSaveStock: () => void;
 }
 
@@ -18,6 +19,7 @@ export function KrMarketDataPageActions({
   isRefreshing,
   onRefresh,
   onSaveAll,
+  onSaveKisDaily,
   onSaveStock,
 }: KrMarketDataPageActionsProps) {
   return (
@@ -42,6 +44,10 @@ export function KrMarketDataPageActions({
       <Button type="button" onClick={onSaveAll}>
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
         KRX 일자별 저장
+      </Button>
+      <Button type="button" onClick={onSaveKisDaily}>
+        <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
+        KIS 전 종목 저장
       </Button>
     </>
   );

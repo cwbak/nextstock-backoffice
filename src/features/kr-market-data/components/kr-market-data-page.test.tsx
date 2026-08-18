@@ -154,4 +154,20 @@ describe("KrMarketDataPage", () => {
       within(dialog).getByText(/같은 종목·날짜가 있어도 새 버전/),
     ).toBeInTheDocument();
   });
+
+  it("KIS 전 종목 기간 일봉 저장 화면을 연다", () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "KIS 전 종목 저장" }));
+
+    const dialog = screen.getByRole("dialog", {
+      name: "KIS 전 종목 기간 일봉 저장",
+    });
+
+    expect(within(dialog).getByLabelText("시작일")).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("종료일")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/Worker가 종목 코드순/),
+    ).toBeInTheDocument();
+  });
 });

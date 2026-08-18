@@ -9,6 +9,7 @@ const stageLabels: Readonly<Record<string, string>> = {
   FETCHING_KOSDAQ: "KOSDAQ 종목 조회",
   FETCHING_KOSPI: "KOSPI 종목 조회",
   PROCESSING_CORPORATIONS: "법인별 출자현황 처리",
+  PROCESSING_STOCKS: "KR 종목별 KIS 일봉 처리",
   SAVING_CORPORATIONS: "법인 정보 저장",
   SAVING_CORPORATION_NAMES: "법인명 저장",
   UPDATING_STOCKS: "KR 종목 갱신",

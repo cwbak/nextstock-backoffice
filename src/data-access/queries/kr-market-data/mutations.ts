@@ -1,5 +1,9 @@
 import { apiRequest } from "@/data-access/api/client";
 import {
+  krStocksKisDailyJobRegistrationSchema,
+  type BackgroundJobRegistration,
+} from "@/data-access/schemas/background-job";
+import {
   krMarketDataCreateAllPayloadSchema,
   krMarketDataCreatePayloadSchema,
   krMarketDataCreateResultSchema,
@@ -16,6 +20,19 @@ export function createKrxDailyMarketData(
   return apiRequest(
     "/admin/kr-stocks/market-data/krx-daily",
     krMarketDataCreateResultSchema,
+    { method: "POST" },
+    body,
+  );
+}
+
+export function createKisDailyMarketData(
+  payload: KrMarketDataCreateAllPayload,
+): Promise<BackgroundJobRegistration> {
+  const body = krMarketDataCreateAllPayloadSchema.parse(payload);
+
+  return apiRequest(
+    "/admin/kr-stocks/market-data/kis-daily",
+    krStocksKisDailyJobRegistrationSchema,
     { method: "POST" },
     body,
   );

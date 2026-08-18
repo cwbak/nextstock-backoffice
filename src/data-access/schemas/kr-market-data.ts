@@ -77,6 +77,22 @@ export const krMarketDataCreateResultSchema = z
   })
   .strict();
 
+export const krMarketDataKisDailyResultSchema = z
+  .object({
+    from: marketDataDateSchema,
+    to: marketDataDateSchema,
+    stockCount: z.number().int().nonnegative(),
+    processedCount: z.number().int().nonnegative(),
+    failedCount: z.number().int().nonnegative(),
+    fetchedCount: z.number().int().nonnegative(),
+    insertedCount: z.number().int().nonnegative(),
+  })
+  .strict()
+  .refine(isValidDateRange, {
+    message: "종료일은 시작일보다 빠를 수 없습니다.",
+    path: ["to"],
+  });
+
 export type KrMarketData = z.infer<typeof krMarketDataSchema>;
 export type KrMarketDataPeriod = z.infer<typeof krMarketDataPeriodSchema>;
 export type KrMarketDataFilterValues = z.infer<typeof krMarketDataFilterSchema>;
@@ -91,4 +107,7 @@ export type KrMarketDataCreateAllPayload = z.infer<
 >;
 export type KrMarketDataCreateResult = z.infer<
   typeof krMarketDataCreateResultSchema
+>;
+export type KrMarketDataKisDailyResult = z.infer<
+  typeof krMarketDataKisDailyResultSchema
 >;

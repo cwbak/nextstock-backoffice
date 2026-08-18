@@ -5,6 +5,7 @@ import {
   krMarketDataCreatePayloadSchema,
   krMarketDataCreateResultSchema,
   krMarketDataFilterSchema,
+  krMarketDataKisDailyResultSchema,
   krMarketDataListParamsSchema,
   krMarketDataSchema,
 } from "@/data-access/schemas/kr-market-data";
@@ -122,5 +123,19 @@ describe("KR market data schemas", () => {
       fetchedCount: 145,
       insertedCount: 140,
     });
+  });
+
+  it("KIS 전 종목 일봉 작업 결과를 검증한다", () => {
+    const result = {
+      from: "2026-01-01",
+      to: "2026-08-10",
+      stockCount: 2_800,
+      processedCount: 2_798,
+      failedCount: 2,
+      fetchedCount: 420_000,
+      insertedCount: 420_000,
+    };
+
+    expect(krMarketDataKisDailyResultSchema.parse(result)).toEqual(result);
   });
 });

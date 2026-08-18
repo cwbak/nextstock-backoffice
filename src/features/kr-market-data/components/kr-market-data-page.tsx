@@ -24,12 +24,14 @@ import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type {
   KrMarketDataCreateResult,
   KrMarketDataFilterValues,
+  KrMarketDataKisDailyResult,
   KrMarketDataListParams,
 } from "@/data-access/schemas/kr-market-data";
 import { KrMarketDataCreateAllDialog } from "@/features/kr-market-data/components/kr-market-data-create-all-dialog";
 import { KrMarketDataEmptyState } from "@/features/kr-market-data/components/kr-market-data-empty-state";
 import { KrMarketDataFilterForm } from "@/features/kr-market-data/components/kr-market-data-filter-form";
 import { KrMarketDataInfiniteLoader } from "@/features/kr-market-data/components/kr-market-data-infinite-loader";
+import { KrMarketDataKisDailyDialog } from "@/features/kr-market-data/components/kr-market-data-kis-daily-dialog";
 import { KrMarketDataPageActions } from "@/features/kr-market-data/components/kr-market-data-page-actions";
 import { KrMarketDataSaveDialog } from "@/features/kr-market-data/components/kr-market-data-save-dialog";
 import { KrMarketDataSaveSummary } from "@/features/kr-market-data/components/kr-market-data-save-summary";
@@ -46,7 +48,7 @@ const inactiveParams: KrMarketDataListParams = {
 
 interface SaveSummary {
   from: string;
-  result: KrMarketDataCreateResult;
+  result: KrMarketDataCreateResult | KrMarketDataKisDailyResult;
   stockLabel: string;
   to: string;
 }
@@ -57,6 +59,7 @@ export function KrMarketDataPage() {
   const [queryEnd, setQueryEnd] = useState(getCurrentLocalDate);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveAllOpen, setSaveAllOpen] = useState(false);
+  const [saveKisDailyOpen, setSaveKisDailyOpen] = useState(false);
   const [saveSummary, setSaveSummary] = useState<SaveSummary | null>(null);
   const marketDataQuery = useInfiniteQuery({
     ...krMarketDataInfiniteQueryOptions(
@@ -125,6 +128,7 @@ export function KrMarketDataPage() {
               isRefreshing={marketDataQuery.isFetching}
               onRefresh={refresh}
               onSaveAll={() => setSaveAllOpen(true)}
+              onSaveKisDaily={() => setSaveKisDailyOpen(true)}
               onSaveStock={() => setSaveOpen(true)}
             />
           }
@@ -248,6 +252,19 @@ export function KrMarketDataPage() {
           setSaveAllOpen(false);
         }}
         onOpenChange={setSaveAllOpen}
+      />
+      <KrMarketDataKisDailyDialog
+        open={saveKisDailyOpen}
+        onCreated={(result) => {
+          setSaveSummary({
+            from: result.from,
+            result,
+            stockLabel: "KIS 전 종목",
+            to: result.to,
+          });
+          setSaveKisDailyOpen(false);
+        }}
+        onOpenChange={setSaveKisDailyOpen}
       />
     </>
   );
