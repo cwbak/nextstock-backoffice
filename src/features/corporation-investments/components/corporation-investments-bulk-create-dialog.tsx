@@ -1,8 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { Clock3Icon } from "lucide-react";
 
+import { BackgroundJobStatusAlert } from "@/components/common/background-job-status-alert";
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
+import { useBackgroundJob } from "@/components/common/use-background-job";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +18,11 @@ import {
 import { FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
+import { equityInvestmentKeys } from "@/data-access/queries/equity-investments/keys";
 import { createAllEquityInvestments } from "@/data-access/queries/equity-investments/mutations";
 import {
   equityInvestmentBulkCreatePayloadSchema,
+  equityInvestmentBulkCreateResultSchema,
   type EquityInvestmentBulkCreatePayload,
   type EquityInvestmentBulkCreateResult,
 } from "@/data-access/schemas/equity-investment";
@@ -51,6 +55,7 @@ export function CorporationInvestmentsBulkCreateDialog({
   onCreated,
   open,
 }: CorporationInvestmentsBulkCreateDialogProps) {
+  const queryClient = useQueryClient();
   const {
     clearErrors,
     control,
@@ -62,19 +67,27 @@ export function CorporationInvestmentsBulkCreateDialog({
   } = useForm<EquityInvestmentBulkCreatePayload>({
     defaultValues: getDefaultCorporationInvestmentPeriod(),
   });
+  const jobTracker = useBackgroundJob({
+    expectedType: "equity_investments_all",
+    resultSchema: equityInvestmentBulkCreateResultSchema,
+    onCompleted: async (result) => {
+      await queryClient.invalidateQueries({
+        queryKey: equityInvestmentKeys.all,
+      });
+      onCreated(result);
+    },
+  });
   const mutation = useMutation({
     mutationFn: createAllEquityInvestments,
-    onSuccess: onCreated,
+    onSuccess: jobTracker.track,
   });
+  const isBusy = mutation.isPending || jobTracker.isTracking;
 
   const changeOpen = (nextOpen: boolean) => {
-    if (mutation.isPending) {
-      return;
-    }
-
-    if (!nextOpen) {
+    if (!nextOpen && !isBusy) {
       clearErrors();
       mutation.reset();
+      jobTracker.reset();
       reset(getDefaultCorporationInvestmentPeriod());
     }
     onOpenChange(nextOpen);
@@ -98,15 +111,14 @@ export function CorporationInvestmentsBulkCreateDialog({
       return;
     }
 
+    jobTracker.reset();
+    mutation.reset();
     mutation.mutate(result.data);
   });
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
-      <DialogContent
-        className="sm:max-w-xl"
-        showCloseButton={!mutation.isPending}
-      >
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>전체 법인 지분투자 DRAFT 생성</DialogTitle>
           <DialogDescription>
@@ -120,10 +132,16 @@ export function CorporationInvestmentsBulkCreateDialog({
             {corporationCount.toLocaleString("ko-KR")}개 법인을 순차 처리합니다
           </AlertTitle>
           <AlertDescription>
-            완료까지 오래 걸릴 수 있습니다. 처리 중에는 이 창을 닫을 수 없으며,
-            일부 법인이 실패해도 나머지는 계속 처리됩니다.
+            Worker가 백그라운드에서 처리합니다. 일부 법인이 실패해도 나머지는
+            계속 처리되며 진행 상태를 2초마다 확인합니다.
           </AlertDescription>
         </Alert>
+        {jobTracker.jobId !== null && jobTracker.isTracking ? (
+          <BackgroundJobStatusAlert
+            job={jobTracker.job}
+            jobId={jobTracker.jobId}
+          />
+        ) : null}
         <form
           className="flex flex-col gap-4"
           noValidate
@@ -145,21 +163,24 @@ export function CorporationInvestmentsBulkCreateDialog({
               )}
             />
           </FieldGroup>
-          {mutation.isError ? (
-            <MutationErrorAlert message={getErrorMessage(mutation.error)} />
+          {jobTracker.errorMessage || mutation.isError ? (
+            <MutationErrorAlert
+              message={
+                jobTracker.errorMessage ?? getErrorMessage(mutation.error)
+              }
+            />
           ) : null}
           <DialogFooter>
             <Button
-              disabled={mutation.isPending}
               type="button"
               variant="outline"
               onClick={() => changeOpen(false)}
             >
-              취소
+              {isBusy ? "닫기" : "취소"}
             </Button>
-            <Button disabled={mutation.isPending} type="submit">
-              {mutation.isPending ? <Spinner data-icon="inline-start" /> : null}
-              {mutation.isPending ? "전체 법인 처리 중" : "전체 DRAFT 생성"}
+            <Button disabled={isBusy} type="submit">
+              {isBusy ? <Spinner data-icon="inline-start" /> : null}
+              {isBusy ? "작업 처리 중" : "전체 DRAFT 생성"}
             </Button>
           </DialogFooter>
         </form>

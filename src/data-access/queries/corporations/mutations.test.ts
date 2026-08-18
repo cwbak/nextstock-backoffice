@@ -61,9 +61,13 @@ describe("corporation mutations", () => {
 
   it("요청 본문 없이 DART 법인명 동기화를 요청한다", async () => {
     const result = {
-      corporationNameFetchedCount: 108_251,
-      corporationNameInsertedCount: 37,
-    };
+      jobId: 42,
+      type: "corporations_sync",
+      status: "QUEUED",
+      statusUrl: "/admin/jobs/42",
+      created: true,
+      createdAt: "2026-08-13T11:00:00+09:00",
+    } as const;
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(result));

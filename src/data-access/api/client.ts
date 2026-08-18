@@ -8,6 +8,9 @@ const apiErrorResponseSchema = z.object({
 
 const serverErrorMessages: Readonly<Record<string, string>> = {
   "body code must match path code": "코드는 변경할 수 없습니다.",
+  "background job not found": "백그라운드 작업을 찾을 수 없습니다.",
+  "background jobs are unavailable":
+    "백그라운드 작업 저장소가 구성되지 않았습니다.",
   "business year must contain 4 digits": "사업연도는 숫자 4자리여야 합니다.",
   "code must contain 8 digits": "법인 코드는 숫자 8자리여야 합니다.",
   "corporation code must contain 8 digits":
@@ -40,6 +43,7 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "invalid dart company response": "DART 기업개황 응답 값이 올바르지 않습니다.",
   "invalid kis response": "한국투자증권 종목 응답 값이 올바르지 않습니다.",
   "id must be a positive integer": "ID는 양의 정수여야 합니다.",
+  "job id must be a positive integer": "작업 ID는 양의 정수여야 합니다.",
   "KR stock not found": "KR 종목을 찾을 수 없습니다.",
   "kr stock code does not match request":
     "요청한 종목 코드와 조회된 KR 종목 코드가 다릅니다.",

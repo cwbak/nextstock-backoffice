@@ -128,7 +128,7 @@ export function KrMarketDataPage() {
               onSaveStock={() => setSaveOpen(true)}
             />
           }
-          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고 한국투자증권 또는 KRX에서 새 일봉을 가져와 저장합니다."
+          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고 한국투자증권 종목별 일봉 또는 KRX 일자별 전 종목 일봉을 저장합니다."
           eyebrow="KR candle market data"
           recordCount={totalRecords}
           title="KR 캔들"
@@ -242,7 +242,7 @@ export function KrMarketDataPage() {
           setSaveSummary({
             from: payload.from,
             result,
-            stockLabel: "전체 KR 종목",
+            stockLabel: "KRX 전 종목",
             to: payload.to,
           });
           setSaveAllOpen(false);

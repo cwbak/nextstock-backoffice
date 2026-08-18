@@ -1,14 +1,16 @@
 import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
 import {
+  corporationsSyncJobRegistrationSchema,
+  type BackgroundJobRegistration,
+} from "@/data-access/schemas/background-job";
+import {
   buildCorporationInfo,
   corporationBasicPayloadSchema,
   corporationInfoPayloadSchema,
   corporationSchema,
-  corporationSyncResultSchema,
   corporationUpsertPayloadSchema,
   type Corporation,
   type CorporationFormValues,
-  type CorporationSyncResult,
   type CorporationUpsertPayload,
 } from "@/data-access/schemas/corporation";
 
@@ -25,10 +27,12 @@ export function upsertCorporation(
   );
 }
 
-export function syncCorporations(): Promise<CorporationSyncResult> {
-  return apiRequest("/admin/corporations/sync", corporationSyncResultSchema, {
-    method: "POST",
-  });
+export function syncCorporations(): Promise<BackgroundJobRegistration> {
+  return apiRequest(
+    "/admin/corporations/sync",
+    corporationsSyncJobRegistrationSchema,
+    { method: "POST" },
+  );
 }
 
 export async function updateCorporation(

@@ -1,11 +1,13 @@
 import { apiRequest } from "@/data-access/api/client";
 import {
+  equityInvestmentsAllJobRegistrationSchema,
+  type BackgroundJobRegistration,
+} from "@/data-access/schemas/background-job";
+import {
   equityInvestmentBulkCreatePayloadSchema,
-  equityInvestmentBulkCreateResultSchema,
   equityInvestmentCreatePayloadSchema,
   equityInvestmentCreateResultSchema,
   type EquityInvestmentBulkCreatePayload,
-  type EquityInvestmentBulkCreateResult,
   type EquityInvestmentCreatePayload,
   type EquityInvestmentCreateResult,
 } from "@/data-access/schemas/equity-investment";
@@ -25,12 +27,12 @@ export async function createEquityInvestments(
 
 export async function createAllEquityInvestments(
   payload: EquityInvestmentBulkCreatePayload,
-): Promise<EquityInvestmentBulkCreateResult> {
+): Promise<BackgroundJobRegistration> {
   const parsedPayload = equityInvestmentBulkCreatePayloadSchema.parse(payload);
 
   return apiRequest(
     "/admin/equity_investments/all",
-    equityInvestmentBulkCreateResultSchema,
+    equityInvestmentsAllJobRegistrationSchema,
     { method: "POST" },
     parsedPayload,
   );

@@ -44,8 +44,10 @@ export const corporationUpsertPayloadSchema = z
 
 export const corporationSyncResultSchema = z
   .object({
+    corporationFetchedCount: z.number().int().nonnegative(),
     corporationNameFetchedCount: z.number().int().nonnegative(),
     corporationNameInsertedCount: z.number().int().nonnegative(),
+    corporationUpdatedCount: z.number().int().nonnegative(),
   })
   .strict();
 
@@ -53,7 +55,7 @@ export const corporationFormSchema = z
   .object({
     code: corporationCodeSchema,
     name: z.string().trim().min(1, "법인명을 입력해 주세요."),
-    nameEn: z.string().trim().min(1, "영문 법인명을 입력해 주세요."),
+    nameEn: z.string().trim(),
     ceoNm: z.string().trim().min(1, "대표자명을 입력해 주세요."),
     hmUrl: z.string().trim(),
     address: z.string().trim().min(1, "주소를 입력해 주세요."),

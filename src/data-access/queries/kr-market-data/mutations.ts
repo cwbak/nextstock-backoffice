@@ -8,13 +8,13 @@ import {
   type KrMarketDataCreateResult,
 } from "@/data-access/schemas/kr-market-data";
 
-export function createAllKrMarketData(
+export function createKrxDailyMarketData(
   payload: KrMarketDataCreateAllPayload,
 ): Promise<KrMarketDataCreateResult> {
   const body = krMarketDataCreateAllPayloadSchema.parse(payload);
 
   return apiRequest(
-    "/admin/kr-stocks/market-data",
+    "/admin/kr-stocks/market-data/krx-daily",
     krMarketDataCreateResultSchema,
     { method: "POST" },
     body,

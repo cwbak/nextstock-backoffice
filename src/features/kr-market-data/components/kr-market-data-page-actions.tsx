@@ -41,7 +41,7 @@ export function KrMarketDataPageActions({
       </Button>
       <Button type="button" onClick={onSaveAll}>
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
-        전체 종목 저장
+        KRX 일자별 저장
       </Button>
     </>
   );

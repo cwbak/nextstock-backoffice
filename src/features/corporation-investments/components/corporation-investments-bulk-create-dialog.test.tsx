@@ -8,50 +8,54 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { corporationKeys } from "@/data-access/queries/corporations/keys";
-import { CorporationSyncDialog } from "@/features/corporations/components/corporation-sync-dialog";
+import { equityInvestmentKeys } from "@/data-access/queries/equity-investments/keys";
+import { CorporationInvestmentsBulkCreateDialog } from "@/features/corporation-investments/components/corporation-investments-bulk-create-dialog";
 
-describe("CorporationSyncDialog", () => {
+describe("CorporationInvestmentsBulkCreateDialog", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
   });
 
-  it("DART 법인·법인명 동기화를 실행하고 법인 캐시를 갱신한다", async () => {
+  it("전체 법인 작업을 등록하고 완료 결과로 지분투자 캐시를 갱신한다", async () => {
     const result = {
-      corporationFetchedCount: 2_850,
-      corporationNameFetchedCount: 108_251,
-      corporationNameInsertedCount: 37,
-      corporationUpdatedCount: 12,
+      bsnsYear: "2025",
+      reprtCode: 4,
+      corporationCount: 2_400,
+      processedCount: 2_398,
+      failedCount: 2,
+      fetchedCount: 1_200,
+      upsertedCount: 1_100,
+      unmatchedCount: 100,
     };
     const registration = {
-      jobId: 42,
-      type: "corporations_sync",
+      jobId: 43,
+      type: "equity_investments_all",
       status: "QUEUED",
-      statusUrl: "/admin/jobs/42",
+      statusUrl: "/admin/jobs/43",
       created: true,
       createdAt: "2026-08-13T11:00:00+09:00",
     };
     const completedJob = {
-      jobId: 42,
-      type: "corporations_sync",
+      jobId: 43,
+      type: "equity_investments_all",
       status: "COMPLETED",
       stage: "COMPLETED",
-      parameters: {},
+      parameters: { bsnsYear: "2025", reprtCode: 4 },
       progress: {
-        current: 2_850,
-        total: 2_850,
+        current: 2_400,
+        total: 2_400,
         percent: 100,
-        succeeded: 2_850,
-        failed: 0,
+        succeeded: 2_398,
+        failed: 2,
       },
       result,
       error: null,
       attemptCount: 1,
       createdAt: "2026-08-13T11:00:00+09:00",
       startedAt: "2026-08-13T11:00:01+09:00",
-      finishedAt: "2026-08-13T11:05:00+09:00",
-      updatedAt: "2026-08-13T11:05:00+09:00",
+      finishedAt: "2026-08-13T11:10:00+09:00",
+      updatedAt: "2026-08-13T11:10:00+09:00",
     };
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
@@ -67,7 +71,7 @@ describe("CorporationSyncDialog", () => {
           status: 200,
         }),
       );
-    const onSynced = vi.fn();
+    const onCreated = vi.fn();
     const queryClient = new QueryClient({
       defaultOptions: {
         mutations: { retry: false },
@@ -75,26 +79,28 @@ describe("CorporationSyncDialog", () => {
       },
     });
     const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
+
     render(
       <QueryClientProvider client={queryClient}>
-        <CorporationSyncDialog
+        <CorporationInvestmentsBulkCreateDialog
+          corporationCount={2_400}
           open
+          onCreated={onCreated}
           onOpenChange={vi.fn()}
-          onSynced={onSynced}
         />
       </QueryClientProvider>,
     );
 
-    expect(
-      screen.getByText(/실제 값이 변경된 법인만 일괄 갱신/),
-    ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "동기화" }));
-
-    await waitFor(() => expect(onSynced).toHaveBeenCalledWith(result));
-    expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: corporationKeys.all,
+    fireEvent.change(screen.getByLabelText("사업연도"), {
+      target: { value: "2025" },
     });
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations/sync");
-    expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/42");
+    fireEvent.click(screen.getByRole("button", { name: "전체 DRAFT 생성" }));
+
+    await waitFor(() => expect(onCreated).toHaveBeenCalledWith(result));
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: equityInvestmentKeys.all,
+    });
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/equity_investments/all");
+    expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/43");
   });
 });

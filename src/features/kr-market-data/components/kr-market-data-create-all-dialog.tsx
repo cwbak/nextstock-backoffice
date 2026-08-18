@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { krMarketDataKeys } from "@/data-access/queries/kr-market-data/keys";
-import { createAllKrMarketData } from "@/data-access/queries/kr-market-data/mutations";
+import { createKrxDailyMarketData } from "@/data-access/queries/kr-market-data/mutations";
 import {
   krMarketDataCreateAllPayloadSchema,
   type KrMarketDataCreateAllPayload,
@@ -64,7 +64,7 @@ export function KrMarketDataCreateAllDialog({
     defaultValues: { from: "", to: "" },
   });
   const mutation = useMutation({
-    mutationFn: createAllKrMarketData,
+    mutationFn: createKrxDailyMarketData,
     onSuccess: async (result, payload) => {
       await queryClient.invalidateQueries({
         queryKey: krMarketDataKeys.lists(),
@@ -112,18 +112,19 @@ export function KrMarketDataCreateAllDialog({
         showCloseButton={!mutation.isPending}
       >
         <DialogHeader>
-          <DialogTitle>KR 전체 종목 일봉 저장</DialogTitle>
+          <DialogTitle>KRX 일자별 전 종목 일봉 저장</DialogTitle>
           <DialogDescription>
-            날짜 구간의 전체 KR 종목 일봉을 ClickHouse에 저장합니다.
+            날짜 구간을 하루씩 순회해 각 거래일의 KRX 전 종목 일봉을
+            ClickHouse에 저장합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
           <Clock3Icon aria-hidden="true" />
-          <AlertTitle>KRX 정보데이터시스템을 날짜별로 조회합니다</AlertTitle>
+          <AlertTitle>각 날짜마다 KRX 전 종목 시세를 조회합니다</AlertTitle>
           <AlertDescription>
-            기간이 길면 오래 걸릴 수 있습니다. 휴장일은 건너뛰고, 이미 저장된
-            종목과 날짜는 다시 저장하지 않습니다. 처리 중에는 이 창을 닫을 수
-            없습니다.
+            기간이 길면 오래 걸릴 수 있으며 휴장일은 건너뜁니다. 같은
+            종목·날짜가 있어도 새 버전으로 저장하고, 조회에는 최신 버전을
+            사용합니다. 처리 중에는 이 창을 닫을 수 없습니다.
           </AlertDescription>
         </Alert>
         <form
@@ -169,7 +170,7 @@ export function KrMarketDataCreateAllDialog({
             </Button>
             <Button disabled={mutation.isPending} type="submit">
               {mutation.isPending ? <Spinner data-icon="inline-start" /> : null}
-              {mutation.isPending ? "전체 종목 저장 중" : "전체 종목 저장"}
+              {mutation.isPending ? "KRX 일봉 저장 중" : "KRX 일봉 저장"}
             </Button>
           </DialogFooter>
         </form>

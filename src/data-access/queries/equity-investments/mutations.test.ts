@@ -14,15 +14,13 @@ const createResult = {
   unmatchedCount: 2,
 } as const;
 
-const bulkCreateResult = {
-  bsnsYear: "2025",
-  reprtCode: 4,
-  corporationCount: 2_400,
-  processedCount: 2_200,
-  failedCount: 200,
-  fetchedCount: 15_000,
-  upsertedCount: 14_000,
-  unmatchedCount: 1_000,
+const bulkCreateRegistration = {
+  jobId: 43,
+  type: "equity_investments_all",
+  status: "QUEUED",
+  statusUrl: "/admin/jobs/43",
+  created: true,
+  createdAt: "2026-08-13T11:00:00+09:00",
 } as const;
 
 function parseRequestBody(body: BodyInit | null | undefined): unknown {
@@ -67,9 +65,9 @@ describe("equity investment mutations", () => {
 
   it("전체 법인 DRAFT 생성에는 사업연도와 보고서만 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify(bulkCreateResult), {
+      new Response(JSON.stringify(bulkCreateRegistration), {
         headers: { "Content-Type": "application/json" },
-        status: 200,
+        status: 202,
       }),
     );
 
@@ -78,7 +76,7 @@ describe("equity investment mutations", () => {
         bsnsYear: "2025",
         reprtCode: 4,
       }),
-    ).resolves.toEqual(bulkCreateResult);
+    ).resolves.toEqual(bulkCreateRegistration);
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/equity_investments/all");
 

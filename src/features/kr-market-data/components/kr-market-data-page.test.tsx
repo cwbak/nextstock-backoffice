@@ -137,13 +137,13 @@ describe("KrMarketDataPage", () => {
     expect(within(dialog).getByText(/보정주가 일봉/)).toBeInTheDocument();
   });
 
-  it("전체 KR 종목 일봉 저장 화면을 연다", () => {
+  it("KRX 일자별 전 종목 일봉 저장 화면을 연다", () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: "전체 종목 저장" }));
+    fireEvent.click(screen.getByRole("button", { name: "KRX 일자별 저장" }));
 
     const dialog = screen.getByRole("dialog", {
-      name: "KR 전체 종목 일봉 저장",
+      name: "KRX 일자별 전 종목 일봉 저장",
     });
 
     expect(dialog).toBeInTheDocument();
@@ -151,7 +151,7 @@ describe("KrMarketDataPage", () => {
     expect(within(dialog).getByLabelText("시작일")).toBeInTheDocument();
     expect(within(dialog).getByLabelText("종료일")).toBeInTheDocument();
     expect(
-      within(dialog).getByText(/KRX 정보데이터시스템/),
+      within(dialog).getByText(/같은 종목·날짜가 있어도 새 버전/),
     ).toBeInTheDocument();
   });
 });

@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CloudDownloadIcon } from "lucide-react";
 
+import { BackgroundJobStatusAlert } from "@/components/common/background-job-status-alert";
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
+import { useBackgroundJob } from "@/components/common/use-background-job";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +18,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { krStockKeys } from "@/data-access/queries/kr-stocks/keys";
 import { syncKrStocks } from "@/data-access/queries/kr-stocks/mutations";
-import type { KrStockSyncResult } from "@/data-access/schemas/kr-stock";
+import {
+  krStockSyncResultSchema,
+  type KrStockSyncResult,
+} from "@/data-access/schemas/kr-stock";
 
 interface KrStockSyncDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -30,28 +35,31 @@ export function KrStockSyncDialog({
   open,
 }: KrStockSyncDialogProps) {
   const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: syncKrStocks,
-    onSuccess: async (result) => {
+  const jobTracker = useBackgroundJob({
+    expectedType: "kr_stocks_sync",
+    resultSchema: krStockSyncResultSchema,
+    onCompleted: async (result) => {
       await queryClient.invalidateQueries({ queryKey: krStockKeys.all });
       onSynced(result);
     },
   });
+  const mutation = useMutation({
+    mutationFn: syncKrStocks,
+    onSuccess: jobTracker.track,
+  });
+  const isBusy = mutation.isPending || jobTracker.isTracking;
 
   const changeOpen = (nextOpen: boolean) => {
-    if (mutation.isPending) {
-      return;
-    }
-
-    if (!nextOpen) {
+    if (!nextOpen && !isBusy) {
       mutation.reset();
+      jobTracker.reset();
     }
     onOpenChange(nextOpen);
   };
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
-      <DialogContent showCloseButton={!mutation.isPending}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>KR 종목 KRX 동기화</DialogTitle>
           <DialogDescription>
@@ -67,25 +75,36 @@ export function KrStockSyncDialog({
             반영합니다.
           </AlertDescription>
         </Alert>
-        {mutation.isError ? (
-          <MutationErrorAlert message={getErrorMessage(mutation.error)} />
+        {jobTracker.jobId !== null && jobTracker.isTracking ? (
+          <BackgroundJobStatusAlert
+            job={jobTracker.job}
+            jobId={jobTracker.jobId}
+          />
+        ) : null}
+        {jobTracker.errorMessage || mutation.isError ? (
+          <MutationErrorAlert
+            message={jobTracker.errorMessage ?? getErrorMessage(mutation.error)}
+          />
         ) : null}
         <DialogFooter>
           <Button
-            disabled={mutation.isPending}
             type="button"
             variant="outline"
             onClick={() => changeOpen(false)}
           >
-            취소
+            {isBusy ? "닫기" : "취소"}
           </Button>
           <Button
-            disabled={mutation.isPending}
+            disabled={isBusy}
             type="button"
-            onClick={() => mutation.mutate()}
+            onClick={() => {
+              jobTracker.reset();
+              mutation.reset();
+              mutation.mutate();
+            }}
           >
-            {mutation.isPending ? <Spinner data-icon="inline-start" /> : null}
-            {mutation.isPending ? "동기화 중" : "동기화"}
+            {isBusy ? <Spinner data-icon="inline-start" /> : null}
+            {isBusy ? "작업 처리 중" : "동기화"}
           </Button>
         </DialogFooter>
       </DialogContent>

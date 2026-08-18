@@ -48,17 +48,19 @@ describe("KR stock mutations", () => {
   });
 
   it("요청 본문 없이 KRX 전체 종목 동기화를 요청한다", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      jsonResponse({
-        fetchedCount: 2_785,
-        updatedCount: 12,
-      }),
-    );
+    const registration = {
+      jobId: 44,
+      type: "kr_stocks_sync",
+      status: "QUEUED",
+      statusUrl: "/admin/jobs/44",
+      created: true,
+      createdAt: "2026-08-13T11:00:00+09:00",
+    } as const;
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(registration));
 
-    await expect(syncKrStocks()).resolves.toEqual({
-      fetchedCount: 2_785,
-      updatedCount: 12,
-    });
+    await expect(syncKrStocks()).resolves.toEqual(registration);
 
     const request = fetchMock.mock.calls[0]?.[1];
 

@@ -1,19 +1,23 @@
 import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
 import {
+  krStocksSyncJobRegistrationSchema,
+  type BackgroundJobRegistration,
+} from "@/data-access/schemas/background-job";
+import {
   krStockSchema,
-  krStockSyncResultSchema,
   krStockUpsertPayloadSchema,
   krStockUpdatePayloadSchema,
   type KrStock,
   type KrStockFormValues,
-  type KrStockSyncResult,
   type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
 
-export function syncKrStocks(): Promise<KrStockSyncResult> {
-  return apiRequest("/admin/kr-stocks/sync", krStockSyncResultSchema, {
-    method: "POST",
-  });
+export function syncKrStocks(): Promise<BackgroundJobRegistration> {
+  return apiRequest(
+    "/admin/kr-stocks/sync",
+    krStocksSyncJobRegistrationSchema,
+    { method: "POST" },
+  );
 }
 
 export async function upsertKrStock(

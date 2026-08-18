@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  createAllKrMarketData,
+  createKrxDailyMarketData,
   createKrMarketData,
 } from "@/data-access/queries/kr-market-data/mutations";
 
@@ -25,7 +25,7 @@ describe("KR market data mutations", () => {
     vi.restoreAllMocks();
   });
 
-  it("KRX 전체 종목 일봉을 날짜 구간으로 조회해 저장한다", async () => {
+  it("KRX 일자별 전 종목 일봉을 날짜 구간으로 조회해 저장한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({
         fetchedCount: 10_850,
@@ -34,7 +34,7 @@ describe("KR market data mutations", () => {
     );
 
     await expect(
-      createAllKrMarketData({
+      createKrxDailyMarketData({
         from: "2026-08-01",
         to: "2026-08-10",
       }),
@@ -45,7 +45,9 @@ describe("KR market data mutations", () => {
 
     const request = fetchMock.mock.calls[0]?.[1];
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/market-data");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/kr-stocks/market-data/krx-daily",
+    );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
       from: "2026-08-01",
