@@ -157,7 +157,7 @@ export function CorporationsPage() {
                   aria-hidden="true"
                   data-icon="inline-start"
                 />
-                법인·법인명 동기화
+                법인 전체 동기화
               </Button>
               <Button type="button" onClick={() => setUpsertOpen(true)}>
                 <PlusIcon aria-hidden="true" data-icon="inline-start" />

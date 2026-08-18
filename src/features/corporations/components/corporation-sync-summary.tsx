@@ -21,15 +21,8 @@ export function CorporationSyncSummary({
   return (
     <Alert>
       <CircleCheckIcon aria-hidden="true" />
-      <AlertTitle>DART 법인과 법인명을 동기화했습니다</AlertTitle>
+      <AlertTitle>DART 법인 전체 동기화를 완료했습니다</AlertTitle>
       <AlertDescription>
-        <p>
-          DART 법인명{" "}
-          {result.corporationNameFetchedCount.toLocaleString("ko-KR")}건을
-          확인해 새 이름{" "}
-          {result.corporationNameInsertedCount.toLocaleString("ko-KR")}건을
-          추가했습니다.
-        </p>
         <p>
           등록된 법인 {result.corporationFetchedCount.toLocaleString("ko-KR")}
           개의 기업개황을 확인해 변경된{" "}
@@ -39,7 +32,7 @@ export function CorporationSyncSummary({
       </AlertDescription>
       <AlertAction>
         <Button
-          aria-label="DART 법인·법인명 동기화 결과 닫기"
+          aria-label="DART 법인 전체 동기화 결과 닫기"
           size="icon-sm"
           type="button"
           variant="ghost"

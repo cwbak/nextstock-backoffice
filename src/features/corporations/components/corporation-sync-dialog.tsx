@@ -61,16 +61,15 @@ export function CorporationSyncDialog({
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>DART 법인·법인명 동기화</DialogTitle>
+          <DialogTitle>DART 법인 전체 동기화</DialogTitle>
           <DialogDescription>
-            법인명 원장을 갱신한 뒤 등록된 모든 법인의 기업개황을 동기화합니다.
+            등록된 모든 법인의 DART 기업개황을 조회해 기본정보를 동기화합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
           <CloudDownloadIcon aria-hidden="true" />
-          <AlertTitle>법인명과 등록된 법인 기본정보를 동기화합니다</AlertTitle>
+          <AlertTitle>등록된 법인의 기본정보를 동기화합니다</AlertTitle>
           <AlertDescription>
-            법인 코드와 정규화된 이름 조합이 없으면 법인명 원장에 추가합니다.
             모든 기업개황 조회가 성공하면 실제 값이 변경된 법인만 일괄 갱신하며,
             기존 부가 정보는 유지합니다.
           </AlertDescription>

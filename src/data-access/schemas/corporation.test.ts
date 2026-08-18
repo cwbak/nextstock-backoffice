@@ -6,11 +6,9 @@ import {
 } from "@/data-access/schemas/corporation";
 
 describe("corporation schemas", () => {
-  it("법인·법인명 동기화 결과를 검증한다", () => {
+  it("법인 전체 동기화 결과를 검증한다", () => {
     const result = {
       corporationFetchedCount: 2_850,
-      corporationNameFetchedCount: 108_251,
-      corporationNameInsertedCount: 37,
       corporationUpdatedCount: 12,
     };
 

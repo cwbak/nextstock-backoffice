@@ -59,7 +59,7 @@ describe("corporation mutations", () => {
     vi.restoreAllMocks();
   });
 
-  it("요청 본문 없이 DART 법인명 동기화를 요청한다", async () => {
+  it("요청 본문 없이 DART 법인 전체 동기화를 요청한다", async () => {
     const result = {
       jobId: 42,
       type: "corporations_sync",

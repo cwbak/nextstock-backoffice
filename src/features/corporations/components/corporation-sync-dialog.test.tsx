@@ -17,11 +17,9 @@ describe("CorporationSyncDialog", () => {
     vi.restoreAllMocks();
   });
 
-  it("DART 법인·법인명 동기화를 실행하고 법인 캐시를 갱신한다", async () => {
+  it("DART 법인 전체 동기화를 실행하고 법인 캐시를 갱신한다", async () => {
     const result = {
       corporationFetchedCount: 2_850,
-      corporationNameFetchedCount: 108_251,
-      corporationNameInsertedCount: 37,
       corporationUpdatedCount: 12,
     };
     const registration = {
