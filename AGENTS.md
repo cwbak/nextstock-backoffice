@@ -39,6 +39,7 @@ When a task matches one of the rows below, use the listed skill before implement
 | Task / Area | Use Tech Stack | Refer to Skill |
 | --- | --- | --- |
 | Finding relevant skills or deciding which installed skill applies | Agent Skills | `find-skills` |
+| Building new UI or substantially reshaping visual design, including aesthetic direction, typography, visual identity, and interface copy | Frontend Design | `frontend-design` |
 | React component design, hooks, rendering, memoization, performance, maintainability | React + TypeScript | `vercel-react-best-practices` |
 | Component composition, container/presentational split, compound components, reusable UI structure | React | `vercel-composition-patterns` |
 | Page/route transitions, shared element transitions, enter/exit/list animations | React View Transitions | `vercel-react-view-transitions` |

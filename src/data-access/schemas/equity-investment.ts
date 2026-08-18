@@ -6,7 +6,6 @@ export const equityInvestmentSchema = z
   .object({
     corpCode: corporationCodeSchema,
     invName: z.string().min(1),
-    invListed: z.boolean(),
     bsnsYear: z.number().int(),
     status: z.literal("OK"),
     invstmntPurps: z.string().nullable(),

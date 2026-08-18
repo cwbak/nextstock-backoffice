@@ -7,7 +7,6 @@ const listResult = [
   {
     corpCode: "00126380",
     invName: "삼성디스플레이",
-    invListed: true,
     bsnsYear: 2026,
     status: "OK",
     invstmntPurps: "경영참여",

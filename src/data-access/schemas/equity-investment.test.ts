@@ -7,12 +7,11 @@ import {
 } from "@/data-access/schemas/equity-investment";
 
 describe("equity investment schemas", () => {
-  it("지분투자 응답의 투자 대상 이름과 상장 여부를 검증한다", () => {
+  it("지분투자 응답의 투자 대상 정보를 검증한다", () => {
     expect(
       equityInvestmentSchema.parse({
         corpCode: "00126380",
         invName: "삼성디스플레이",
-        invListed: true,
         bsnsYear: 2026,
         status: "OK",
         invstmntPurps: "경영참여",
@@ -21,7 +20,6 @@ describe("equity investment schemas", () => {
     ).toMatchObject({
       corpCode: "00126380",
       invName: "삼성디스플레이",
-      invListed: true,
       bsnsYear: 2026,
       status: "OK",
       invstmntPurps: "경영참여",
@@ -34,7 +32,6 @@ describe("equity investment schemas", () => {
       equityInvestmentSchema.parse({
         corpCode: "00126380",
         invName: "비상장기업",
-        invListed: false,
         bsnsYear: 2026,
         status: "OK",
         invstmntPurps: null,
@@ -79,7 +76,6 @@ describe("equity investment schemas", () => {
     const baseResponse = {
       corpCode: "00126380",
       invName: "삼성디스플레이",
-      invListed: true,
       bsnsYear: 2026,
       status: "OK",
       invstmntPurps: "경영참여",
@@ -98,11 +94,10 @@ describe("equity investment schemas", () => {
     ).toBe(false);
   });
 
-  it("삭제된 필드를 포함한 이전 응답 형식을 거부한다", () => {
+  it("삭제된 상장 여부 필드를 포함한 이전 응답 형식을 거부한다", () => {
     expect(
       equityInvestmentSchema.safeParse({
         corpCode: "00126380",
-        invCorpCode: "00164779",
         invName: "삼성디스플레이",
         invListed: true,
         bsnsYear: 2026,
