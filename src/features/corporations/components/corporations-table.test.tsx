@@ -40,6 +40,7 @@ describe("CorporationsTable", () => {
         onEdit={onEdit}
         onSort={onSort}
         onView={onView}
+        resetKey=""
         sortBy="estDt"
         sortDirection="desc"
       />,
@@ -73,5 +74,62 @@ describe("CorporationsTable", () => {
     fireEvent.click(screen.getByRole("button", { name: "삼성전자 삭제" }));
     expect(onDelete).toHaveBeenCalledWith(corporation);
     expect(onView).toHaveBeenCalledTimes(2);
+  });
+
+  it("전체 건수는 유지하면서 보이는 범위의 행만 렌더링한다", () => {
+    const corporations = Array.from({ length: 100 }, (_, index) => ({
+      ...corporation,
+      code: index.toString().padStart(8, "0"),
+      name: `법인 ${index}`,
+    }));
+
+    const { rerender } = render(
+      <CorporationsTable
+        corporations={corporations}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onSort={vi.fn()}
+        onView={vi.fn()}
+        resetKey=""
+        sortBy={null}
+        sortDirection="asc"
+      />,
+    );
+
+    const scrollRegion = screen.getByRole("region", {
+      name: "등록된 법인 목록",
+    });
+
+    expect(scrollRegion).toHaveAttribute("tabindex", "0");
+    expect(scrollRegion.parentElement).toHaveClass("h-full", "min-h-0");
+    expect(screen.getByRole("table")).toHaveAttribute("aria-rowcount", "101");
+
+    const renderedRows = screen.getAllByRole("row").slice(1);
+
+    expect(renderedRows.length).toBeGreaterThan(0);
+    expect(renderedRows.length).toBeLessThan(corporations.length);
+    expect(screen.getByText("00000000")).toBeInTheDocument();
+    expect(screen.queryByText("00000099")).not.toBeInTheDocument();
+
+    scrollRegion.scrollTop = 56 * 80;
+    fireEvent.scroll(scrollRegion);
+
+    expect(screen.getByText("00000080")).toBeInTheDocument();
+    expect(screen.queryByText("00000000")).not.toBeInTheDocument();
+
+    rerender(
+      <CorporationsTable
+        corporations={corporations}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onSort={vi.fn()}
+        onView={vi.fn()}
+        resetKey="filtered"
+        sortBy={null}
+        sortDirection="asc"
+      />,
+    );
+
+    expect(scrollRegion.scrollTop).toBe(0);
   });
 });

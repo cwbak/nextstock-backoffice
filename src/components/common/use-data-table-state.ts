@@ -5,6 +5,10 @@ export interface DataTableState {
   q: string;
 }
 
+export interface UnpaginatedDataTableState {
+  q: string;
+}
+
 export type SortDirection = "asc" | "desc";
 
 export interface SortableDataTableState<
@@ -12,6 +16,32 @@ export interface SortableDataTableState<
 > extends DataTableState {
   sortBy: TSortField | null;
   sortDirection: SortDirection;
+}
+
+export interface SortableUnpaginatedDataTableState<
+  TSortField extends string,
+> extends UnpaginatedDataTableState {
+  sortBy: TSortField | null;
+  sortDirection: SortDirection;
+}
+
+export function useUnpaginatedDataTableState<
+  TState extends UnpaginatedDataTableState,
+>(initialState: TState) {
+  const [state, setState] = useState(initialState);
+
+  const updateQuery = useCallback((q: string) => {
+    setState((previous) => ({
+      ...previous,
+      q,
+    }));
+  }, []);
+
+  return {
+    setState,
+    state,
+    updateQuery,
+  };
 }
 
 export function useDataTableState<TState extends DataTableState>(

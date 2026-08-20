@@ -32,7 +32,7 @@ export function DataTableCard({
 }: DataTableCardProps) {
   return (
     <Card className={cn("min-w-0 gap-0 py-0", className)}>
-      <CardHeader className="border-b py-4">
+      <CardHeader className="shrink-0 border-b py-4">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
         <CardAction className="flex items-center gap-2">

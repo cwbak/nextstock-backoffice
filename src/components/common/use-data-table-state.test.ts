@@ -3,7 +3,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import {
   type SortableDataTableState,
+  type SortableUnpaginatedDataTableState,
   useDataTableState,
+  useUnpaginatedDataTableState,
 } from "@/components/common/use-data-table-state";
 
 type TestSortField = "name" | "date";
@@ -14,6 +16,13 @@ const initialState: SortableDataTableState<TestSortField> = {
   sortBy: "date",
   sortDirection: "desc",
 };
+
+const initialUnpaginatedState: SortableUnpaginatedDataTableState<TestSortField> =
+  {
+    q: "",
+    sortBy: "date",
+    sortDirection: "desc",
+  };
 
 describe("useDataTableState", () => {
   afterEach(() => {
@@ -39,5 +48,19 @@ describe("useDataTableState", () => {
     act(() => result.current.updatePage(5));
 
     expect(result.current.state.page).toBe(5);
+  });
+
+  it("페이지 없는 목록의 검색어와 나머지 화면 상태를 유지한다", () => {
+    const { result } = renderHook(() =>
+      useUnpaginatedDataTableState(initialUnpaginatedState),
+    );
+
+    act(() => result.current.updateQuery("삼성"));
+
+    expect(result.current.state).toEqual({
+      q: "삼성",
+      sortBy: "date",
+      sortDirection: "desc",
+    });
   });
 });

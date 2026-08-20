@@ -54,6 +54,7 @@ describe("KrStocksTable", () => {
         onEdit={onEdit}
         onSort={onSort}
         onView={onView}
+        resetKey=""
         sortBy="name"
         sortDirection="asc"
       />,
@@ -107,6 +108,7 @@ describe("KrStocksTable", () => {
         onEdit={vi.fn()}
         onSort={vi.fn()}
         onView={onView}
+        resetKey=""
         sortBy={null}
         sortDirection="asc"
       />,

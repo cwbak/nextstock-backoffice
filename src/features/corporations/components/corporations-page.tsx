@@ -1,20 +1,22 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CloudDownloadIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
-import {
-  DataPagination,
-  DataTableToolbar,
-} from "@/components/common/data-table-controls";
+import { DataTableToolbar } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
-  type SortableDataTableState,
-  useDataTableState,
+  type SortableUnpaginatedDataTableState,
+  useUnpaginatedDataTableState,
 } from "@/components/common/use-data-table-state";
 import { useDataTableFilterQuery } from "@/components/common/use-data-table-filter-query";
+import {
+  viewportDataTableCardClassName,
+  viewportDataTableCardContentClassName,
+  viewportDataTablePageClassName,
+} from "@/components/common/viewport-data-table-layout";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
@@ -34,17 +36,16 @@ import {
   CorporationsTable,
 } from "@/features/corporations/components/corporations-table";
 
-const pageSize = 50;
 const corporationNameCollator = new Intl.Collator(["ko-KR", "en"], {
   numeric: true,
   sensitivity: "base",
 });
-const initialTableState: SortableDataTableState<CorporationSortField> = {
-  page: 1,
-  q: "",
-  sortBy: null,
-  sortDirection: "asc",
-};
+const initialTableState: SortableUnpaginatedDataTableState<CorporationSortField> =
+  {
+    q: "",
+    sortBy: null,
+    sortDirection: "asc",
+  };
 
 export function CorporationsPage() {
   const { data, isFetching, refetch } = useSuspenseQuery(
@@ -53,12 +54,12 @@ export function CorporationsPage() {
   const {
     setState: setTableState,
     state: tableState,
-    updatePage,
     updateQuery,
-  } = useDataTableState(initialTableState);
+  } = useUnpaginatedDataTableState(initialTableState);
   const [filterQuery, updateFilterQuery] = useDataTableFilterQuery(
     tableState.q,
   );
+  const deferredFilterQuery = useDeferredValue(filterQuery);
   const { sortBy, sortDirection } = tableState;
   const [editingCorporation, setEditingCorporation] =
     useState<Corporation | null>(null);
@@ -72,7 +73,7 @@ export function CorporationsPage() {
   const [viewingCorporation, setViewingCorporation] =
     useState<Corporation | null>(null);
   const filteredCorporations = useMemo(() => {
-    const query = filterQuery.toLocaleLowerCase("ko-KR");
+    const query = deferredFilterQuery.toLocaleLowerCase("ko-KR");
 
     if (!query) {
       return data;
@@ -86,7 +87,7 @@ export function CorporationsPage() {
         corporation.indutyCode,
       ].some((value) => value.toLocaleLowerCase("ko-KR").includes(query)),
     );
-  }, [data, filterQuery]);
+  }, [data, deferredFilterQuery]);
   const sortedCorporations = useMemo(() => {
     if (sortBy === null) {
       return filteredCorporations;
@@ -108,16 +109,7 @@ export function CorporationsPage() {
       return sortDirection === "asc" ? comparison : -comparison;
     });
   }, [filteredCorporations, sortBy, sortDirection]);
-  const totalPages = Math.max(
-    1,
-    Math.ceil(sortedCorporations.length / pageSize),
-  );
-  const currentPage = Math.min(tableState.page, totalPages);
-  const startIndex = (currentPage - 1) * pageSize;
-  const visibleCorporations = sortedCorporations.slice(
-    startIndex,
-    startIndex + pageSize,
-  );
+  const tableResetKey = `${deferredFilterQuery}\u0000${sortBy ?? ""}\u0000${sortDirection}`;
 
   const updateSort = (sortBy: CorporationSortField) => {
     const sortDirection =
@@ -127,7 +119,6 @@ export function CorporationsPage() {
 
     setTableState((previous) => ({
       ...previous,
-      page: 1,
       sortBy,
       sortDirection,
     }));
@@ -135,7 +126,7 @@ export function CorporationsPage() {
 
   return (
     <>
-      <section className="flex flex-col gap-6">
+      <section className={viewportDataTablePageClassName}>
         <DataPageHeader
           actions={
             <>
@@ -184,6 +175,8 @@ export function CorporationsPage() {
           onQueryChange={updateQuery}
         />
         <DataTableCard
+          className={viewportDataTableCardClassName}
+          contentClassName={viewportDataTableCardContentClassName}
           description="헤더를 눌러 법인명과 설립일 기준으로 정렬할 수 있습니다."
           recordCount={filteredCorporations.length}
           title="법인 원장"
@@ -192,32 +185,20 @@ export function CorporationsPage() {
             <CorporationsEmptyState onUpsert={() => setUpsertOpen(true)} />
           ) : filteredCorporations.length === 0 ? (
             <NoSearchResults
-              query={filterQuery}
+              query={deferredFilterQuery}
               onClear={() => updateQuery("")}
             />
           ) : (
-            <>
-              <CorporationsTable
-                corporations={visibleCorporations}
-                onDelete={setDeletingCorporation}
-                onEdit={setEditingCorporation}
-                onSort={updateSort}
-                onView={setViewingCorporation}
-                sortBy={tableState.sortBy}
-                sortDirection={tableState.sortDirection}
-              />
-              <DataPagination
-                endRecord={Math.min(
-                  startIndex + pageSize,
-                  filteredCorporations.length,
-                )}
-                page={currentPage}
-                startRecord={startIndex + 1}
-                totalPages={totalPages}
-                totalRecords={filteredCorporations.length}
-                onPageChange={updatePage}
-              />
-            </>
+            <CorporationsTable
+              corporations={sortedCorporations}
+              resetKey={tableResetKey}
+              onDelete={setDeletingCorporation}
+              onEdit={setEditingCorporation}
+              onSort={updateSort}
+              onView={setViewingCorporation}
+              sortBy={tableState.sortBy}
+              sortDirection={tableState.sortDirection}
+            />
           )}
         </DataTableCard>
       </section>

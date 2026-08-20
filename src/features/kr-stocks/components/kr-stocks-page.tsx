@@ -1,20 +1,22 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
-import {
-  DataPagination,
-  DataTableToolbar,
-} from "@/components/common/data-table-controls";
+import { DataTableToolbar } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
 import { krStockStatusLabels } from "@/components/common/kr-stock-status";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
-  type SortableDataTableState,
-  useDataTableState,
+  type SortableUnpaginatedDataTableState,
+  useUnpaginatedDataTableState,
 } from "@/components/common/use-data-table-state";
 import { useDataTableFilterQuery } from "@/components/common/use-data-table-filter-query";
+import {
+  viewportDataTableCardClassName,
+  viewportDataTableCardContentClassName,
+  viewportDataTablePageClassName,
+} from "@/components/common/viewport-data-table-layout";
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type { Corporation } from "@/data-access/schemas/corporation";
@@ -34,13 +36,11 @@ import {
   KrStocksTable,
 } from "@/features/kr-stocks/components/kr-stocks-table";
 
-const pageSize = 50;
 const krStockNameCollator = new Intl.Collator(["ko-KR", "en"], {
   numeric: true,
   sensitivity: "base",
 });
-const initialTableState: SortableDataTableState<KrStockSortField> = {
-  page: 1,
+const initialTableState: SortableUnpaginatedDataTableState<KrStockSortField> = {
   q: "",
   sortBy: null,
   sortDirection: "asc",
@@ -52,12 +52,12 @@ export function KrStocksPage() {
   const {
     setState: setTableState,
     state: tableState,
-    updatePage,
     updateQuery,
-  } = useDataTableState(initialTableState);
+  } = useUnpaginatedDataTableState(initialTableState);
   const [filterQuery, updateFilterQuery] = useDataTableFilterQuery(
     tableState.q,
   );
+  const deferredFilterQuery = useDeferredValue(filterQuery);
   const { sortBy, sortDirection } = tableState;
   const [upsertOpen, setUpsertOpen] = useState(false);
   const [syncOpen, setSyncOpen] = useState(false);
@@ -77,7 +77,7 @@ export function KrStocksPage() {
   );
   const isFetching = krStocksQuery.isFetching || corporationsQuery.isFetching;
   const filteredKrStocks = useMemo(() => {
-    const query = filterQuery.toLocaleLowerCase("ko-KR");
+    const query = deferredFilterQuery.toLocaleLowerCase("ko-KR");
 
     if (!query) {
       return krStocksQuery.data;
@@ -100,7 +100,7 @@ export function KrStocksPage() {
         corporation?.name ?? "",
       ].some((value) => value.toLocaleLowerCase("ko-KR").includes(query));
     });
-  }, [corporationsByCode, filterQuery, krStocksQuery.data]);
+  }, [corporationsByCode, deferredFilterQuery, krStocksQuery.data]);
   const sortedKrStocks = useMemo(() => {
     if (sortBy === null) {
       return filteredKrStocks;
@@ -122,13 +122,7 @@ export function KrStocksPage() {
       return sortDirection === "asc" ? comparison : -comparison;
     });
   }, [filteredKrStocks, sortBy, sortDirection]);
-  const totalPages = Math.max(1, Math.ceil(sortedKrStocks.length / pageSize));
-  const currentPage = Math.min(tableState.page, totalPages);
-  const startIndex = (currentPage - 1) * pageSize;
-  const visibleKrStocks = sortedKrStocks.slice(
-    startIndex,
-    startIndex + pageSize,
-  );
+  const tableResetKey = `${deferredFilterQuery}\u0000${sortBy ?? ""}\u0000${sortDirection}`;
 
   const refresh = async () => {
     await Promise.all([krStocksQuery.refetch(), corporationsQuery.refetch()]);
@@ -142,7 +136,6 @@ export function KrStocksPage() {
 
     setTableState((previous) => ({
       ...previous,
-      page: 1,
       sortBy,
       sortDirection,
     }));
@@ -150,7 +143,7 @@ export function KrStocksPage() {
 
   return (
     <>
-      <section className="flex flex-col gap-6">
+      <section className={viewportDataTablePageClassName}>
         <DataPageHeader
           actions={
             <KrStocksPageActions
@@ -179,6 +172,8 @@ export function KrStocksPage() {
           onQueryChange={updateQuery}
         />
         <DataTableCard
+          className={viewportDataTableCardClassName}
+          contentClassName={viewportDataTableCardContentClassName}
           description="헤더를 눌러 종목명과 상장일 기준으로 정렬할 수 있습니다."
           recordCount={filteredKrStocks.length}
           title="KR 종목 원장"
@@ -187,32 +182,20 @@ export function KrStocksPage() {
             <KrStocksEmptyState onUpsert={() => setUpsertOpen(true)} />
           ) : filteredKrStocks.length === 0 ? (
             <NoSearchResults
-              query={filterQuery}
+              query={deferredFilterQuery}
               onClear={() => updateQuery("")}
             />
           ) : (
-            <>
-              <KrStocksTable
-                corporationsByCode={corporationsByCode}
-                krStocks={visibleKrStocks}
-                onEdit={setEditingKrStock}
-                onSort={updateSort}
-                onView={setViewingCorporation}
-                sortBy={tableState.sortBy}
-                sortDirection={tableState.sortDirection}
-              />
-              <DataPagination
-                endRecord={Math.min(
-                  startIndex + pageSize,
-                  filteredKrStocks.length,
-                )}
-                page={currentPage}
-                startRecord={startIndex + 1}
-                totalPages={totalPages}
-                totalRecords={filteredKrStocks.length}
-                onPageChange={updatePage}
-              />
-            </>
+            <KrStocksTable
+              corporationsByCode={corporationsByCode}
+              krStocks={sortedKrStocks}
+              resetKey={tableResetKey}
+              onEdit={setEditingKrStock}
+              onSort={updateSort}
+              onView={setViewingCorporation}
+              sortBy={tableState.sortBy}
+              sortDirection={tableState.sortDirection}
+            />
           )}
         </DataTableCard>
       </section>
