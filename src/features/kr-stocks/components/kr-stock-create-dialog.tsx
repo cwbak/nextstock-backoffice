@@ -28,6 +28,7 @@ import {
   krStockUpsertPayloadSchema,
   type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
+import { KrStockAliasesField } from "@/features/kr-stocks/components/kr-stock-aliases-field";
 import { KrStockCorporationClassSelect } from "@/features/kr-stocks/components/kr-stock-corporation-class-select";
 import { KrStockCorporationField } from "@/features/kr-stocks/components/kr-stock-corporation-field";
 import { KrStockFallbackListDateField } from "@/features/kr-stocks/components/kr-stock-fallback-list-date-field";
@@ -40,6 +41,7 @@ interface KrStockUpsertDialogProps {
 }
 
 const upsertFieldNames = new Set<keyof KrStockUpsertPayload>([
+  "aliases",
   "corporationClass",
   "corporationCode",
   "listDd",
@@ -74,6 +76,7 @@ function KrStockUpsertForm({
     setError,
   } = useForm<KrStockUpsertPayload>({
     defaultValues: {
+      aliases: undefined,
       corporationCode: "",
       status: "ACTIVE",
       stockCode: "",
@@ -180,6 +183,22 @@ function KrStockUpsertForm({
           registration={register("listDd", {
             setValueAs: (value: unknown) => (value === "" ? undefined : value),
           })}
+        />
+        <Controller
+          control={control}
+          name="aliases"
+          render={({ field }) => (
+            <KrStockAliasesField
+              errorMessage={errors.aliases?.message}
+              id="create-kr-stock-aliases"
+              inputRef={field.ref}
+              mode="append"
+              name={field.name}
+              value={field.value}
+              onBlur={field.onBlur}
+              onValueChange={field.onChange}
+            />
+          )}
         />
       </FieldGroup>
       {mutation.isError ? (

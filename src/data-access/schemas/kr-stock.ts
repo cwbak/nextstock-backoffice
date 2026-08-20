@@ -22,6 +22,14 @@ export const krStockStatusSchema = z.enum(
   { error: "종목 상태를 선택해 주세요." },
 );
 
+const krStockAliasListSchema = z.array(
+  z.string().trim().min(1, "종목명 별칭은 빈 문자열일 수 없습니다."),
+);
+
+export const krStockAliasesSchema = krStockAliasListSchema.optional();
+
+export const krStockNameAliasesSchema = krStockAliasListSchema;
+
 const listDateSchema = z
   .string()
   .regex(datePattern, "상장일은 YYYY-MM-DD 형식이어야 합니다.");
@@ -66,6 +74,7 @@ export const krStockListSchema = z.array(krStockSchema);
 
 export const krStockFormSchema = z
   .object({
+    aliases: krStockAliasesSchema,
     code: krStockCodeSchema,
     corporationCode: corporationCodeSchema,
     name: z.string().trim().min(1, "종목명을 입력해 주세요."),
@@ -80,6 +89,7 @@ export const krStockFormSchema = z
 
 export const krStockUpsertPayloadSchema = z
   .object({
+    aliases: krStockAliasesSchema,
     corporationClass: krStockCorporationClassSchema.optional(),
     corporationCode: corporationCodeSchema,
     listDd: listDateSchema.optional(),
@@ -88,9 +98,13 @@ export const krStockUpsertPayloadSchema = z
   })
   .strict();
 
-export const krStockUpdatePayloadSchema = krStockFormSchema.omit({
-  code: true,
-});
+export const krStockUpdatePayloadSchema = krStockFormSchema
+  .omit({
+    code: true,
+  })
+  .extend({
+    aliases: krStockAliasListSchema.nullish(),
+  });
 
 export const krStockSyncResultSchema = z
   .object({
@@ -100,6 +114,7 @@ export const krStockSyncResultSchema = z
   .strict();
 
 export type KrStock = z.infer<typeof krStockSchema>;
+export type KrStockNameAliases = z.infer<typeof krStockNameAliasesSchema>;
 export type KrStockCorporationClass = z.infer<
   typeof krStockCorporationClassSchema
 >;

@@ -57,7 +57,7 @@ describe("KrStockUpsertDialog", () => {
     vi.restoreAllMocks();
   });
 
-  it("이름으로 선택한 법인 코드, 상태와 대체 시장을 KR 종목 생성·갱신 API로 전송한다", async () => {
+  it("법인 코드, 상태, 대체 시장과 정리한 별칭을 KR 종목 생성·갱신 API로 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(krStock), {
         headers: { "Content-Type": "application/json" },
@@ -99,6 +99,12 @@ describe("KrStockUpsertDialog", () => {
       screen.getByRole("combobox", { name: "대체 상장 시장 (선택)" }),
     );
     fireEvent.click(screen.getByRole("option", { name: "KOSDAQ (K)" }));
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "종목명 별칭 (선택)" }),
+      {
+        target: { value: " 삼전 \n삼성전자 보통주\n삼전" },
+      },
+    );
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
@@ -106,6 +112,7 @@ describe("KrStockUpsertDialog", () => {
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
     expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
       JSON.stringify({
+        aliases: ["삼전", "삼성전자 보통주"],
         corporationClass: "K",
         corporationCode: "00126380",
         status: "LISTING_SCHEDULED",

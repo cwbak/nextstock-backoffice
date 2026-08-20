@@ -55,13 +55,28 @@ describe("KrStockEditDialog", () => {
     vi.restoreAllMocks();
   });
 
-  it("변경한 종목 상태를 KR 종목 수정 API로 전송한다", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify({ ...krStock, status: "SUSPENDED" }), {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      }),
-    );
+  it("기존 종목명 별칭을 불러와 수정 API로 전송한다", async () => {
+    const aliases = ["삼성전자 보통주", "삼전"];
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(aliases), {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ ...krStock, status: "SUSPENDED" }), {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(aliases), {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }),
+      );
     const onOpenChange = vi.fn();
     const queryClient = new QueryClient({
       defaultOptions: {
@@ -81,6 +96,18 @@ describe("KrStockEditDialog", () => {
       </QueryClientProvider>,
     );
 
+    expect(
+      screen.getByRole("status", { name: "기존 종목명 별칭 불러오는 중" }),
+    ).toBeInTheDocument();
+    const aliasesInput = await screen.findByRole("textbox", {
+      name: "종목명 별칭 (선택)",
+    });
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/kr-stocks/005930/name-aliases",
+    );
+    expect(aliasesInput).toHaveValue("삼성전자 보통주\n삼전");
+
     fireEvent.click(screen.getByRole("combobox", { name: "종목 상태" }));
     fireEvent.click(
       screen.getByRole("option", { name: "거래 정지 (SUSPENDED)" }),
@@ -88,9 +115,10 @@ describe("KrStockEditDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/005930");
-    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("PUT");
-    expect(parseRequestBody(fetchMock.mock.calls[0]?.[1]?.body)).toEqual({
+    expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/kr-stocks/005930");
+    expect(fetchMock.mock.calls[1]?.[1]?.method).toBe("PUT");
+    expect(parseRequestBody(fetchMock.mock.calls[1]?.[1]?.body)).toEqual({
+      aliases,
       corporationCode: "00126380",
       listDd: "1975-06-11",
       listShrs: 5_969_782_550,
@@ -100,5 +128,40 @@ describe("KrStockEditDialog", () => {
       status: "SUSPENDED",
       stockType: "보통주",
     });
+  });
+
+  it("종목명 별칭 조회 실패 시 수정 폼 대신 오류 상태를 표시한다", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ error: "internal server error" }), {
+        headers: { "Content-Type": "application/json" },
+        status: 500,
+      }),
+    );
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        mutations: { retry: false },
+        queries: { retry: false },
+      },
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <KrStockEditDialog
+          corporations={[corporation]}
+          krStock={krStock}
+          open
+          onOpenChange={vi.fn()}
+        />
+      </QueryClientProvider>,
+    );
+
+    expect(
+      await screen.findByText("종목명 별칭을 불러오지 못했습니다"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("서버 내부 오류가 발생했습니다.")).toBeVisible();
+    expect(
+      screen.queryByRole("textbox", { name: "종목 코드" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "다시 시도" })).toBeEnabled();
   });
 });

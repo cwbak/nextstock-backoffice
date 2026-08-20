@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 
 import { CorporationCombobox } from "@/components/common/corporation-combobox";
@@ -32,12 +32,19 @@ import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { krStockKeys } from "@/data-access/queries/kr-stocks/keys";
 import { updateKrStock } from "@/data-access/queries/kr-stocks/mutations";
+import { krStockNameAliasesQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type { Corporation } from "@/data-access/schemas/corporation";
 import {
   krStockFormSchema,
   type KrStock,
   type KrStockFormValues,
+  type KrStockNameAliases,
 } from "@/data-access/schemas/kr-stock";
+import { KrStockAliasesField } from "@/features/kr-stocks/components/kr-stock-aliases-field";
+import {
+  KrStockEditFormLoadError,
+  KrStockEditFormLoading,
+} from "@/features/kr-stocks/components/kr-stock-edit-dialog-state";
 import { KrStockStatusField } from "@/features/kr-stocks/components/kr-stock-status-field";
 
 interface KrStockEditDialogProps {
@@ -48,6 +55,7 @@ interface KrStockEditDialogProps {
 }
 
 const krStockFieldNames = new Set<keyof KrStockFormValues>([
+  "aliases",
   "code",
   "corporationCode",
   "name",
@@ -66,19 +74,20 @@ function isKrStockFieldName(
 }
 
 function getDefaultValues(
-  krStock: KrStock | undefined,
-  corporations: ReadonlyArray<Corporation>,
+  krStock: KrStock,
+  aliases: KrStockNameAliases,
 ): KrStockFormValues {
   return {
-    code: krStock?.code ?? "",
-    corporationCode: krStock?.corporationCode ?? corporations[0]?.code ?? "",
-    name: krStock?.name ?? "",
-    marketType: krStock?.marketType ?? "KOSPI",
-    stockType: krStock?.stockType ?? "",
-    status: krStock?.status ?? "ACTIVE",
-    listDd: krStock?.listDd ?? "",
-    parval: krStock?.parval ?? null,
-    listShrs: krStock?.listShrs ?? null,
+    aliases: [...aliases],
+    code: krStock.code,
+    corporationCode: krStock.corporationCode,
+    name: krStock.name,
+    marketType: krStock.marketType,
+    stockType: krStock.stockType,
+    status: krStock.status,
+    listDd: krStock.listDd,
+    parval: krStock.parval,
+    listShrs: krStock.listShrs,
   };
 }
 
@@ -89,13 +98,15 @@ function parseNullableNumber(value: unknown) {
 }
 
 interface KrStockEditFormProps {
+  aliases: KrStockNameAliases;
   corporations: ReadonlyArray<Corporation>;
-  krStock: KrStock | undefined;
+  krStock: KrStock;
   onCancel: () => void;
   onSaved: () => void;
 }
 
 function KrStockEditForm({
+  aliases,
   corporations,
   krStock,
   onCancel,
@@ -110,7 +121,7 @@ function KrStockEditForm({
     register,
     setError,
   } = useForm<KrStockFormValues>({
-    defaultValues: getDefaultValues(krStock, corporations),
+    defaultValues: getDefaultValues(krStock, aliases),
   });
   const mutation = useMutation({
     mutationFn: updateKrStock,
@@ -287,6 +298,22 @@ function KrStockEditForm({
           </FieldDescription>
           <FieldError errors={[errors.corporationCode]} />
         </Field>
+        <Controller
+          control={control}
+          name="aliases"
+          render={({ field }) => (
+            <KrStockAliasesField
+              errorMessage={errors.aliases?.message}
+              id="edit-kr-stock-aliases"
+              inputRef={field.ref}
+              mode="replace"
+              name={field.name}
+              value={field.value}
+              onBlur={field.onBlur}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
       </FieldGroup>
       {mutation.isError ? (
         <MutationErrorAlert message={getErrorMessage(mutation.error)} />
@@ -309,6 +336,50 @@ function KrStockEditForm({
   );
 }
 
+interface KrStockEditDialogBodyProps {
+  corporations: ReadonlyArray<Corporation>;
+  krStock: KrStock;
+  onCancel: () => void;
+  onSaved: () => void;
+}
+
+function KrStockEditDialogBody({
+  corporations,
+  krStock,
+  onCancel,
+  onSaved,
+}: KrStockEditDialogBodyProps) {
+  const aliasesQuery = useQuery(krStockNameAliasesQueryOptions(krStock.code));
+  const isInitialAliasesFetch =
+    aliasesQuery.isPending ||
+    (aliasesQuery.isFetching && !aliasesQuery.isFetchedAfterMount);
+
+  if (isInitialAliasesFetch) {
+    return <KrStockEditFormLoading />;
+  }
+
+  if (aliasesQuery.isError) {
+    return (
+      <KrStockEditFormLoadError
+        isRetrying={aliasesQuery.isFetching}
+        message={getErrorMessage(aliasesQuery.error)}
+        onCancel={onCancel}
+        onRetry={() => void aliasesQuery.refetch()}
+      />
+    );
+  }
+
+  return (
+    <KrStockEditForm
+      aliases={aliasesQuery.data}
+      corporations={corporations}
+      krStock={krStock}
+      onCancel={onCancel}
+      onSaved={onSaved}
+    />
+  );
+}
+
 export function KrStockEditDialog({
   corporations,
   krStock,
@@ -324,8 +395,8 @@ export function KrStockEditDialog({
             {krStock?.code ?? ""} 종목 정보와 연결 법인을 수정합니다.
           </DialogDescription>
         </DialogHeader>
-        {open ? (
-          <KrStockEditForm
+        {open && krStock ? (
+          <KrStockEditDialogBody
             corporations={corporations}
             krStock={krStock}
             onCancel={() => onOpenChange(false)}

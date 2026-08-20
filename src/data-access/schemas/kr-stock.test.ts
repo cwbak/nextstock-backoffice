@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   krStockSchema,
+  krStockNameAliasesSchema,
   krStockSyncResultSchema,
   krStockUpsertPayloadSchema,
+  krStockUpdatePayloadSchema,
 } from "@/data-access/schemas/kr-stock";
 
 const krStockResponse = {
@@ -136,5 +138,61 @@ describe("krStockSchema", () => {
         stockCode: "005930",
       }),
     ).toThrow();
+  });
+
+  it("생성·갱신과 수정 요청의 종목명 별칭을 검증한다", () => {
+    const aliases = ["삼전", "삼성전자 보통주"];
+    const updatePayload = {
+      corporationCode: "00126380",
+      listDd: "1975-06-11",
+      listShrs: null,
+      marketType: "KOSPI" as const,
+      name: "삼성전자",
+      parval: null,
+      status: "ACTIVE" as const,
+      stockType: "보통주",
+    };
+
+    expect(
+      krStockUpsertPayloadSchema.parse({
+        aliases,
+        corporationCode: "00126380",
+        status: "ACTIVE",
+        stockCode: "005930",
+      }).aliases,
+    ).toEqual(aliases);
+    expect(
+      krStockUpdatePayloadSchema.parse({
+        aliases,
+        ...updatePayload,
+      }).aliases,
+    ).toEqual(aliases);
+    expect(
+      krStockUpdatePayloadSchema.parse({
+        aliases: null,
+        ...updatePayload,
+      }).aliases,
+    ).toBeNull();
+    expect(
+      krStockUpdatePayloadSchema.parse({
+        aliases: [],
+        ...updatePayload,
+      }).aliases,
+    ).toEqual([]);
+    expect(() =>
+      krStockUpsertPayloadSchema.parse({
+        aliases: [""],
+        corporationCode: "00126380",
+        status: "ACTIVE",
+        stockCode: "005930",
+      }),
+    ).toThrow();
+  });
+
+  it("종목명 별칭 목록 조회 응답을 검증한다", () => {
+    expect(krStockNameAliasesSchema.parse(["삼성전자 보통주", "삼전"])).toEqual(
+      ["삼성전자 보통주", "삼전"],
+    );
+    expect(() => krStockNameAliasesSchema.parse([""])).toThrow();
   });
 });

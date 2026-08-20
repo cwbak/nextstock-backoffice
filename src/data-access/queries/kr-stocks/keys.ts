@@ -4,4 +4,6 @@ export const krStockKeys = {
   list: () => [...krStockKeys.lists(), "all"] as const,
   details: () => [...krStockKeys.all, "detail"] as const,
   detail: (code: string) => [...krStockKeys.details(), code] as const,
+  nameAliases: (code: string) =>
+    [...krStockKeys.detail(code), "name-aliases"] as const,
 };

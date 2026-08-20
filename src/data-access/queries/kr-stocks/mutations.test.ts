@@ -97,6 +97,25 @@ describe("KR stock mutations", () => {
     });
   });
 
+  it("생성·갱신할 종목명 별칭을 전송한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(krStock));
+
+    await expect(
+      upsertKrStock({
+        aliases: ["삼전", "삼성전자 보통주"],
+        corporationCode: "00126380",
+        status: "ACTIVE",
+        stockCode: "005930",
+      }),
+    ).resolves.toEqual(krStock);
+
+    expect(parseRequestBody(fetchMock.mock.calls[0]?.[1]?.body)).toMatchObject({
+      aliases: ["삼전", "삼성전자 보통주"],
+    });
+  });
+
   it("DART 시장 구분이 유효하지 않을 때 사용할 대체 시장을 전송한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
@@ -145,12 +164,17 @@ describe("KR stock mutations", () => {
     });
   });
 
-  it("nullable 상장 정보를 포함한 수정 payload를 전송한다", async () => {
+  it("별칭과 nullable 상장 정보를 포함한 수정 payload를 전송한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(krStock));
 
-    await expect(updateKrStock(formValues)).resolves.toEqual(krStock);
+    await expect(
+      updateKrStock({
+        ...formValues,
+        aliases: ["삼전", "삼성전자 보통주"],
+      }),
+    ).resolves.toEqual(krStock);
 
     expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/005930");
@@ -159,6 +183,7 @@ describe("KR stock mutations", () => {
 
     expect(request?.method).toBe("PUT");
     expect(parseRequestBody(request?.body)).toEqual({
+      aliases: ["삼전", "삼성전자 보통주"],
       corporationCode: "00126380",
       listDd: "1975-06-11",
       listShrs: 5_969_782_550,
