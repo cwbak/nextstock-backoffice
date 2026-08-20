@@ -39,6 +39,7 @@ function createStock(code: string, name: string): KrStock {
     name,
     marketType: "KOSPI",
     stockType: "보통주",
+    status: "ACTIVE",
     listDd: "1979-02-27",
     parval: 5_000,
     listShrs: 80_585_530,

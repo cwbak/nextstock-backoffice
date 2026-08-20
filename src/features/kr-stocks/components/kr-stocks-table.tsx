@@ -1,6 +1,7 @@
-import { PencilIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 
 import { DataTableDetailButton } from "@/components/common/data-table-detail-button";
+import { KrStockStatusBadge } from "@/components/common/kr-stock-status-badge";
 import { SortableTableHead } from "@/components/common/sortable-table-head";
 import type { SortDirection } from "@/components/common/use-data-table-state";
 import { Button } from "@/components/ui/button";
@@ -22,15 +23,10 @@ export type KrStockSortField = "name" | "listDd";
 
 interface KrStockRowActionsProps {
   krStock: KrStock;
-  onDelete: (krStock: KrStock) => void;
   onEdit: (krStock: KrStock) => void;
 }
 
-function KrStockRowActions({
-  krStock,
-  onDelete,
-  onEdit,
-}: KrStockRowActionsProps) {
+function KrStockRowActions({ krStock, onEdit }: KrStockRowActionsProps) {
   return (
     <div className="flex justify-end gap-1">
       <Button
@@ -46,19 +42,6 @@ function KrStockRowActions({
       >
         <PencilIcon aria-hidden="true" data-icon="inline-start" />
       </Button>
-      <Button
-        aria-label={`${krStock.name} 삭제`}
-        size="icon-sm"
-        title="삭제"
-        type="button"
-        variant="destructive"
-        onClick={(event) => {
-          event.stopPropagation();
-          onDelete(krStock);
-        }}
-      >
-        <Trash2Icon aria-hidden="true" data-icon="inline-start" />
-      </Button>
     </div>
   );
 }
@@ -66,7 +49,6 @@ function KrStockRowActions({
 interface KrStocksTableProps {
   corporationsByCode: ReadonlyMap<string, Corporation>;
   krStocks: ReadonlyArray<KrStock>;
-  onDelete: (krStock: KrStock) => void;
   onEdit: (krStock: KrStock) => void;
   onSort: (field: KrStockSortField) => void;
   onView: (corporation: Corporation) => void;
@@ -77,7 +59,6 @@ interface KrStocksTableProps {
 export function KrStocksTable({
   corporationsByCode,
   krStocks,
-  onDelete,
   onEdit,
   onSort,
   onView,
@@ -85,12 +66,13 @@ export function KrStocksTable({
   sortDirection,
 }: KrStocksTableProps) {
   return (
-    <Table className="min-w-[91rem] table-fixed">
-      <TableCaption className="sr-only">등록된 상장 종목 목록</TableCaption>
+    <Table className="min-w-[96rem] table-fixed">
+      <TableCaption className="sr-only">등록된 KR 종목 목록</TableCaption>
       <colgroup>
         <col className="w-28" />
         <col className="w-60" />
         <col className="w-24" />
+        <col className="w-28" />
         <col className="w-24" />
         <col className="w-72" />
         <col className="w-28" />
@@ -108,6 +90,7 @@ export function KrStocksTable({
             onSort={() => onSort("name")}
           />
           <TableHead>시장</TableHead>
+          <TableHead>상태</TableHead>
           <TableHead>주식 종류</TableHead>
           <TableHead>연결 법인</TableHead>
           <SortableTableHead
@@ -156,6 +139,9 @@ export function KrStocksTable({
                   {krStock.marketType}
                 </Badge>
               </TableCell>
+              <TableCell>
+                <KrStockStatusBadge status={krStock.status} />
+              </TableCell>
               <TableCell>{krStock.stockType}</TableCell>
               <TableCell className="overflow-hidden">
                 <div className="flex min-w-0 flex-col">
@@ -182,11 +168,7 @@ export function KrStocksTable({
                 {formatDateTime(krStock.updatedAt)}
               </TableCell>
               <TableCell className="pr-4">
-                <KrStockRowActions
-                  krStock={krStock}
-                  onDelete={onDelete}
-                  onEdit={onEdit}
-                />
+                <KrStockRowActions krStock={krStock} onEdit={onEdit} />
               </TableCell>
             </TableRow>
           );

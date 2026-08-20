@@ -30,6 +30,7 @@ const stock: KrStock = {
   name: "삼성전자",
   marketType: "KOSPI",
   stockType: "보통주",
+  status: "ACTIVE",
   listDd: "1975-06-11",
   parval: 100,
   listShrs: 5_969_782_550,

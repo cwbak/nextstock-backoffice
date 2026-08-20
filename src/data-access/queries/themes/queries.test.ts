@@ -23,6 +23,7 @@ const stocks = [
     name: "삼성SDI",
     marketType: "KOSPI",
     stockType: "보통주",
+    status: "ACTIVE",
     listDd: "1979-02-27",
     parval: 5_000,
     listShrs: 80_585_530,

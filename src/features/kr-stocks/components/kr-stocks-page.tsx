@@ -8,6 +8,7 @@ import {
   DataTableToolbar,
 } from "@/components/common/data-table-controls";
 import { DataTableCard } from "@/components/common/data-table-card";
+import { krStockStatusLabels } from "@/components/common/kr-stock-status";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
   type SortableDataTableState,
@@ -23,7 +24,6 @@ import type {
 } from "@/data-access/schemas/kr-stock";
 import { CorporationDetailSheet } from "@/features/corporations";
 import { KrStockUpsertDialog } from "@/features/kr-stocks/components/kr-stock-create-dialog";
-import { KrStockDeleteDialog } from "@/features/kr-stocks/components/kr-stock-delete-dialog";
 import { KrStockEditDialog } from "@/features/kr-stocks/components/kr-stock-edit-dialog";
 import { KrStockSyncDialog } from "@/features/kr-stocks/components/kr-stock-sync-dialog";
 import { KrStockSyncSummary } from "@/features/kr-stocks/components/kr-stock-sync-summary";
@@ -63,7 +63,6 @@ export function KrStocksPage() {
   const [syncOpen, setSyncOpen] = useState(false);
   const [syncResult, setSyncResult] = useState<KrStockSyncResult | null>(null);
   const [editingKrStock, setEditingKrStock] = useState<KrStock | null>(null);
-  const [deletingKrStock, setDeletingKrStock] = useState<KrStock | null>(null);
   const [viewingCorporation, setViewingCorporation] =
     useState<Corporation | null>(null);
   const corporationsByCode = useMemo(
@@ -92,6 +91,8 @@ export function KrStocksPage() {
         krStock.name,
         krStock.marketType,
         krStock.stockType,
+        krStock.status,
+        krStockStatusLabels[krStock.status],
         krStock.corporationCode,
         krStock.listDd,
         krStock.parval?.toString() ?? "",
@@ -173,7 +174,7 @@ export function KrStocksPage() {
         <DataTableToolbar
           label="KR 종목 검색"
           onFilterChange={updateFilterQuery}
-          placeholder="종목 코드, 종목명, 시장, 주식 종류, 상장 정보, 연결 법인 검색"
+          placeholder="종목 코드, 종목명, 시장, 상태, 주식 종류, 상장 정보, 연결 법인 검색"
           query={tableState.q}
           onQueryChange={updateQuery}
         />
@@ -194,7 +195,6 @@ export function KrStocksPage() {
               <KrStocksTable
                 corporationsByCode={corporationsByCode}
                 krStocks={visibleKrStocks}
-                onDelete={setDeletingKrStock}
                 onEdit={setEditingKrStock}
                 onSort={updateSort}
                 onView={setViewingCorporation}
@@ -238,10 +238,6 @@ export function KrStocksPage() {
             setEditingKrStock(null);
           }
         }}
-      />
-      <KrStockDeleteDialog
-        krStock={deletingKrStock}
-        onClose={() => setDeletingKrStock(null)}
       />
       {viewingCorporation ? (
         <CorporationDetailSheet

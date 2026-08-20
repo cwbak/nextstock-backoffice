@@ -197,7 +197,7 @@ export function KrStockUpsertDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>상장 종목 생성·갱신</DialogTitle>
+          <DialogTitle>KR 종목 생성·갱신</DialogTitle>
           <DialogDescription>
             등록된 DART 법인을 선택하고 종목 코드를 입력하면 DART·한국투자증권
             최신 정보로 종목을 생성하거나 갱신합니다.

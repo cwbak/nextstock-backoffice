@@ -1,4 +1,4 @@
-import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
+import { apiRequest } from "@/data-access/api/client";
 import {
   krStocksSyncJobRegistrationSchema,
   type BackgroundJobRegistration,
@@ -45,10 +45,4 @@ export async function updateKrStock(
     { method: "PUT" },
     parsedPayload,
   );
-}
-
-export async function deleteKrStock(code: string): Promise<void> {
-  await apiRequestVoid(`/admin/kr-stocks/${encodeURIComponent(code)}`, {
-    method: "DELETE",
-  });
 }

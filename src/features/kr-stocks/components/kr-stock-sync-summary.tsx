@@ -24,8 +24,8 @@ export function KrStockSyncSummary({
       <AlertTitle>KRX 종목 정보를 동기화했습니다</AlertTitle>
       <AlertDescription>
         KOSPI·KOSDAQ {result.fetchedCount.toLocaleString("ko-KR")}건을 조회해
-        변경된 {result.updatedCount.toLocaleString("ko-KR")}개 종목을
-        갱신했습니다.
+        정보 또는 상태가 변경된 {result.updatedCount.toLocaleString("ko-KR")}개
+        종목을 갱신했습니다.
       </AlertDescription>
       <AlertAction>
         <Button

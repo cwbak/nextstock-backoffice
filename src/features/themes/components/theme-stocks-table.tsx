@@ -1,3 +1,4 @@
+import { KrStockStatusBadge } from "@/components/common/kr-stock-status-badge";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -18,7 +19,7 @@ interface ThemeStocksTableProps {
 
 export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
   return (
-    <Table className="min-w-[68rem] table-fixed">
+    <Table className="min-w-[74rem] table-fixed">
       <TableCaption className="sr-only">
         {themeName} 테마의 KR 종목 목록
       </TableCaption>
@@ -26,6 +27,7 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
         <col className="w-28" />
         <col className="w-52" />
         <col className="w-24" />
+        <col className="w-28" />
         <col className="w-24" />
         <col className="w-32" />
         <col className="w-28" />
@@ -37,6 +39,7 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
           <TableHead className="pl-4">종목 코드</TableHead>
           <TableHead>종목명</TableHead>
           <TableHead>시장</TableHead>
+          <TableHead>상태</TableHead>
           <TableHead>주식 종류</TableHead>
           <TableHead>법인 코드</TableHead>
           <TableHead>상장일</TableHead>
@@ -59,6 +62,9 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
               >
                 {stock.marketType}
               </Badge>
+            </TableCell>
+            <TableCell>
+              <KrStockStatusBadge status={stock.status} />
             </TableCell>
             <TableCell>{stock.stockType}</TableCell>
             <TableCell className="font-mono text-xs tabular-nums">

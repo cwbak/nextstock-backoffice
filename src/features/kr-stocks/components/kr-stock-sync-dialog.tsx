@@ -68,11 +68,11 @@ export function KrStockSyncDialog({
         </DialogHeader>
         <Alert>
           <CloudDownloadIcon aria-hidden="true" />
-          <AlertTitle>종목명·액면가·상장주식수를 동기화합니다</AlertTitle>
+          <AlertTitle>종목 정보와 상태를 동기화합니다</AlertTitle>
           <AlertDescription>
-            DB에 이미 등록된 종목만 갱신하며, KRX에만 존재하는 종목은 새로
-            추가하지 않습니다. 두 시장의 전체 응답을 검증한 뒤 한 번에
-            반영합니다.
+            DB에 이미 등록된 종목만 갱신합니다. KRX에서 사라진 종목은 상장 예정
+            상태를 제외하고 상장 폐지로 변경하며, KRX에만 존재하는 종목은 새로
+            추가하지 않습니다.
           </AlertDescription>
         </Alert>
         {jobTracker.jobId !== null && jobTracker.isTracking ? (

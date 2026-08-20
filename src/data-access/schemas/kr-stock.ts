@@ -17,6 +17,11 @@ export const stockTypeSchema = z
   .trim()
   .min(1, "주식 종류를 입력해 주세요.");
 
+export const krStockStatusSchema = z.enum(
+  ["ACTIVE", "LISTING_SCHEDULED", "DELISTED", "SUSPENDED"],
+  { error: "종목 상태를 선택해 주세요." },
+);
+
 const listDateSchema = z
   .string()
   .regex(datePattern, "상장일은 YYYY-MM-DD 형식이어야 합니다.");
@@ -48,6 +53,7 @@ export const krStockSchema = z
     name: z.string().min(1),
     marketType: marketTypeSchema,
     stockType: stockTypeSchema,
+    status: krStockStatusSchema,
     listDd: listDateSchema,
     parval: optionalParvalResponseSchema,
     listShrs: optionalListedSharesResponseSchema,
@@ -65,6 +71,7 @@ export const krStockFormSchema = z
     name: z.string().trim().min(1, "종목명을 입력해 주세요."),
     marketType: marketTypeSchema,
     stockType: stockTypeSchema,
+    status: krStockStatusSchema,
     listDd: listDateSchema,
     parval: parvalSchema,
     listShrs: listedSharesSchema,
@@ -95,6 +102,7 @@ export type KrStock = z.infer<typeof krStockSchema>;
 export type KrStockCorporationClass = z.infer<
   typeof krStockCorporationClassSchema
 >;
+export type KrStockStatus = z.infer<typeof krStockStatusSchema>;
 export type KrStockFormValues = z.infer<typeof krStockFormSchema>;
 export type KrStockUpsertPayload = z.infer<typeof krStockUpsertPayloadSchema>;
 export type KrStockUpdatePayload = z.infer<typeof krStockUpdatePayloadSchema>;

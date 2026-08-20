@@ -38,6 +38,7 @@ import {
   type KrStock,
   type KrStockFormValues,
 } from "@/data-access/schemas/kr-stock";
+import { KrStockStatusField } from "@/features/kr-stocks/components/kr-stock-status-field";
 
 interface KrStockEditDialogProps {
   corporations: ReadonlyArray<Corporation>;
@@ -52,6 +53,7 @@ const krStockFieldNames = new Set<keyof KrStockFormValues>([
   "name",
   "marketType",
   "stockType",
+  "status",
   "listDd",
   "parval",
   "listShrs",
@@ -73,6 +75,7 @@ function getDefaultValues(
     name: krStock?.name ?? "",
     marketType: krStock?.marketType ?? "KOSPI",
     stockType: krStock?.stockType ?? "",
+    status: krStock?.status ?? "ACTIVE",
     listDd: krStock?.listDd ?? "",
     parval: krStock?.parval ?? null,
     listShrs: krStock?.listShrs ?? null,
@@ -188,6 +191,17 @@ function KrStockEditForm({
           />
           <FieldError errors={[errors.marketType]} />
         </Field>
+        <Controller
+          control={control}
+          name="status"
+          render={({ field }) => (
+            <KrStockStatusField
+              error={errors.status}
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
         <Field data-invalid={Boolean(errors.name)}>
           <FieldLabel htmlFor="edit-kr-stock-name">종목명</FieldLabel>
           <Input
@@ -304,7 +318,7 @@ export function KrStockEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100svh-2rem)] overflow-hidden sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>상장 종목 수정</DialogTitle>
+          <DialogTitle>KR 종목 수정</DialogTitle>
           <DialogDescription>
             {krStock?.code ?? ""} 종목 정보와 연결 법인을 수정합니다.
           </DialogDescription>

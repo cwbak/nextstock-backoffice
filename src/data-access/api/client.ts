@@ -70,6 +70,9 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "stock already exists in theme": "이미 이 테마에 포함된 종목입니다.",
   "stock code must contain 6 uppercase letters or digits":
     "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
+  "status is required": "종목 상태를 선택해 주세요.",
+  "status must be ACTIVE, LISTING_SCHEDULED, DELISTED, or SUSPENDED":
+    "종목 상태가 유효하지 않습니다.",
   "theme already exists": "같은 ID 또는 이름의 테마가 이미 있습니다.",
   "theme not found": "테마를 찾을 수 없습니다.",
   "to must use YYYY-MM-DD format": "종료일은 YYYY-MM-DD 형식이어야 합니다.",

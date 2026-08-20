@@ -12,6 +12,7 @@ const krStockResponse = {
   name: "삼성전자",
   marketType: "KOSPI",
   stockType: "보통주",
+  status: "ACTIVE",
   listDd: "1975-06-11",
   createdAt: "2026-07-30T17:49:28.993831+09:00",
   updatedAt: "2026-07-30T17:49:28.993831+09:00",
@@ -51,6 +52,27 @@ describe("krStockSchema", () => {
         stockType: " 보통주 ",
       }).stockType,
     ).toBe("보통주");
+  });
+
+  it.each(["ACTIVE", "LISTING_SCHEDULED", "DELISTED", "SUSPENDED"] as const)(
+    "종목 상태 %s를 허용한다",
+    (status) => {
+      expect(
+        krStockSchema.parse({
+          ...krStockResponse,
+          status,
+        }).status,
+      ).toBe(status);
+    },
+  );
+
+  it("지원하지 않는 종목 상태를 거부한다", () => {
+    expect(() =>
+      krStockSchema.parse({
+        ...krStockResponse,
+        status: "NORMAL",
+      }),
+    ).toThrow();
   });
 
   it("KRX 전체 종목 동기화 결과를 검증한다", () => {

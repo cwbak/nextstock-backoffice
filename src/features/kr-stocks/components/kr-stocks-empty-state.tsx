@@ -21,7 +21,7 @@ export function KrStocksEmptyState({ onUpsert }: KrStocksEmptyStateProps) {
         <EmptyMedia variant="icon">
           <ChartCandlestickIcon aria-hidden="true" />
         </EmptyMedia>
-        <EmptyTitle>등록된 상장 종목이 없습니다</EmptyTitle>
+        <EmptyTitle>등록된 KR 종목이 없습니다</EmptyTitle>
         <EmptyDescription>
           먼저 등록된 DART 법인 코드와 종목 코드를 입력해 종목을 생성하세요.
         </EmptyDescription>

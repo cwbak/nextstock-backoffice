@@ -80,7 +80,7 @@ describe("KrStockSyncDialog", () => {
       </QueryClientProvider>,
     );
 
-    expect(screen.getByText(/새로 추가하지 않습니다/)).toBeInTheDocument();
+    expect(screen.getByText(/상장 폐지로 변경/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "동기화" }));
 
     await waitFor(() => expect(onSynced).toHaveBeenCalledWith(result));

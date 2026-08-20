@@ -19,6 +19,7 @@ const krStock = {
   marketType: "KOSDAQ",
   name: "삼성전자",
   parval: 100,
+  status: "ACTIVE",
   stockType: "보통주",
   updatedAt: "2026-07-26T11:00:00+09:00",
 };

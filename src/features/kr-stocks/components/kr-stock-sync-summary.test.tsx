@@ -20,7 +20,9 @@ describe("KrStockSyncSummary", () => {
     );
 
     expect(screen.getByText(/KOSPI·KOSDAQ 2,785건/)).toBeInTheDocument();
-    expect(screen.getByText(/변경된 12개 종목/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/정보 또는 상태가 변경된 12개/),
+    ).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole("button", {

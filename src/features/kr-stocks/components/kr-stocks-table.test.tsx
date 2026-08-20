@@ -32,6 +32,7 @@ const krStock: KrStock = {
   marketType: "KOSPI",
   name: "삼성전자",
   parval: 100,
+  status: "ACTIVE",
   stockType: "보통주",
   updatedAt: "2026-07-26T11:00:00+09:00",
 };
@@ -41,8 +42,7 @@ describe("KrStocksTable", () => {
     cleanup();
   });
 
-  it("행과 종목명으로 연결 기업 상세를 열고 수정·삭제 클릭은 전파하지 않는다", () => {
-    const onDelete = vi.fn();
+  it("종목 상태를 표시하고 행·종목명 상세 및 수정 동작을 제공한다", () => {
     const onEdit = vi.fn();
     const onSort = vi.fn();
     const onView = vi.fn();
@@ -51,7 +51,6 @@ describe("KrStocksTable", () => {
       <KrStocksTable
         corporationsByCode={new Map([[corporation.code, corporation]])}
         krStocks={[krStock]}
-        onDelete={onDelete}
         onEdit={onEdit}
         onSort={onSort}
         onView={onView}
@@ -61,6 +60,7 @@ describe("KrStocksTable", () => {
     );
 
     expect(screen.getByText("1975. 6. 11.")).toBeInTheDocument();
+    expect(screen.getByText("정상")).toBeInTheDocument();
     expect(screen.getByText("보통주")).toBeInTheDocument();
     expect(screen.getByText("100원")).toBeInTheDocument();
     expect(screen.getByText("5,969,782,550주")).toBeInTheDocument();
@@ -92,12 +92,9 @@ describe("KrStocksTable", () => {
     );
     expect(onEdit).toHaveBeenCalledWith(krStock);
     expect(onView).toHaveBeenCalledTimes(2);
-
-    fireEvent.click(
-      screen.getByRole("button", { name: `${krStock.name} 삭제` }),
-    );
-    expect(onDelete).toHaveBeenCalledWith(krStock);
-    expect(onView).toHaveBeenCalledTimes(2);
+    expect(
+      screen.queryByRole("button", { name: `${krStock.name} 삭제` }),
+    ).not.toBeInTheDocument();
   });
 
   it("연결 기업을 찾지 못한 종목은 상세 동작을 제공하지 않는다", () => {
@@ -107,7 +104,6 @@ describe("KrStocksTable", () => {
       <KrStocksTable
         corporationsByCode={new Map()}
         krStocks={[krStock]}
-        onDelete={vi.fn()}
         onEdit={vi.fn()}
         onSort={vi.fn()}
         onView={onView}
