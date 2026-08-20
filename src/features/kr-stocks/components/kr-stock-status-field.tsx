@@ -17,18 +17,20 @@ import {
 
 interface KrStockStatusFieldProps {
   error: FormFieldError | undefined;
+  id: string;
   onValueChange: (value: KrStockStatus) => void;
   value: KrStockStatus;
 }
 
 export function KrStockStatusField({
   error,
+  id,
   onValueChange,
   value,
 }: KrStockStatusFieldProps) {
   return (
     <Field data-invalid={Boolean(error)}>
-      <FieldLabel htmlFor="edit-kr-stock-status">종목 상태</FieldLabel>
+      <FieldLabel htmlFor={id}>종목 상태</FieldLabel>
       <Select
         value={value}
         onValueChange={(nextValue) => {
@@ -39,11 +41,7 @@ export function KrStockStatusField({
           }
         }}
       >
-        <SelectTrigger
-          aria-invalid={Boolean(error)}
-          className="w-full"
-          id="edit-kr-stock-status"
-        >
+        <SelectTrigger aria-invalid={Boolean(error)} className="w-full" id={id}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

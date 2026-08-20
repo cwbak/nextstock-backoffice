@@ -57,7 +57,7 @@ describe("KrStockUpsertDialog", () => {
     vi.restoreAllMocks();
   });
 
-  it("이름으로 선택한 법인 코드와 대체 시장을 KR 종목 생성·갱신 API로 전송한다", async () => {
+  it("이름으로 선택한 법인 코드, 상태와 대체 시장을 KR 종목 생성·갱신 API로 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(krStock), {
         headers: { "Content-Type": "application/json" },
@@ -89,6 +89,12 @@ describe("KrStockUpsertDialog", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "종목 코드" }), {
       target: { value: "005930" },
     });
+    fireEvent.click(screen.getByRole("combobox", { name: "종목 상태" }));
+    fireEvent.click(
+      screen.getByRole("option", {
+        name: "상장 예정 (LISTING_SCHEDULED)",
+      }),
+    );
     fireEvent.click(
       screen.getByRole("combobox", { name: "대체 상장 시장 (선택)" }),
     );
@@ -102,6 +108,7 @@ describe("KrStockUpsertDialog", () => {
       JSON.stringify({
         corporationClass: "K",
         corporationCode: "00126380",
+        status: "LISTING_SCHEDULED",
         stockCode: "005930",
       }),
     );
@@ -148,6 +155,7 @@ describe("KrStockUpsertDialog", () => {
       JSON.stringify({
         corporationCode: "00126380",
         listDd: "1975-06-11",
+        status: "ACTIVE",
         stockCode: "005930",
       }),
     );

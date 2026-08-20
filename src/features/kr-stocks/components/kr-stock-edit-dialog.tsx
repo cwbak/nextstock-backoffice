@@ -197,6 +197,7 @@ function KrStockEditForm({
           render={({ field }) => (
             <KrStockStatusField
               error={errors.status}
+              id="edit-kr-stock-status"
               value={field.value}
               onValueChange={field.onChange}
             />

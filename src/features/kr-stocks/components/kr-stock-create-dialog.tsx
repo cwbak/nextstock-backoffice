@@ -31,6 +31,7 @@ import {
 import { KrStockCorporationClassSelect } from "@/features/kr-stocks/components/kr-stock-corporation-class-select";
 import { KrStockCorporationField } from "@/features/kr-stocks/components/kr-stock-corporation-field";
 import { KrStockFallbackListDateField } from "@/features/kr-stocks/components/kr-stock-fallback-list-date-field";
+import { KrStockStatusField } from "@/features/kr-stocks/components/kr-stock-status-field";
 
 interface KrStockUpsertDialogProps {
   corporations: ReadonlyArray<Corporation>;
@@ -42,6 +43,7 @@ const upsertFieldNames = new Set<keyof KrStockUpsertPayload>([
   "corporationClass",
   "corporationCode",
   "listDd",
+  "status",
   "stockCode",
 ]);
 
@@ -73,6 +75,7 @@ function KrStockUpsertForm({
   } = useForm<KrStockUpsertPayload>({
     defaultValues: {
       corporationCode: "",
+      status: "ACTIVE",
       stockCode: "",
     },
   });
@@ -139,6 +142,18 @@ function KrStockUpsertForm({
           <FieldDescription>대문자 또는 숫자 6자리</FieldDescription>
           <FieldError errors={[errors.stockCode]} />
         </Field>
+        <Controller
+          control={control}
+          name="status"
+          render={({ field }) => (
+            <KrStockStatusField
+              error={errors.status}
+              id="create-kr-stock-status"
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
         <Field data-invalid={Boolean(errors.corporationClass)}>
           <FieldLabel htmlFor="create-kr-stock-corporation-class">
             대체 상장 시장 (선택)

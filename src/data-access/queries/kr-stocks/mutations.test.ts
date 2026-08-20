@@ -70,7 +70,7 @@ describe("KR stock mutations", () => {
     expect(request?.body).toBeUndefined();
   });
 
-  it("대체 시장을 생략하고 DART 법인 코드와 종목 코드를 전송한다", async () => {
+  it("필수 상태와 DART 법인 코드, 종목 코드를 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(krStock), {
         headers: { "Content-Type": "application/json" },
@@ -81,6 +81,7 @@ describe("KR stock mutations", () => {
     await expect(
       upsertKrStock({
         corporationCode: "00126380",
+        status: "ACTIVE",
         stockCode: "005930",
       }),
     ).resolves.toEqual(krStock);
@@ -91,6 +92,7 @@ describe("KR stock mutations", () => {
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
       corporationCode: "00126380",
+      status: "ACTIVE",
       stockCode: "005930",
     });
   });
@@ -104,6 +106,7 @@ describe("KR stock mutations", () => {
       upsertKrStock({
         corporationClass: "K",
         corporationCode: "00126380",
+        status: "LISTING_SCHEDULED",
         stockCode: "005930",
       }),
     ).resolves.toEqual(krStock);
@@ -113,6 +116,7 @@ describe("KR stock mutations", () => {
     expect(parseRequestBody(request?.body)).toEqual({
       corporationClass: "K",
       corporationCode: "00126380",
+      status: "LISTING_SCHEDULED",
       stockCode: "005930",
     });
   });
@@ -126,6 +130,7 @@ describe("KR stock mutations", () => {
       upsertKrStock({
         corporationCode: "00126380",
         listDd: "1975-06-11",
+        status: "ACTIVE",
         stockCode: "005930",
       }),
     ).resolves.toEqual(krStock);
@@ -135,6 +140,7 @@ describe("KR stock mutations", () => {
     expect(parseRequestBody(request?.body)).toEqual({
       corporationCode: "00126380",
       listDd: "1975-06-11",
+      status: "ACTIVE",
       stockCode: "005930",
     });
   });

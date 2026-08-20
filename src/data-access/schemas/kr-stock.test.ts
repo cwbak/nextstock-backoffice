@@ -93,6 +93,7 @@ describe("krStockSchema", () => {
       const payload = {
         corporationClass,
         corporationCode: "00126380",
+        status: "ACTIVE" as const,
         stockCode: "005930",
       };
 
@@ -105,6 +106,7 @@ describe("krStockSchema", () => {
       krStockUpsertPayloadSchema.parse({
         corporationClass: "N",
         corporationCode: "00126380",
+        status: "ACTIVE",
         stockCode: "005930",
       }),
     ).toThrow();
@@ -114,6 +116,7 @@ describe("krStockSchema", () => {
     const payload = {
       corporationCode: "00126380",
       listDd: "1975-06-11",
+      status: "ACTIVE" as const,
       stockCode: "005930",
     };
 
@@ -122,6 +125,15 @@ describe("krStockSchema", () => {
       krStockUpsertPayloadSchema.parse({
         ...payload,
         listDd: "19750611",
+      }),
+    ).toThrow();
+  });
+
+  it("생성·갱신 요청에서 종목 상태를 필수로 검증한다", () => {
+    expect(() =>
+      krStockUpsertPayloadSchema.parse({
+        corporationCode: "00126380",
+        stockCode: "005930",
       }),
     ).toThrow();
   });
