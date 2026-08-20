@@ -23,14 +23,17 @@ import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { krStockKeys } from "@/data-access/queries/kr-stocks/keys";
 import { upsertKrStock } from "@/data-access/queries/kr-stocks/mutations";
+import type { Corporation } from "@/data-access/schemas/corporation";
 import {
   krStockUpsertPayloadSchema,
   type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
 import { KrStockCorporationClassSelect } from "@/features/kr-stocks/components/kr-stock-corporation-class-select";
+import { KrStockCorporationField } from "@/features/kr-stocks/components/kr-stock-corporation-field";
 import { KrStockFallbackListDateField } from "@/features/kr-stocks/components/kr-stock-fallback-list-date-field";
 
 interface KrStockUpsertDialogProps {
+  corporations: ReadonlyArray<Corporation>;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
@@ -49,11 +52,16 @@ function isCreateFieldName(
 }
 
 interface KrStockUpsertFormProps {
+  corporations: ReadonlyArray<Corporation>;
   onCancel: () => void;
   onSaved: () => void;
 }
 
-function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
+function KrStockUpsertForm({
+  corporations,
+  onCancel,
+  onSaved,
+}: KrStockUpsertFormProps) {
   const queryClient = useQueryClient();
   const {
     clearErrors,
@@ -102,21 +110,18 @@ function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
       onSubmit={(event) => void submitForm(event)}
     >
       <FieldGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field data-invalid={Boolean(errors.corporationCode)}>
-          <FieldLabel htmlFor="create-corporation-code">
-            DART 법인 코드
-          </FieldLabel>
-          <Input
-            aria-invalid={Boolean(errors.corporationCode)}
-            id="create-corporation-code"
-            inputMode="numeric"
-            maxLength={8}
-            placeholder="00126380"
-            {...register("corporationCode")}
-          />
-          <FieldDescription>숫자 8자리</FieldDescription>
-          <FieldError errors={[errors.corporationCode]} />
-        </Field>
+        <Controller
+          control={control}
+          name="corporationCode"
+          render={({ field }) => (
+            <KrStockCorporationField
+              corporations={corporations}
+              error={errors.corporationCode}
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
         <Field data-invalid={Boolean(errors.stockCode)}>
           <FieldLabel htmlFor="create-kr-stock-code">종목 코드</FieldLabel>
           <Input
@@ -184,6 +189,7 @@ function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
 }
 
 export function KrStockUpsertDialog({
+  corporations,
   onOpenChange,
   open,
 }: KrStockUpsertDialogProps) {
@@ -193,12 +199,13 @@ export function KrStockUpsertDialog({
         <DialogHeader>
           <DialogTitle>상장 종목 생성·갱신</DialogTitle>
           <DialogDescription>
-            등록된 DART 법인 코드와 종목 코드를 입력하면 DART·한국투자증권 최신
-            정보로 종목을 생성하거나 갱신합니다.
+            등록된 DART 법인을 선택하고 종목 코드를 입력하면 DART·한국투자증권
+            최신 정보로 종목을 생성하거나 갱신합니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (
           <KrStockUpsertForm
+            corporations={corporations}
             onCancel={() => onOpenChange(false)}
             onSaved={() => onOpenChange(false)}
           />

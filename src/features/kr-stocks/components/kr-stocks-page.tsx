@@ -216,7 +216,11 @@ export function KrStocksPage() {
           )}
         </DataTableCard>
       </section>
-      <KrStockUpsertDialog open={upsertOpen} onOpenChange={setUpsertOpen} />
+      <KrStockUpsertDialog
+        corporations={corporationsQuery.data}
+        open={upsertOpen}
+        onOpenChange={setUpsertOpen}
+      />
       <KrStockSyncDialog
         open={syncOpen}
         onOpenChange={setSyncOpen}

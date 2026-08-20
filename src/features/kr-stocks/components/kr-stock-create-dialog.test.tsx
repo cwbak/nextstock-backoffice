@@ -22,6 +22,33 @@ const krStock = {
   stockType: "보통주",
   updatedAt: "2026-07-26T11:00:00+09:00",
 };
+const corporations = [
+  {
+    accMt: 12,
+    address: "경기도 수원시 영통구 삼성로 129",
+    ceoNm: "대표이사",
+    code: "00126380",
+    createdAt: "2026-07-25T10:00:00+09:00",
+    estDt: "1969-01-13",
+    hmUrl: "https://www.samsung.com",
+    indutyCode: "264",
+    info: null,
+    name: "삼성전자",
+    nameEn: "Samsung Electronics Co., Ltd.",
+    updatedAt: "2026-07-26T11:00:00+09:00",
+  },
+];
+
+async function selectCorporationByName() {
+  fireEvent.click(screen.getByRole("combobox", { name: "DART 법인" }));
+  fireEvent.change(
+    await screen.findByRole("searchbox", { name: "법인 검색" }),
+    {
+      target: { value: "삼성전자" },
+    },
+  );
+  fireEvent.click(screen.getByRole("option", { name: /삼성전자/ }));
+}
 
 describe("KrStockUpsertDialog", () => {
   afterEach(() => {
@@ -29,7 +56,7 @@ describe("KrStockUpsertDialog", () => {
     vi.restoreAllMocks();
   });
 
-  it("선택한 대체 시장을 KR 종목 생성·갱신 API로 전송한다", async () => {
+  it("이름으로 선택한 법인 코드와 대체 시장을 KR 종목 생성·갱신 API로 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify(krStock), {
         headers: { "Content-Type": "application/json" },
@@ -46,13 +73,18 @@ describe("KrStockUpsertDialog", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <KrStockUpsertDialog open onOpenChange={onOpenChange} />
+        <KrStockUpsertDialog
+          corporations={corporations}
+          open
+          onOpenChange={onOpenChange}
+        />
       </QueryClientProvider>,
     );
 
-    fireEvent.change(screen.getByRole("textbox", { name: "DART 법인 코드" }), {
-      target: { value: "00126380" },
-    });
+    expect(
+      screen.queryByRole("textbox", { name: "DART 법인 코드" }),
+    ).not.toBeInTheDocument();
+    await selectCorporationByName();
     fireEvent.change(screen.getByRole("textbox", { name: "종목 코드" }), {
       target: { value: "005930" },
     });
@@ -91,13 +123,15 @@ describe("KrStockUpsertDialog", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <KrStockUpsertDialog open onOpenChange={onOpenChange} />
+        <KrStockUpsertDialog
+          corporations={corporations}
+          open
+          onOpenChange={onOpenChange}
+        />
       </QueryClientProvider>,
     );
 
-    fireEvent.change(screen.getByRole("textbox", { name: "DART 법인 코드" }), {
-      target: { value: "00126380" },
-    });
+    await selectCorporationByName();
     fireEvent.change(screen.getByRole("textbox", { name: "종목 코드" }), {
       target: { value: "005930" },
     });
