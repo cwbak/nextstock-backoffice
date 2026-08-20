@@ -68,6 +68,7 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "report code must be between 1 and 4": "보고서 구분을 선택해 주세요.",
   "theme id must be a positive integer": "테마 ID는 양의 정수여야 합니다.",
   "stock already exists in theme": "이미 이 테마에 포함된 종목입니다.",
+  "stock not found in theme": "이 테마에 포함된 종목을 찾을 수 없습니다.",
   "stock code must contain 6 uppercase letters or digits":
     "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
   "status is required": "종목 상태를 선택해 주세요.",

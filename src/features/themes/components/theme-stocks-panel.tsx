@@ -24,6 +24,7 @@ interface ThemeStocksPanelProps {
   error: unknown;
   isPending: boolean;
   onAddStock: () => void;
+  onDeleteStock: (stock: KrStock) => void;
   onRetry: () => void;
   parentThemeName: string | undefined;
   stocks: ReadonlyArray<KrStock> | undefined;
@@ -33,6 +34,7 @@ interface ThemeStocksPanelProps {
 export function ThemeStocksPanel({
   error,
   onAddStock,
+  onDeleteStock,
   isPending,
   onRetry,
   parentThemeName,
@@ -78,7 +80,11 @@ export function ThemeStocksPanel({
           </EmptyContent>
         </Empty>
       ) : stocks?.length ? (
-        <ThemeStocksTable stocks={stocks} themeName={theme.name} />
+        <ThemeStocksTable
+          stocks={stocks}
+          themeName={theme.name}
+          onDelete={onDeleteStock}
+        />
       ) : (
         <Empty className="min-h-72 border-0">
           <EmptyHeader>

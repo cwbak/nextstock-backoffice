@@ -4,6 +4,7 @@ import {
   themeCreatePayloadSchema,
   themeSchema,
   themeStockCreatePayloadSchema,
+  themeStockDeletePayloadSchema,
 } from "@/data-access/schemas/theme";
 
 const themeResponse = {
@@ -72,6 +73,26 @@ describe("themeStockCreatePayloadSchema", () => {
       themeStockCreatePayloadSchema.parse({
         themeId: 449,
         stockCode: "5930",
+      }),
+    ).toThrow();
+  });
+});
+
+describe("themeStockDeletePayloadSchema", () => {
+  it("삭제할 테마 ID와 KR 종목 코드를 검증한다", () => {
+    expect(
+      themeStockDeletePayloadSchema.parse({
+        themeId: 449,
+        stockCode: "005930",
+      }),
+    ).toEqual({ themeId: 449, stockCode: "005930" });
+  });
+
+  it("양의 정수가 아닌 테마 ID는 거부한다", () => {
+    expect(() =>
+      themeStockDeletePayloadSchema.parse({
+        themeId: 0,
+        stockCode: "005930",
       }),
     ).toThrow();
   });

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createTheme,
   createThemeStock,
+  deleteThemeStock,
 } from "@/data-access/queries/themes/mutations";
 import type { KrStock } from "@/data-access/schemas/kr-stock";
 import type { Theme } from "@/data-access/schemas/theme";
@@ -87,5 +88,23 @@ describe("theme mutations", () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/themes/449/stocks");
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({ stockCode: "005930" });
+  });
+
+  it("선택한 테마에서 KR 종목 연결을 삭제한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    await expect(
+      deleteThemeStock({ themeId: 449, stockCode: "005930" }),
+    ).resolves.toBeUndefined();
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/themes/449/stocks/005930",
+    );
+    expect(request?.method).toBe("DELETE");
+    expect(request?.body).toBeUndefined();
   });
 });

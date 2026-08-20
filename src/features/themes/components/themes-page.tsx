@@ -18,9 +18,12 @@ import {
   themesQueryOptions,
   themeStocksQueryOptions,
 } from "@/data-access/queries/themes/queries";
+import type { KrStock } from "@/data-access/schemas/kr-stock";
+import type { Theme } from "@/data-access/schemas/theme";
 import { ThemeList } from "@/features/themes/components/theme-list";
 import { ThemeCreateDialog } from "@/features/themes/components/theme-create-dialog";
 import { ThemeStockCreateDialog } from "@/features/themes/components/theme-stock-create-dialog";
+import { ThemeStockDeleteDialog } from "@/features/themes/components/theme-stock-delete-dialog";
 import { ThemeStocksPanel } from "@/features/themes/components/theme-stocks-panel";
 import { ThemesEmptyState } from "@/features/themes/components/themes-empty-state";
 
@@ -36,6 +39,10 @@ export function ThemesPage() {
   );
   const [createOpen, setCreateOpen] = useState(false);
   const [stockCreateOpen, setStockCreateOpen] = useState(false);
+  const [deletingThemeStock, setDeletingThemeStock] = useState<{
+    stock: KrStock;
+    theme: Theme;
+  } | null>(null);
   const { state: tableState, updateQuery } =
     useDataTableState(initialTableState);
   const [filterQuery, updateFilterQuery] = useDataTableFilterQuery(
@@ -162,6 +169,9 @@ export function ThemesPage() {
                   parentThemeName={selectedParentTheme?.name}
                   stocks={themeStocksQuery.data}
                   theme={selectedTheme}
+                  onDeleteStock={(stock) =>
+                    setDeletingThemeStock({ stock, theme: selectedTheme })
+                  }
                   onRetry={() => void themeStocksQuery.refetch()}
                 />
               ) : null}
@@ -186,6 +196,11 @@ export function ThemesPage() {
           onOpenChange={setStockCreateOpen}
         />
       ) : null}
+      <ThemeStockDeleteDialog
+        stock={deletingThemeStock?.stock ?? null}
+        theme={deletingThemeStock?.theme ?? null}
+        onClose={() => setDeletingThemeStock(null)}
+      />
     </>
   );
 }

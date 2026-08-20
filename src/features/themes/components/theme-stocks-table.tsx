@@ -1,5 +1,8 @@
+import { Trash2Icon } from "lucide-react";
+
 import { KrStockStatusBadge } from "@/components/common/kr-stock-status-badge";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -13,13 +16,18 @@ import type { KrStock } from "@/data-access/schemas/kr-stock";
 import { formatDate } from "@/lib/format";
 
 interface ThemeStocksTableProps {
+  onDelete: (stock: KrStock) => void;
   stocks: ReadonlyArray<KrStock>;
   themeName: string;
 }
 
-export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
+export function ThemeStocksTable({
+  onDelete,
+  stocks,
+  themeName,
+}: ThemeStocksTableProps) {
   return (
-    <Table className="min-w-[74rem] table-fixed">
+    <Table className="min-w-[79rem] table-fixed">
       <TableCaption className="sr-only">
         {themeName} 테마의 KR 종목 목록
       </TableCaption>
@@ -33,6 +41,7 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
         <col className="w-28" />
         <col className="w-28" />
         <col className="w-36" />
+        <col className="w-20" />
       </colgroup>
       <TableHeader>
         <TableRow className="bg-muted/35 hover:bg-muted/35">
@@ -45,6 +54,7 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
           <TableHead>상장일</TableHead>
           <TableHead className="text-right">액면가</TableHead>
           <TableHead className="pr-4 text-right">상장주식수</TableHead>
+          <TableHead className="pr-4 text-right">작업</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -80,6 +90,18 @@ export function ThemeStocksTable({ stocks, themeName }: ThemeStocksTableProps) {
               {stock.listShrs === null
                 ? "-"
                 : `${stock.listShrs.toLocaleString("ko-KR")}주`}
+            </TableCell>
+            <TableCell className="pr-4 text-right">
+              <Button
+                aria-label={`${stock.name} 테마에서 삭제`}
+                size="icon-sm"
+                title="테마에서 삭제"
+                type="button"
+                variant="destructive"
+                onClick={() => onDelete(stock)}
+              >
+                <Trash2Icon aria-hidden="true" data-icon="inline-start" />
+              </Button>
             </TableCell>
           </TableRow>
         ))}

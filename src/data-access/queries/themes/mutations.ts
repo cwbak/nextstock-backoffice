@@ -1,12 +1,14 @@
-import { apiRequest } from "@/data-access/api/client";
+import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
 import { krStockSchema, type KrStock } from "@/data-access/schemas/kr-stock";
 import {
   themeCreatePayloadSchema,
   themeSchema,
   themeStockCreatePayloadSchema,
+  themeStockDeletePayloadSchema,
   type Theme,
   type ThemeCreatePayload,
   type ThemeStockCreatePayload,
+  type ThemeStockDeletePayload,
 } from "@/data-access/schemas/theme";
 
 export async function createTheme(payload: ThemeCreatePayload): Promise<Theme> {
@@ -30,5 +32,16 @@ export async function createThemeStock(
     krStockSchema,
     { method: "POST" },
     body,
+  );
+}
+
+export async function deleteThemeStock(
+  payload: ThemeStockDeletePayload,
+): Promise<void> {
+  const { stockCode, themeId } = themeStockDeletePayloadSchema.parse(payload);
+
+  await apiRequestVoid(
+    `/admin/themes/${encodeURIComponent(themeId)}/stocks/${encodeURIComponent(stockCode)}`,
+    { method: "DELETE" },
   );
 }

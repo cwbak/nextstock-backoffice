@@ -37,9 +37,14 @@ export const themeStockFormSchema = z
 export const themeStockCreatePayloadSchema = themeStockFormSchema.extend({
   themeId: themeIdSchema,
 });
+
+export const themeStockDeletePayloadSchema = themeStockCreatePayloadSchema;
 export type Theme = z.infer<typeof themeSchema>;
 export type ThemeCreatePayload = z.infer<typeof themeCreatePayloadSchema>;
 export type ThemeStockFormValues = z.infer<typeof themeStockFormSchema>;
 export type ThemeStockCreatePayload = z.infer<
   typeof themeStockCreatePayloadSchema
+>;
+export type ThemeStockDeletePayload = z.infer<
+  typeof themeStockDeletePayloadSchema
 >;

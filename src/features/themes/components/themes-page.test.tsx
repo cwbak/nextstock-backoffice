@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import {
@@ -82,6 +82,7 @@ function renderPage() {
 describe("ThemesPage", () => {
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
   });
 
   it("테마를 선택하면 연결된 KR 종목을 표시한다", async () => {
@@ -151,5 +152,48 @@ describe("ThemesPage", () => {
     expect(
       screen.queryByRole("option", { name: /삼성SDI/ }),
     ).not.toBeInTheDocument();
+  });
+
+  it("확인 후 선택한 테마에서 기업 연결을 삭제한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify([]), {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }),
+      );
+    renderPage();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "삼성SDI 테마에서 삭제" }),
+    );
+
+    expect(
+      screen.getByRole("alertdialog", {
+        name: "테마에서 기업을 삭제할까요?",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/KR 종목과 법인 정보는 유지됩니다/),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "삭제" }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/admin/themes/449/stocks/006400",
+        expect.objectContaining({ method: "DELETE" }),
+      );
+    });
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("alertdialog", {
+          name: "테마에서 기업을 삭제할까요?",
+        }),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.queryByText("삼성SDI")).not.toBeInTheDocument();
   });
 });
