@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,6 @@ import {
   corporationUpsertPayloadSchema,
   type CorporationUpsertPayload,
 } from "@/data-access/schemas/corporation";
-import { CorporationClassSelect } from "@/features/corporations/components/corporation-class-select";
 
 interface CorporationUpsertDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -46,7 +45,6 @@ function CorporationUpsertForm({
   const queryClient = useQueryClient();
   const {
     clearErrors,
-    control,
     formState: { errors },
     handleSubmit,
     register,
@@ -68,10 +66,8 @@ function CorporationUpsertForm({
 
     if (!result.success) {
       for (const issue of result.error.issues) {
-        const fieldName = issue.path[0];
-
-        if (fieldName === "code" || fieldName === "corporationClass") {
-          setError(fieldName, { message: issue.message });
+        if (issue.path[0] === "code") {
+          setError("code", { message: issue.message });
         }
       }
       return;
@@ -101,27 +97,6 @@ function CorporationUpsertForm({
           />
           <FieldDescription>숫자 8자리</FieldDescription>
           <FieldError errors={[errors.code]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.corporationClass)}>
-          <FieldLabel htmlFor="upsert-corporation-class">
-            대체 상장 시장 (선택)
-          </FieldLabel>
-          <Controller
-            control={control}
-            name="corporationClass"
-            render={({ field }) => (
-              <CorporationClassSelect
-                aria-invalid={Boolean(errors.corporationClass)}
-                id="upsert-corporation-class"
-                value={field.value}
-                onValueChange={field.onChange}
-              />
-            )}
-          />
-          <FieldDescription>
-            DART 시장 구분이 Y/K가 아닐 때만 사용합니다.
-          </FieldDescription>
-          <FieldError errors={[errors.corporationClass]} />
         </Field>
       </FieldGroup>
       {mutation.isError ? (

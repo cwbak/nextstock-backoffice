@@ -10,6 +10,8 @@ export const krStockCodeSchema = z
 
 export const marketTypeSchema = z.enum(["KOSPI", "KOSDAQ"]);
 
+export const krStockCorporationClassSchema = z.enum(["Y", "K"]);
+
 export const stockTypeSchema = z
   .string()
   .trim()
@@ -71,6 +73,7 @@ export const krStockFormSchema = z
 
 export const krStockUpsertPayloadSchema = z
   .object({
+    corporationClass: krStockCorporationClassSchema.optional(),
     corporationCode: corporationCodeSchema,
     stockCode: krStockCodeSchema,
   })
@@ -88,6 +91,9 @@ export const krStockSyncResultSchema = z
   .strict();
 
 export type KrStock = z.infer<typeof krStockSchema>;
+export type KrStockCorporationClass = z.infer<
+  typeof krStockCorporationClassSchema
+>;
 export type KrStockFormValues = z.infer<typeof krStockFormSchema>;
 export type KrStockUpsertPayload = z.infer<typeof krStockUpsertPayloadSchema>;
 export type KrStockUpdatePayload = z.infer<typeof krStockUpdatePayloadSchema>;

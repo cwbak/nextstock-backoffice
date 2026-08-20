@@ -6,8 +6,6 @@ export const corporationCodeSchema = z
   .string()
   .regex(/^\d{8}$/, "법인 코드는 숫자 8자리여야 합니다.");
 
-export const corporationClassSchema = z.enum(["Y", "K"]);
-
 const dateSchema = z
   .string()
   .regex(datePattern, "날짜는 YYYY-MM-DD 형식이어야 합니다.");
@@ -41,7 +39,6 @@ export const corporationListSchema = z.array(corporationSchema);
 export const corporationUpsertPayloadSchema = z
   .object({
     code: corporationCodeSchema,
-    corporationClass: corporationClassSchema.optional(),
   })
   .strict();
 
@@ -117,7 +114,6 @@ export function buildCorporationInfo(
 
 export type CorporationInfo = z.infer<typeof corporationInfoSchema>;
 export type Corporation = z.infer<typeof corporationSchema>;
-export type CorporationClass = z.infer<typeof corporationClassSchema>;
 export type CorporationUpsertPayload = z.infer<
   typeof corporationUpsertPayloadSchema
 >;

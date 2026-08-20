@@ -97,23 +97,6 @@ describe("corporation mutations", () => {
     expect(parseRequestBody(request?.body)).toEqual({ code: "00126380" });
   });
 
-  it("DART 시장 구분이 유효하지 않을 때 사용할 대체 시장을 전송한다", async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(jsonResponse(corporation));
-
-    await expect(
-      upsertCorporation({ code: "00126380", corporationClass: "K" }),
-    ).resolves.toEqual(corporation);
-
-    const request = fetchMock.mock.calls[0]?.[1];
-
-    expect(parseRequestBody(request?.body)).toEqual({
-      code: "00126380",
-      corporationClass: "K",
-    });
-  });
-
   it("기본 정보 수정 후 새 info API에 줄 단위 배열을 저장한다", async () => {
     const updatedCorporation: Corporation = {
       ...corporation,

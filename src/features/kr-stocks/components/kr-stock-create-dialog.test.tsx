@@ -8,32 +8,30 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CorporationUpsertDialog } from "@/features/corporations/components/corporation-upsert-dialog";
+import { KrStockUpsertDialog } from "@/features/kr-stocks/components/kr-stock-create-dialog";
 
-const corporation = {
-  accMt: 12,
-  address: "경기도 수원시 영통구 삼성로 129",
-  ceoNm: "한종희",
-  code: "00126380",
+const krStock = {
+  code: "005930",
+  corporationCode: "00126380",
   createdAt: "2026-07-25T10:00:00+09:00",
-  estDt: "1969-01-13",
-  hmUrl: "https://www.samsung.com/sec",
-  indutyCode: "264",
-  info: null,
+  listDd: "1975-06-11",
+  listShrs: 5_969_782_550,
+  marketType: "KOSDAQ",
   name: "삼성전자",
-  nameEn: "Samsung Electronics",
+  parval: 100,
+  stockType: "보통주",
   updatedAt: "2026-07-26T11:00:00+09:00",
 };
 
-describe("CorporationUpsertDialog", () => {
+describe("KrStockUpsertDialog", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
   });
 
-  it("법인 코드를 검증해 법인 생성·갱신 API로 전송한다", async () => {
+  it("선택한 대체 시장을 KR 종목 생성·갱신 API로 전송한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
-      new Response(JSON.stringify(corporation), {
+      new Response(JSON.stringify(krStock), {
         headers: { "Content-Type": "application/json" },
         status: 200,
       }),
@@ -48,17 +46,31 @@ describe("CorporationUpsertDialog", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <CorporationUpsertDialog open onOpenChange={onOpenChange} />
+        <KrStockUpsertDialog open onOpenChange={onOpenChange} />
       </QueryClientProvider>,
     );
 
     fireEvent.change(screen.getByRole("textbox", { name: "DART 법인 코드" }), {
       target: { value: "00126380" },
     });
+    fireEvent.change(screen.getByRole("textbox", { name: "종목 코드" }), {
+      target: { value: "005930" },
+    });
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "대체 상장 시장 (선택)" }),
+    );
+    fireEvent.click(screen.getByRole("option", { name: "KOSDAQ (K)" }));
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks");
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
+      JSON.stringify({
+        corporationClass: "K",
+        corporationCode: "00126380",
+        stockCode: "005930",
+      }),
+    );
   });
 });

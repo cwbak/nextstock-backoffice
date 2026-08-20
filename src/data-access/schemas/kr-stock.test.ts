@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   krStockSchema,
   krStockSyncResultSchema,
+  krStockUpsertPayloadSchema,
 } from "@/data-access/schemas/kr-stock";
 
 const krStockResponse = {
@@ -62,5 +63,28 @@ describe("krStockSchema", () => {
       fetchedCount: 2_785,
       updatedCount: 12,
     });
+  });
+
+  it.each(["Y", "K"] as const)(
+    "생성·갱신 요청의 대체 시장 %s를 허용한다",
+    (corporationClass) => {
+      const payload = {
+        corporationClass,
+        corporationCode: "00126380",
+        stockCode: "005930",
+      };
+
+      expect(krStockUpsertPayloadSchema.parse(payload)).toEqual(payload);
+    },
+  );
+
+  it("생성·갱신 요청에서 지원하지 않는 대체 시장을 거부한다", () => {
+    expect(() =>
+      krStockUpsertPayloadSchema.parse({
+        corporationClass: "N",
+        corporationCode: "00126380",
+        stockCode: "005930",
+      }),
+    ).toThrow();
   });
 });

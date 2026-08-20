@@ -7,33 +7,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  corporationClassSchema,
-  type CorporationClass,
-} from "@/data-access/schemas/corporation";
+  krStockCorporationClassSchema,
+  type KrStockCorporationClass,
+} from "@/data-access/schemas/kr-stock";
 
 const corporationClassOptions = [
   { label: "KOSPI (Y)", value: "Y" },
   { label: "KOSDAQ (K)", value: "K" },
 ] as const;
 
-interface CorporationClassSelectProps {
+interface KrStockCorporationClassSelectProps {
   "aria-invalid"?: boolean;
   id: string;
-  onValueChange: (value: CorporationClass) => void;
-  value: CorporationClass | undefined;
+  onValueChange: (value: KrStockCorporationClass) => void;
+  value: KrStockCorporationClass | undefined;
 }
 
-export function CorporationClassSelect({
+export function KrStockCorporationClassSelect({
   "aria-invalid": ariaInvalid,
   id,
   onValueChange,
   value,
-}: CorporationClassSelectProps) {
+}: KrStockCorporationClassSelectProps) {
   return (
     <Select
       value={value ?? ""}
       onValueChange={(nextValue) => {
-        const result = corporationClassSchema.safeParse(nextValue);
+        const result = krStockCorporationClassSchema.safeParse(nextValue);
 
         if (result.success) {
           onValueChange(result.data);

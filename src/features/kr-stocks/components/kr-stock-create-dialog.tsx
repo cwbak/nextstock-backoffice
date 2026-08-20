@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import {
   krStockUpsertPayloadSchema,
   type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
+import { KrStockCorporationClassSelect } from "@/features/kr-stocks/components/kr-stock-corporation-class-select";
 
 interface KrStockUpsertDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -34,6 +35,7 @@ interface KrStockUpsertDialogProps {
 }
 
 const upsertFieldNames = new Set<keyof KrStockUpsertPayload>([
+  "corporationClass",
   "corporationCode",
   "stockCode",
 ]);
@@ -53,6 +55,7 @@ function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
   const queryClient = useQueryClient();
   const {
     clearErrors,
+    control,
     formState: { errors },
     handleSubmit,
     register,
@@ -128,6 +131,30 @@ function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
           />
           <FieldDescription>대문자 또는 숫자 6자리</FieldDescription>
           <FieldError errors={[errors.stockCode]} />
+        </Field>
+        <Field
+          className="sm:col-span-2"
+          data-invalid={Boolean(errors.corporationClass)}
+        >
+          <FieldLabel htmlFor="create-kr-stock-corporation-class">
+            대체 상장 시장 (선택)
+          </FieldLabel>
+          <Controller
+            control={control}
+            name="corporationClass"
+            render={({ field }) => (
+              <KrStockCorporationClassSelect
+                aria-invalid={Boolean(errors.corporationClass)}
+                id="create-kr-stock-corporation-class"
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+          <FieldDescription>
+            DART 시장 구분이 Y/K가 아닐 때만 사용합니다.
+          </FieldDescription>
+          <FieldError errors={[errors.corporationClass]} />
         </Field>
       </FieldGroup>
       {mutation.isError ? (
