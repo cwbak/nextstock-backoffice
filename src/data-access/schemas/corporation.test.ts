@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   corporationFormSchema,
   corporationSyncResultSchema,
+  corporationUpsertPayloadSchema,
 } from "@/data-access/schemas/corporation";
 
 describe("corporation schemas", () => {
@@ -31,5 +32,23 @@ describe("corporation schemas", () => {
         summary: "",
       }).nameEn,
     ).toBe("");
+  });
+
+  it.each(["Y", "K"] as const)(
+    "법인 생성·갱신 요청의 대체 시장 %s를 허용한다",
+    (corporationClass) => {
+      const payload = { code: "00126380", corporationClass };
+
+      expect(corporationUpsertPayloadSchema.parse(payload)).toEqual(payload);
+    },
+  );
+
+  it("법인 생성·갱신 요청에서 지원하지 않는 대체 시장을 거부한다", () => {
+    expect(() =>
+      corporationUpsertPayloadSchema.parse({
+        code: "00126380",
+        corporationClass: "N",
+      }),
+    ).toThrow();
   });
 });

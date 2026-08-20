@@ -55,10 +55,17 @@ describe("CorporationUpsertDialog", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "DART 법인 코드" }), {
       target: { value: "00126380" },
     });
+    fireEvent.click(
+      screen.getByRole("combobox", { name: "대체 상장 시장 (선택)" }),
+    );
+    fireEvent.click(screen.getByRole("option", { name: "KOSDAQ (K)" }));
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations");
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
+      JSON.stringify({ code: "00126380", corporationClass: "K" }),
+    );
   });
 });
