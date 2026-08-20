@@ -28,6 +28,7 @@ import {
   type KrStockUpsertPayload,
 } from "@/data-access/schemas/kr-stock";
 import { KrStockCorporationClassSelect } from "@/features/kr-stocks/components/kr-stock-corporation-class-select";
+import { KrStockFallbackListDateField } from "@/features/kr-stocks/components/kr-stock-fallback-list-date-field";
 
 interface KrStockUpsertDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -37,6 +38,7 @@ interface KrStockUpsertDialogProps {
 const upsertFieldNames = new Set<keyof KrStockUpsertPayload>([
   "corporationClass",
   "corporationCode",
+  "listDd",
   "stockCode",
 ]);
 
@@ -132,10 +134,7 @@ function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
           <FieldDescription>대문자 또는 숫자 6자리</FieldDescription>
           <FieldError errors={[errors.stockCode]} />
         </Field>
-        <Field
-          className="sm:col-span-2"
-          data-invalid={Boolean(errors.corporationClass)}
-        >
+        <Field data-invalid={Boolean(errors.corporationClass)}>
           <FieldLabel htmlFor="create-kr-stock-corporation-class">
             대체 상장 시장 (선택)
           </FieldLabel>
@@ -156,6 +155,12 @@ function KrStockUpsertForm({ onCancel, onSaved }: KrStockUpsertFormProps) {
           </FieldDescription>
           <FieldError errors={[errors.corporationClass]} />
         </Field>
+        <KrStockFallbackListDateField
+          error={errors.listDd}
+          registration={register("listDd", {
+            setValueAs: (value: unknown) => (value === "" ? undefined : value),
+          })}
+        />
       </FieldGroup>
       {mutation.isError ? (
         <MutationErrorAlert message={getErrorMessage(mutation.error)} />

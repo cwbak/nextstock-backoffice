@@ -116,6 +116,28 @@ describe("KR stock mutations", () => {
     });
   });
 
+  it("KIS 상장일이 비어 있을 때 사용할 대체 상장일을 전송한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(krStock));
+
+    await expect(
+      upsertKrStock({
+        corporationCode: "00126380",
+        listDd: "1975-06-11",
+        stockCode: "005930",
+      }),
+    ).resolves.toEqual(krStock);
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(parseRequestBody(request?.body)).toEqual({
+      corporationCode: "00126380",
+      listDd: "1975-06-11",
+      stockCode: "005930",
+    });
+  });
+
   it("nullable 상장 정보를 포함한 수정 payload를 전송한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")

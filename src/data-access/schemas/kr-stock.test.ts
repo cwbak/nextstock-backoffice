@@ -87,4 +87,20 @@ describe("krStockSchema", () => {
       }),
     ).toThrow();
   });
+
+  it("생성·갱신 요청의 선택적 대체 상장일을 YYYY-MM-DD 형식으로 검증한다", () => {
+    const payload = {
+      corporationCode: "00126380",
+      listDd: "1975-06-11",
+      stockCode: "005930",
+    };
+
+    expect(krStockUpsertPayloadSchema.parse(payload)).toEqual(payload);
+    expect(() =>
+      krStockUpsertPayloadSchema.parse({
+        ...payload,
+        listDd: "19750611",
+      }),
+    ).toThrow();
+  });
 });

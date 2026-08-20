@@ -75,6 +75,7 @@ export const krStockUpsertPayloadSchema = z
   .object({
     corporationClass: krStockCorporationClassSchema.optional(),
     corporationCode: corporationCodeSchema,
+    listDd: listDateSchema.optional(),
     stockCode: krStockCodeSchema,
   })
   .strict();

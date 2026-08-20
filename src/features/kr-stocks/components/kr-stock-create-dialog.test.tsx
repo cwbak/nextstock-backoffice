@@ -73,4 +73,48 @@ describe("KrStockUpsertDialog", () => {
       }),
     );
   });
+
+  it("입력한 대체 상장일을 KR 종목 생성·갱신 API로 전송한다", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(krStock), {
+        headers: { "Content-Type": "application/json" },
+        status: 200,
+      }),
+    );
+    const onOpenChange = vi.fn();
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        mutations: { retry: false },
+        queries: { retry: false },
+      },
+    });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <KrStockUpsertDialog open onOpenChange={onOpenChange} />
+      </QueryClientProvider>,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "DART 법인 코드" }), {
+      target: { value: "00126380" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "종목 코드" }), {
+      target: { value: "005930" },
+    });
+    fireEvent.change(screen.getByLabelText("대체 상장일 (선택)"), {
+      target: { value: "1975-06-11" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "저장" }));
+
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks");
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
+      JSON.stringify({
+        corporationCode: "00126380",
+        listDd: "1975-06-11",
+        stockCode: "005930",
+      }),
+    );
+  });
 });
