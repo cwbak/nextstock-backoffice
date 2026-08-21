@@ -51,7 +51,7 @@ describe("background job schemas", () => {
   it("KIS 전 종목 일봉 작업 등록 응답을 검증한다", () => {
     const response = {
       jobId: 52,
-      type: "kr_stocks_kis_daily",
+      type: "stocks_kis_daily",
       status: "RUNNING",
       statusUrl: "/admin/jobs/52",
       created: false,

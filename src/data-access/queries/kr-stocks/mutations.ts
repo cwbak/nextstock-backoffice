@@ -13,11 +13,9 @@ import {
 } from "@/data-access/schemas/kr-stock";
 
 export function syncKrStocks(): Promise<BackgroundJobRegistration> {
-  return apiRequest(
-    "/admin/kr-stocks/sync",
-    krStocksSyncJobRegistrationSchema,
-    { method: "POST" },
-  );
+  return apiRequest("/admin/stocks/sync", krStocksSyncJobRegistrationSchema, {
+    method: "POST",
+  });
 }
 
 export async function upsertKrStock(
@@ -26,7 +24,7 @@ export async function upsertKrStock(
   const parsedPayload = krStockUpsertPayloadSchema.parse(payload);
 
   return apiRequest(
-    "/admin/kr-stocks",
+    "/admin/stocks",
     krStockSchema,
     { method: "POST" },
     parsedPayload,
@@ -40,7 +38,7 @@ export async function updateKrStock(
   const parsedPayload = krStockUpdatePayloadSchema.parse(updatePayload);
 
   return apiRequest(
-    `/admin/kr-stocks/${encodeURIComponent(code)}`,
+    `/admin/stocks/${encodeURIComponent(code)}`,
     krStockSchema,
     { method: "PUT" },
     parsedPayload,

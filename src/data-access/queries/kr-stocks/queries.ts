@@ -10,7 +10,7 @@ import {
 export const krStocksQueryOptions = queryOptions({
   queryKey: krStockKeys.list(),
   queryFn: ({ signal }) =>
-    apiRequest("/admin/kr-stocks", krStockListSchema, { signal }),
+    apiRequest("/admin/stocks", krStockListSchema, { signal }),
   staleTime: 30 * 1000,
 });
 
@@ -19,7 +19,7 @@ export function krStockNameAliasesQueryOptions(code: string) {
     queryKey: krStockKeys.nameAliases(code),
     queryFn: ({ signal }) =>
       apiRequest(
-        `/admin/kr-stocks/${encodeURIComponent(code)}/name-aliases`,
+        `/admin/stocks/${encodeURIComponent(code)}/name-aliases`,
         krStockNameAliasesSchema,
         { signal },
       ),

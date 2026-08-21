@@ -51,7 +51,7 @@ describe("KR stock mutations", () => {
   it("요청 본문 없이 KRX 전체 종목 동기화를 요청한다", async () => {
     const registration = {
       jobId: 44,
-      type: "kr_stocks_sync",
+      type: "stocks_sync",
       status: "QUEUED",
       statusUrl: "/admin/jobs/44",
       created: true,
@@ -65,7 +65,7 @@ describe("KR stock mutations", () => {
 
     const request = fetchMock.mock.calls[0]?.[1];
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/sync");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stocks/sync");
     expect(request?.method).toBe("POST");
     expect(request?.body).toBeUndefined();
   });
@@ -88,7 +88,7 @@ describe("KR stock mutations", () => {
 
     const request = fetchMock.mock.calls[0]?.[1];
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stocks");
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
       corporationCode: "00126380",
@@ -177,7 +177,7 @@ describe("KR stock mutations", () => {
     ).resolves.toEqual(krStock);
 
     expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/005930");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stocks/005930");
 
     const request = fetchMock.mock.calls[0]?.[1];
 

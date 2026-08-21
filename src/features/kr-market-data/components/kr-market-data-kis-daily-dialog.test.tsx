@@ -29,7 +29,7 @@ describe("KrMarketDataKisDailyDialog", () => {
     };
     const registration = {
       jobId: 52,
-      type: "kr_stocks_kis_daily",
+      type: "stocks_kis_daily",
       status: "QUEUED",
       statusUrl: "/admin/jobs/52",
       created: true,
@@ -37,7 +37,7 @@ describe("KrMarketDataKisDailyDialog", () => {
     };
     const completedJob = {
       jobId: 52,
-      type: "kr_stocks_kis_daily",
+      type: "stocks_kis_daily",
       status: "COMPLETED",
       stage: "COMPLETED",
       parameters: { from: "2026-01-01", to: "2026-08-10" },
@@ -102,7 +102,7 @@ describe("KrMarketDataKisDailyDialog", () => {
       queryKey: krMarketDataKeys.lists(),
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/kr-stocks/market-data/kis-daily",
+      "/admin/stocks/market-data/kis-daily",
     );
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/52");
   });

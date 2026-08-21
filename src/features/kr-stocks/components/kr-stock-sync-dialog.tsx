@@ -36,7 +36,7 @@ export function KrStockSyncDialog({
 }: KrStockSyncDialogProps) {
   const queryClient = useQueryClient();
   const jobTracker = useBackgroundJob({
-    expectedType: "kr_stocks_sync",
+    expectedType: "stocks_sync",
     resultSchema: krStockSyncResultSchema,
     onCompleted: async (result) => {
       await queryClient.invalidateQueries({ queryKey: krStockKeys.all });

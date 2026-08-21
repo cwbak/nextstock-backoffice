@@ -3,8 +3,8 @@ import { z } from "zod";
 export const backgroundJobTypeSchema = z.enum([
   "corporations_sync",
   "equity_investments_all",
-  "kr_stocks_kis_daily",
-  "kr_stocks_sync",
+  "stocks_kis_daily",
+  "stocks_sync",
 ]);
 
 export const backgroundJobStatusSchema = z.enum([
@@ -73,12 +73,12 @@ export const equityInvestmentsAllJobRegistrationSchema =
 
 export const krStocksSyncJobRegistrationSchema =
   backgroundJobRegistrationSchema.extend({
-    type: z.literal("kr_stocks_sync"),
+    type: z.literal("stocks_sync"),
   });
 
 export const krStocksKisDailyJobRegistrationSchema =
   backgroundJobRegistrationSchema.extend({
-    type: z.literal("kr_stocks_kis_daily"),
+    type: z.literal("stocks_kis_daily"),
   });
 
 export type BackgroundJob = z.infer<typeof backgroundJobSchema>;

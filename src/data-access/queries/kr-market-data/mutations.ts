@@ -18,7 +18,7 @@ export function createKrxDailyMarketData(
   const body = krMarketDataCreateAllPayloadSchema.parse(payload);
 
   return apiRequest(
-    "/admin/kr-stocks/market-data/krx-daily",
+    "/admin/stocks/market-data/krx-daily",
     krMarketDataCreateResultSchema,
     { method: "POST" },
     body,
@@ -31,7 +31,7 @@ export function createKisDailyMarketData(
   const body = krMarketDataCreateAllPayloadSchema.parse(payload);
 
   return apiRequest(
-    "/admin/kr-stocks/market-data/kis-daily",
+    "/admin/stocks/market-data/kis-daily",
     krStocksKisDailyJobRegistrationSchema,
     { method: "POST" },
     body,
@@ -44,7 +44,7 @@ export function createKrMarketData(
   const { stockCode, ...body } = krMarketDataCreatePayloadSchema.parse(payload);
 
   return apiRequest(
-    `/admin/kr-stocks/${encodeURIComponent(stockCode)}/market-data`,
+    `/admin/stocks/${encodeURIComponent(stockCode)}/market-data`,
     krMarketDataCreateResultSchema,
     { method: "POST" },
     body,

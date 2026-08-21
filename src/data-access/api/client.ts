@@ -15,8 +15,7 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "code must contain 8 digits": "법인 코드는 숫자 8자리여야 합니다.",
   "corporation code must contain 8 digits":
     "법인 코드는 숫자 8자리여야 합니다.",
-  "corporation has KR stocks":
-    "연결된 KR 종목이 있어 법인을 삭제할 수 없습니다.",
+  "corporation has stocks": "연결된 KR 종목이 있어 법인을 삭제할 수 없습니다.",
   "corporation is not listed on kospi or kosdaq":
     "KOSPI 또는 KOSDAQ 상장 법인이 아닙니다.",
   "corporation not found": "법인을 찾을 수 없습니다.",
@@ -44,11 +43,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "invalid kis response": "한국투자증권 종목 응답 값이 올바르지 않습니다.",
   "id must be a positive integer": "ID는 양의 정수여야 합니다.",
   "job id must be a positive integer": "작업 ID는 양의 정수여야 합니다.",
-  "KR stock not found": "KR 종목을 찾을 수 없습니다.",
-  "kr stock code does not match request":
-    "요청한 종목 코드와 조회된 KR 종목 코드가 다릅니다.",
-  "kr stock lookup failed": "KR 종목 정보를 조회하지 못했습니다.",
-  "kr stock not found": "KR 종목을 찾을 수 없습니다.",
+  "stock lookup failed": "KR 종목 정보를 조회하지 못했습니다.",
+  "stock not found": "KR 종목을 찾을 수 없습니다.",
   "krx website market data lookup failed":
     "KRX 정보데이터시스템에서 전체 종목 일봉을 조회하지 못했습니다.",
   "krx stocks lookup failed": "KRX 전체 종목을 조회하지 못했습니다.",

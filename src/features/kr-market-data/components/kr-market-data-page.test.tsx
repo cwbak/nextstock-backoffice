@@ -113,7 +113,7 @@ describe("KrMarketDataPage", () => {
       expect(screen.getByText("70,500")).toBeInTheDocument();
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      `/admin/kr-stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
+      `/admin/stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
     );
     expect(screen.getByText("870,000,000,000")).toBeInTheDocument();
     expect(

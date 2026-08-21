@@ -104,7 +104,7 @@ describe("KrStockEditDialog", () => {
     });
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/kr-stocks/005930/name-aliases",
+      "/admin/stocks/005930/name-aliases",
     );
     expect(aliasesInput).toHaveValue("삼성전자 보통주\n삼전");
 
@@ -115,7 +115,7 @@ describe("KrStockEditDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
-    expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/kr-stocks/005930");
+    expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/stocks/005930");
     expect(fetchMock.mock.calls[1]?.[1]?.method).toBe("PUT");
     expect(parseRequestBody(fetchMock.mock.calls[1]?.[1]?.body)).toEqual({
       aliases,

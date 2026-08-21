@@ -22,7 +22,7 @@ function buildMarketDataPath(params: KrMarketDataListParams) {
 
   const query = searchParams.toString();
 
-  return `/admin/kr-stocks/${encodeURIComponent(stockCode)}/market-data${query ? `?${query}` : ""}`;
+  return `/admin/stocks/${encodeURIComponent(stockCode)}/market-data${query ? `?${query}` : ""}`;
 }
 
 export function getNextKrMarketDataEnd(

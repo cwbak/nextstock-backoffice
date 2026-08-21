@@ -108,7 +108,7 @@ describe("KrStockUpsertDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stocks");
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
     expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
       JSON.stringify({
@@ -156,7 +156,7 @@ describe("KrStockUpsertDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stocks");
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
     expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
       JSON.stringify({

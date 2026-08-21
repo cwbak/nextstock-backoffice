@@ -24,7 +24,7 @@ describe("KrStockSyncDialog", () => {
     };
     const registration = {
       jobId: 44,
-      type: "kr_stocks_sync",
+      type: "stocks_sync",
       status: "QUEUED",
       statusUrl: "/admin/jobs/44",
       created: true,
@@ -32,7 +32,7 @@ describe("KrStockSyncDialog", () => {
     };
     const completedJob = {
       jobId: 44,
-      type: "kr_stocks_sync",
+      type: "stocks_sync",
       status: "COMPLETED",
       stage: "COMPLETED",
       parameters: {},
@@ -87,7 +87,7 @@ describe("KrStockSyncDialog", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: krStockKeys.all,
     });
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/kr-stocks/sync");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stocks/sync");
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/44");
   });
 });

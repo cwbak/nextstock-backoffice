@@ -40,7 +40,7 @@ export function KrMarketDataKisDailyDialog({
   const { createSubmit, errors, register, resetForm } =
     useKrMarketDataDateRangeForm();
   const jobTracker = useBackgroundJob({
-    expectedType: "kr_stocks_kis_daily",
+    expectedType: "stocks_kis_daily",
     resultSchema: krMarketDataKisDailyResultSchema,
     onCompleted: async (result) => {
       await queryClient.invalidateQueries({

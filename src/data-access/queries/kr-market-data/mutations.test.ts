@@ -47,7 +47,7 @@ describe("KR market data mutations", () => {
     const request = fetchMock.mock.calls[0]?.[1];
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/kr-stocks/market-data/krx-daily",
+      "/admin/stocks/market-data/krx-daily",
     );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
@@ -78,7 +78,7 @@ describe("KR market data mutations", () => {
     const request = fetchMock.mock.calls[0]?.[1];
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/kr-stocks/005930/market-data",
+      "/admin/stocks/005930/market-data",
     );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
@@ -90,7 +90,7 @@ describe("KR market data mutations", () => {
   it("KIS 전 종목 기간 일봉 작업을 등록한다", async () => {
     const registration = {
       jobId: 52,
-      type: "kr_stocks_kis_daily",
+      type: "stocks_kis_daily",
       status: "QUEUED",
       statusUrl: "/admin/jobs/52",
       created: true,
@@ -113,7 +113,7 @@ describe("KR market data mutations", () => {
     const request = fetchMock.mock.calls[0]?.[1];
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/kr-stocks/market-data/kis-daily",
+      "/admin/stocks/market-data/kis-daily",
     );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
