@@ -29,6 +29,7 @@ import { KrStockUpsertDialog } from "@/features/kr-stocks/components/kr-stock-cr
 import { KrStockEditDialog } from "@/features/kr-stocks/components/kr-stock-edit-dialog";
 import { KrStockSyncDialog } from "@/features/kr-stocks/components/kr-stock-sync-dialog";
 import { KrStockSyncSummary } from "@/features/kr-stocks/components/kr-stock-sync-summary";
+import { KrStockThemeAddDialog } from "@/features/kr-stocks/components/kr-stock-theme-add-dialog";
 import { KrStocksPageActions } from "@/features/kr-stocks/components/kr-stocks-page-actions";
 import { KrStocksEmptyState } from "@/features/kr-stocks/components/kr-stocks-empty-state";
 import {
@@ -63,6 +64,9 @@ export function KrStocksPage() {
   const [syncOpen, setSyncOpen] = useState(false);
   const [syncResult, setSyncResult] = useState<KrStockSyncResult | null>(null);
   const [editingKrStock, setEditingKrStock] = useState<KrStock | null>(null);
+  const [themeAddingKrStock, setThemeAddingKrStock] = useState<KrStock | null>(
+    null,
+  );
   const [viewingCorporation, setViewingCorporation] =
     useState<Corporation | null>(null);
   const corporationsByCode = useMemo(
@@ -190,6 +194,7 @@ export function KrStocksPage() {
               corporationsByCode={corporationsByCode}
               krStocks={sortedKrStocks}
               resetKey={tableResetKey}
+              onAddToTheme={setThemeAddingKrStock}
               onEdit={setEditingKrStock}
               onSort={updateSort}
               onView={setViewingCorporation}
@@ -219,6 +224,14 @@ export function KrStocksPage() {
         onOpenChange={(open) => {
           if (!open) {
             setEditingKrStock(null);
+          }
+        }}
+      />
+      <KrStockThemeAddDialog
+        krStock={themeAddingKrStock}
+        onOpenChange={(open) => {
+          if (!open) {
+            setThemeAddingKrStock(null);
           }
         }}
       />

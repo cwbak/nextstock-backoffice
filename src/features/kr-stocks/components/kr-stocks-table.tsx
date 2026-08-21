@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, TagsIcon } from "lucide-react";
 
 import { DataTableDetailButton } from "@/components/common/data-table-detail-button";
 import { KrStockStatusBadge } from "@/components/common/kr-stock-status-badge";
@@ -32,12 +32,30 @@ export type KrStockSortField = "name" | "listDd";
 
 interface KrStockRowActionsProps {
   krStock: KrStock;
+  onAddToTheme: (krStock: KrStock) => void;
   onEdit: (krStock: KrStock) => void;
 }
 
-function KrStockRowActions({ krStock, onEdit }: KrStockRowActionsProps) {
+function KrStockRowActions({
+  krStock,
+  onAddToTheme,
+  onEdit,
+}: KrStockRowActionsProps) {
   return (
     <div className="flex justify-end gap-1">
+      <Button
+        aria-label={`${krStock.name} 테마에 추가`}
+        size="icon-sm"
+        title="테마에 추가"
+        type="button"
+        variant="ghost"
+        onClick={(event) => {
+          event.stopPropagation();
+          onAddToTheme(krStock);
+        }}
+      >
+        <TagsIcon aria-hidden="true" data-icon="inline-start" />
+      </Button>
       <Button
         aria-label={`${krStock.name} 수정`}
         size="icon-sm"
@@ -58,6 +76,7 @@ function KrStockRowActions({ krStock, onEdit }: KrStockRowActionsProps) {
 interface KrStocksTableProps {
   corporationsByCode: ReadonlyMap<string, Corporation>;
   krStocks: ReadonlyArray<KrStock>;
+  onAddToTheme: (krStock: KrStock) => void;
   onEdit: (krStock: KrStock) => void;
   onSort: (field: KrStockSortField) => void;
   onView: (corporation: Corporation) => void;
@@ -69,6 +88,7 @@ interface KrStocksTableProps {
 export function KrStocksTable({
   corporationsByCode,
   krStocks,
+  onAddToTheme,
   onEdit,
   onSort,
   onView,
@@ -205,7 +225,11 @@ export function KrStocksTable({
                   {formatDateTime(krStock.updatedAt)}
                 </TableCell>
                 <TableCell className="pr-4">
-                  <KrStockRowActions krStock={krStock} onEdit={onEdit} />
+                  <KrStockRowActions
+                    krStock={krStock}
+                    onAddToTheme={onAddToTheme}
+                    onEdit={onEdit}
+                  />
                 </TableCell>
               </VirtualizedDataTableRow>
             );

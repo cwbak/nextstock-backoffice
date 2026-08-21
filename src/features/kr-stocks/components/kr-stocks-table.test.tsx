@@ -44,6 +44,7 @@ describe("KrStocksTable", () => {
 
   it("종목 상태를 표시하고 행·종목명 상세 및 수정 동작을 제공한다", () => {
     const onEdit = vi.fn();
+    const onAddToTheme = vi.fn();
     const onSort = vi.fn();
     const onView = vi.fn();
 
@@ -51,6 +52,7 @@ describe("KrStocksTable", () => {
       <KrStocksTable
         corporationsByCode={new Map([[corporation.code, corporation]])}
         krStocks={[krStock]}
+        onAddToTheme={onAddToTheme}
         onEdit={onEdit}
         onSort={onSort}
         onView={onView}
@@ -89,6 +91,12 @@ describe("KrStocksTable", () => {
     expect(onView).toHaveBeenCalledTimes(2);
 
     fireEvent.click(
+      screen.getByRole("button", { name: `${krStock.name} 테마에 추가` }),
+    );
+    expect(onAddToTheme).toHaveBeenCalledWith(krStock);
+    expect(onView).toHaveBeenCalledTimes(2);
+
+    fireEvent.click(
       screen.getByRole("button", { name: `${krStock.name} 수정` }),
     );
     expect(onEdit).toHaveBeenCalledWith(krStock);
@@ -105,6 +113,7 @@ describe("KrStocksTable", () => {
       <KrStocksTable
         corporationsByCode={new Map()}
         krStocks={[krStock]}
+        onAddToTheme={vi.fn()}
         onEdit={vi.fn()}
         onSort={vi.fn()}
         onView={onView}
