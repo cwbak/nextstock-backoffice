@@ -4,10 +4,8 @@ import {
   type BackgroundJobRegistration,
 } from "@/data-access/schemas/background-job";
 import {
-  equityInvestmentBulkCreatePayloadSchema,
   equityInvestmentCreatePayloadSchema,
   equityInvestmentCreateResultSchema,
-  type EquityInvestmentBulkCreatePayload,
   type EquityInvestmentCreatePayload,
   type EquityInvestmentCreateResult,
 } from "@/data-access/schemas/equity-investment";
@@ -25,15 +23,10 @@ export async function createEquityInvestments(
   );
 }
 
-export async function createAllEquityInvestments(
-  payload: EquityInvestmentBulkCreatePayload,
-): Promise<BackgroundJobRegistration> {
-  const parsedPayload = equityInvestmentBulkCreatePayloadSchema.parse(payload);
-
+export async function createAllEquityInvestments(): Promise<BackgroundJobRegistration> {
   return apiRequest(
     "/admin/equity_investments/all",
     equityInvestmentsAllJobRegistrationSchema,
     { method: "POST" },
-    parsedPayload,
   );
 }

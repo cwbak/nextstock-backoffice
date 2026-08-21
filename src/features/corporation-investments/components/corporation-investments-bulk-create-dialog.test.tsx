@@ -19,8 +19,6 @@ describe("CorporationInvestmentsBulkCreateDialog", () => {
 
   it("전체 법인 작업을 등록하고 완료 결과로 지분투자 캐시를 갱신한다", async () => {
     const result = {
-      bsnsYear: "2025",
-      reprtCode: 4,
       corporationCount: 2_400,
       processedCount: 2_398,
       failedCount: 2,
@@ -40,7 +38,7 @@ describe("CorporationInvestmentsBulkCreateDialog", () => {
       type: "equity_investments_all",
       status: "COMPLETED",
       stage: "COMPLETED",
-      parameters: { bsnsYear: "2025", reprtCode: 4 },
+      parameters: {},
       progress: {
         current: 2_400,
         total: 2_400,
@@ -90,16 +88,16 @@ describe("CorporationInvestmentsBulkCreateDialog", () => {
       </QueryClientProvider>,
     );
 
-    fireEvent.change(screen.getByLabelText("사업연도"), {
-      target: { value: "2025" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: "전체 DRAFT 생성" }));
+    expect(screen.queryByLabelText("사업연도")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("보고서 구분")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "전체 동기화" }));
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(result));
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: equityInvestmentKeys.all,
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/equity_investments/all");
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBeUndefined();
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/43");
   });
 });

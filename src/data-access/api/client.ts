@@ -11,7 +11,6 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "background job not found": "백그라운드 작업을 찾을 수 없습니다.",
   "background jobs are unavailable":
     "백그라운드 작업 저장소가 구성되지 않았습니다.",
-  "business year must contain 4 digits": "사업연도는 숫자 4자리여야 합니다.",
   "code must contain 8 digits": "법인 코드는 숫자 8자리여야 합니다.",
   "corporation code must contain 8 digits":
     "법인 코드는 숫자 8자리여야 합니다.",
@@ -23,8 +22,6 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
     "종목 코드는 대문자 또는 숫자 6자리여야 합니다.",
   "dart corporation investments lookup failed":
     "DART 출자현황을 조회하지 못했습니다.",
-  "dart corporation investments not found":
-    "DART에서 해당 출자현황을 찾을 수 없습니다.",
   "dart corporation codes lookup failed":
     "DART 고유번호를 조회하지 못했습니다.",
   "dart company lookup failed": "DART 기업개황을 조회하지 못했습니다.",
@@ -61,7 +58,6 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "parent theme not found": "상위 테마를 찾을 수 없습니다.",
   "period must be daily, weekly, or monthly":
     "캔들 주기는 일봉, 주봉, 월봉 중에서 선택해 주세요.",
-  "report code must be between 1 and 4": "보고서 구분을 선택해 주세요.",
   "theme id must be a positive integer": "테마 ID는 양의 정수여야 합니다.",
   "stock already exists in theme": "이미 이 테마에 포함된 종목입니다.",
   "stock not found in theme": "이 테마에 포함된 종목을 찾을 수 없습니다.",

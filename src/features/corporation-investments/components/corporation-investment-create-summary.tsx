@@ -24,15 +24,15 @@ export function CorporationInvestmentCreateSummary({
   return (
     <Alert>
       <CircleCheckIcon aria-hidden="true" />
-      <AlertTitle>지분투자 DRAFT 생성을 완료했습니다</AlertTitle>
+      <AlertTitle>출자현황 동기화를 완료했습니다</AlertTitle>
       <AlertDescription>
-        {corporation?.name ?? result.corpCode} · {result.bsnsYear}년 · 조회{" "}
-        {result.fetchedCount.toLocaleString("ko-KR")}건 중{" "}
-        {result.upsertedCount.toLocaleString("ko-KR")}건 생성
+        {corporation?.name ?? result.corpCode} · DART 조회{" "}
+        {result.fetchedCount.toLocaleString("ko-KR")}건 · 반영{" "}
+        {result.upsertedCount.toLocaleString("ko-KR")}건
       </AlertDescription>
       <AlertAction>
         <Button
-          aria-label="DRAFT 생성 결과 닫기"
+          aria-label="출자현황 동기화 결과 닫기"
           size="icon-sm"
           type="button"
           variant="ghost"

@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
 import { Clock3Icon } from "lucide-react";
 
 import { BackgroundJobStatusAlert } from "@/components/common/background-job-status-alert";
@@ -15,38 +14,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { equityInvestmentKeys } from "@/data-access/queries/equity-investments/keys";
 import { createAllEquityInvestments } from "@/data-access/queries/equity-investments/mutations";
 import {
-  equityInvestmentBulkCreatePayloadSchema,
   equityInvestmentBulkCreateResultSchema,
-  type EquityInvestmentBulkCreatePayload,
   type EquityInvestmentBulkCreateResult,
 } from "@/data-access/schemas/equity-investment";
-import { CorporationInvestmentPeriodFields } from "@/features/corporation-investments/components/corporation-investment-period-fields";
-import { getDefaultCorporationInvestmentPeriod } from "@/features/corporation-investments/corporation-investment-period";
 
 interface CorporationInvestmentsBulkCreateDialogProps {
   corporationCount: number;
   onOpenChange: (open: boolean) => void;
   onCreated: (result: EquityInvestmentBulkCreateResult) => void;
   open: boolean;
-}
-
-const bulkCreateFieldNames = new Set<keyof EquityInvestmentBulkCreatePayload>([
-  "bsnsYear",
-  "reprtCode",
-]);
-
-function isBulkCreateFieldName(
-  value: PropertyKey,
-): value is keyof EquityInvestmentBulkCreatePayload {
-  return bulkCreateFieldNames.has(
-    value as keyof EquityInvestmentBulkCreatePayload,
-  );
 }
 
 export function CorporationInvestmentsBulkCreateDialog({
@@ -56,17 +37,6 @@ export function CorporationInvestmentsBulkCreateDialog({
   open,
 }: CorporationInvestmentsBulkCreateDialogProps) {
   const queryClient = useQueryClient();
-  const {
-    clearErrors,
-    control,
-    formState: { errors },
-    handleSubmit,
-    register,
-    reset,
-    setError,
-  } = useForm<EquityInvestmentBulkCreatePayload>({
-    defaultValues: getDefaultCorporationInvestmentPeriod(),
-  });
   const jobTracker = useBackgroundJob({
     expectedType: "equity_investments_all",
     resultSchema: equityInvestmentBulkCreateResultSchema,
@@ -85,45 +55,26 @@ export function CorporationInvestmentsBulkCreateDialog({
 
   const changeOpen = (nextOpen: boolean) => {
     if (!nextOpen && !isBusy) {
-      clearErrors();
       mutation.reset();
       jobTracker.reset();
-      reset(getDefaultCorporationInvestmentPeriod());
     }
     onOpenChange(nextOpen);
   };
 
-  const submitForm = handleSubmit((values) => {
-    clearErrors();
-    const result = equityInvestmentBulkCreatePayloadSchema.safeParse(values);
-
-    if (!result.success) {
-      for (const issue of result.error.issues) {
-        const fieldName = issue.path[0];
-
-        if (
-          typeof fieldName !== "undefined" &&
-          isBulkCreateFieldName(fieldName)
-        ) {
-          setError(fieldName, { message: issue.message });
-        }
-      }
-      return;
-    }
-
+  const synchronizeAll = () => {
     jobTracker.reset();
     mutation.reset();
-    mutation.mutate(result.data);
-  });
+    mutation.mutate();
+  };
 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>전체 법인 지분투자 DRAFT 생성</DialogTitle>
+          <DialogTitle>전체 법인 출자현황 동기화</DialogTitle>
           <DialogDescription>
-            등록된 모든 법인의 정기보고서를 순차 조회해 지분투자를 DRAFT로
-            추가합니다. 기존 지분투자는 갱신하지 않습니다.
+            등록된 모든 법인의 최신 출자현황 스냅샷을 DART에서 동기화합니다.
+            조회할 보고서는 서버가 현재 시점에 맞춰 결정합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
@@ -142,48 +93,24 @@ export function CorporationInvestmentsBulkCreateDialog({
             jobId={jobTracker.jobId}
           />
         ) : null}
-        <form
-          className="flex flex-col gap-4"
-          noValidate
-          onSubmit={(event) => void submitForm(event)}
-        >
-          <FieldGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Controller
-              control={control}
-              name="reprtCode"
-              render={({ field }) => (
-                <CorporationInvestmentPeriodFields
-                  businessYearError={errors.bsnsYear}
-                  businessYearRegistration={register("bsnsYear")}
-                  idPrefix="bulk-investment"
-                  reportCode={field.value}
-                  reportCodeError={errors.reprtCode}
-                  onReportCodeChange={field.onChange}
-                />
-              )}
-            />
-          </FieldGroup>
-          {jobTracker.errorMessage || mutation.isError ? (
-            <MutationErrorAlert
-              message={
-                jobTracker.errorMessage ?? getErrorMessage(mutation.error)
-              }
-            />
-          ) : null}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => changeOpen(false)}
-            >
-              {isBusy ? "닫기" : "취소"}
-            </Button>
-            <Button disabled={isBusy} type="submit">
-              {isBusy ? <Spinner data-icon="inline-start" /> : null}
-              {isBusy ? "작업 처리 중" : "전체 DRAFT 생성"}
-            </Button>
-          </DialogFooter>
-        </form>
+        {jobTracker.errorMessage || mutation.isError ? (
+          <MutationErrorAlert
+            message={jobTracker.errorMessage ?? getErrorMessage(mutation.error)}
+          />
+        ) : null}
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => changeOpen(false)}
+          >
+            {isBusy ? "닫기" : "취소"}
+          </Button>
+          <Button disabled={isBusy} type="button" onClick={synchronizeAll}>
+            {isBusy ? <Spinner data-icon="inline-start" /> : null}
+            {isBusy ? "동기화 중" : "전체 동기화"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

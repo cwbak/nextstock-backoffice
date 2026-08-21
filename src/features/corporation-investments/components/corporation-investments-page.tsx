@@ -88,8 +88,6 @@ export function CorporationInvestmentsPage() {
         corporation?.nameEn ?? "",
         investment.invName,
         investment.trmendBlceQotaRt ?? "",
-        investment.bsnsYear.toString(),
-        investment.status,
       ].some((value) => value.toLocaleLowerCase("ko-KR").includes(query));
     });
   }, [corporationsByCode, filterQuery, investmentsQuery.data]);
@@ -132,15 +130,15 @@ export function CorporationInvestmentsPage() {
               </Button>
               <Button type="button" onClick={() => setCreateOpen(true)}>
                 <PlusIcon aria-hidden="true" data-icon="inline-start" />
-                법인별 추가
+                법인별 동기화
               </Button>
               <Button type="button" onClick={() => setBulkCreateOpen(true)}>
                 <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
-                전체 법인 추가
+                전체 동기화
               </Button>
             </>
           }
-          description="확정된 지분투자를 조회하고 DART 정기보고서에서 검토용 DRAFT를 생성합니다."
+          description="법인별 최신 출자현황을 조회하고 DART 정기보고서에서 새 스냅샷을 동기화합니다."
           eyebrow="Equity investments"
           recordCount={investmentsQuery.data.length}
           title="출자현황"
@@ -159,13 +157,13 @@ export function CorporationInvestmentsPage() {
         ) : null}
         <DataTableToolbar
           label="출자현황 검색"
-          placeholder="보유 법인, 투자 대상, 사업연도, 상태, 지분율 검색"
+          placeholder="보유 법인, 투자 대상, 지분율 검색"
           query={tableState.q}
           onFilterChange={updateFilterQuery}
           onQueryChange={updateQuery}
         />
         <DataTableCard
-          description="상태가 OK인 법인별 지분투자를 사업연도와 함께 표시합니다."
+          description="법인별 최신 출자현황 스냅샷을 표시합니다."
           recordCount={filteredInvestments.length}
           title="지분투자 원장"
         >

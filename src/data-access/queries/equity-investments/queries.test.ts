@@ -7,8 +7,6 @@ const listResult = [
   {
     corpCode: "00126380",
     invName: "삼성디스플레이",
-    bsnsYear: 2026,
-    status: "OK",
     trmendBlceQotaRt: "84.80",
   },
 ] as const;

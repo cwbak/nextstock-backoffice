@@ -8,15 +8,11 @@ const investments: ReadonlyArray<EquityInvestment> = [
   {
     corpCode: "00126380",
     invName: "삼성디스플레이",
-    bsnsYear: 2026,
-    status: "OK",
     trmendBlceQotaRt: "84.80",
   },
   {
     corpCode: "00126380",
     invName: "비상장기업",
-    bsnsYear: 2025,
-    status: "OK",
     trmendBlceQotaRt: null,
   },
 ];
@@ -26,7 +22,7 @@ describe("CorporationInvestmentsTable", () => {
     cleanup();
   });
 
-  it("투자 대상과 사업연도, 상태, 지분율을 표시한다", () => {
+  it("투자 대상과 지분율을 표시한다", () => {
     render(
       <CorporationInvestmentsTable
         corporationsByCode={new Map()}
@@ -35,13 +31,11 @@ describe("CorporationInvestmentsTable", () => {
     );
 
     expect(
-      screen.getByRole("columnheader", { name: "사업연도" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("columnheader", { name: "사업연도" }),
+    ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "상태" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("2026년")).toBeInTheDocument();
-    expect(screen.getAllByText("OK")).toHaveLength(2);
+      screen.queryByRole("columnheader", { name: "상태" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("삼성디스플레이")).toBeInTheDocument();
     expect(screen.getByText("비상장기업")).toBeInTheDocument();
     expect(screen.getByText("-")).toBeInTheDocument();
