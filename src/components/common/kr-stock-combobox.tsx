@@ -113,6 +113,18 @@ export function KrStockCombobox({
             type="search"
             value={query}
             onChange={(event) => setQuery(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" || event.nativeEvent.isComposing) {
+                return;
+              }
+
+              event.preventDefault();
+              const firstMatchingStock = matchingStocks[0]?.stock;
+
+              if (firstMatchingStock) {
+                selectStock(firstMatchingStock.code);
+              }
+            }}
           />
         </div>
         <div
@@ -155,7 +167,7 @@ export function KrStockCombobox({
         </div>
         <p className="px-1 text-xs text-muted-foreground">
           {query.trim()
-            ? `최대 ${maximumVisibleStocks}개 결과를 표시합니다.`
+            ? `최대 ${maximumVisibleStocks}개 결과를 표시합니다. Enter로 첫 결과를 선택할 수 있습니다.`
             : "종목 코드 또는 종목명을 입력해 검색하세요."}
         </p>
       </PopoverContent>

@@ -38,6 +38,20 @@ const stock: KrStock = {
   updatedAt: "2026-08-10T10:00:00+09:00",
 };
 
+const dongwhaPharmStock: KrStock = {
+  ...stock,
+  code: "000020",
+  corporationCode: "00119195",
+  name: "동화약품",
+};
+
+const fromBioStock: KrStock = {
+  ...stock,
+  code: "377220",
+  corporationCode: "01505747",
+  name: "프롬바이오",
+};
+
 function jsonResponse(body: unknown) {
   return new Response(JSON.stringify(body), {
     headers: { "Content-Type": "application/json" },
@@ -45,7 +59,7 @@ function jsonResponse(body: unknown) {
   });
 }
 
-function renderPage() {
+function renderPage(stocks: ReadonlyArray<KrStock> = [stock]) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -54,7 +68,7 @@ function renderPage() {
       },
     },
   });
-  queryClient.setQueryData(krStocksQueryOptions.queryKey, [stock]);
+  queryClient.setQueryData(krStocksQueryOptions.queryKey, [...stocks]);
 
   render(
     <QueryClientProvider client={queryClient}>
@@ -120,6 +134,42 @@ describe("KrMarketDataPage", () => {
       screen.getByRole("columnheader", { name: "전일대비" }),
     ).toBeInTheDocument();
     expect(screen.getByText("+500")).toBeInTheDocument();
+  });
+
+  it("조회 종목을 바꾸면 새 종목 코드로 캔들을 요청한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse([]));
+    renderPage([dongwhaPharmStock, fromBioStock]);
+
+    fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
+    fireEvent.click(screen.getByRole("option", { name: /동화약품/ }));
+    fireEvent.click(screen.getByRole("button", { name: "조회" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      `/admin/stocks/000020/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
+    );
+
+    fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
+    const stockSearch = screen.getByRole("searchbox", {
+      name: "KR 종목 검색",
+    });
+    fireEvent.change(stockSearch, { target: { value: "프롬바이오" } });
+    fireEvent.keyDown(stockSearch, { isComposing: true, key: "Enter" });
+    expect(screen.getByRole("combobox", { name: "KR 종목" })).toHaveTextContent(
+      "000020 · 동화약품",
+    );
+    fireEvent.keyDown(stockSearch, { key: "Enter" });
+    expect(screen.getByRole("combobox", { name: "KR 종목" })).toHaveTextContent(
+      "377220 · 프롬바이오",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "조회" }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      `/admin/stocks/377220/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
+    );
   });
 
   it("일봉 전용 저장 화면을 연다", () => {
