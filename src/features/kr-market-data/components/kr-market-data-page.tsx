@@ -203,7 +203,11 @@ export function KrMarketDataPage() {
             <KrMarketDataEmptyState mode="no-results" />
           ) : (
             <>
-              <KrMarketDataTable items={visibleItems} stockName={stockLabel} />
+              <KrMarketDataTable
+                items={visibleItems}
+                showPriceChange={!filters.adjusted}
+                stockName={stockLabel}
+              />
               <KrMarketDataInfiniteLoader
                 error={
                   marketDataQuery.isFetchNextPageError

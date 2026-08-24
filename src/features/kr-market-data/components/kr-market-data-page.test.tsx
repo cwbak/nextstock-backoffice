@@ -138,6 +138,36 @@ describe("KrMarketDataPage", () => {
     expect(screen.getByText("+500")).toBeInTheDocument();
   });
 
+  it("수정주가 조회에서는 전일대비 컬럼을 표시하지 않는다", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      jsonResponse([
+        {
+          period: "daily",
+          date: "2026-08-10",
+          open: 70_000,
+          low: 69_500,
+          high: 71_000,
+          close: 70_500,
+          priceChange: 0,
+          volume: 12_345_678,
+          value: 870_000_000_000,
+        },
+      ]),
+    );
+    renderPage();
+
+    fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
+    fireEvent.click(screen.getByRole("option", { name: /삼성전자/ }));
+    fireEvent.click(screen.getByRole("button", { name: "조회" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("70,500")).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("columnheader", { name: "전일대비" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("조회 종목을 바꾸면 새 종목 코드로 캔들을 요청한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
