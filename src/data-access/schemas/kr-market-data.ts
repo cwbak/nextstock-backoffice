@@ -37,6 +37,7 @@ export const krMarketDataListSchema = z.array(krMarketDataSchema);
 
 export const krMarketDataListParamsSchema = z
   .object({
+    adjusted: z.boolean(),
     stockCode: krStockCodeSchema,
     period: krMarketDataPeriodSchema,
     end: marketDataDateSchema,
@@ -46,6 +47,7 @@ export const krMarketDataListParamsSchema = z
 
 export const krMarketDataFilterSchema = z
   .object({
+    adjusted: z.boolean(),
     stockCode: krStockCodeSchema,
     period: krMarketDataPeriodSchema,
   })

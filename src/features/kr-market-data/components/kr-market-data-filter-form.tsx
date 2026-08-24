@@ -17,6 +17,7 @@ import {
   krMarketDataFilterSchema,
   type KrMarketDataFilterValues,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataAdjustedField } from "@/features/kr-market-data/components/kr-market-data-adjusted-field";
 import { KrMarketDataPeriodSelect } from "@/features/kr-market-data/components/kr-market-data-period-select";
 
 interface KrMarketDataFilterFormProps {
@@ -26,6 +27,7 @@ interface KrMarketDataFilterFormProps {
 }
 
 const filterFieldNames = new Set<keyof KrMarketDataFilterValues>([
+  "adjusted",
   "stockCode",
   "period",
 ]);
@@ -50,6 +52,7 @@ export function KrMarketDataFilterForm({
     setError,
   } = useForm<KrMarketDataFilterValues>({
     defaultValues: {
+      adjusted: true,
       stockCode: "",
       period: "daily",
     },
@@ -88,10 +91,10 @@ export function KrMarketDataFilterForm({
       <div className="mb-4">
         <h2 className="font-semibold">조회 조건</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          선택한 종목과 주기를 현재 일자 기준으로 조회합니다.
+          선택한 종목, 주기와 주가 기준을 현재 일자 기준으로 조회합니다.
         </p>
       </div>
-      <FieldGroup className="grid grid-cols-1 items-start gap-4 sm:grid-cols-[minmax(16rem,1.5fr)_minmax(8rem,0.7fr)_auto]">
+      <FieldGroup className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(16rem,1.5fr)_minmax(8rem,0.7fr)_minmax(9rem,0.7fr)_auto]">
         <Field data-invalid={Boolean(errors.stockCode)}>
           <FieldLabel htmlFor="market-data-stock-code">KR 종목</FieldLabel>
           <Controller
@@ -125,6 +128,18 @@ export function KrMarketDataFilterForm({
           />
           <FieldError errors={[errors.period]} />
         </Field>
+        <Controller
+          control={control}
+          name="adjusted"
+          render={({ field }) => (
+            <KrMarketDataAdjustedField
+              description="수정주가는 market_data_adj, 원본주가는 market_data에서 조회합니다."
+              id="market-data-adjusted"
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
         <Field className="sm:pt-6">
           <Button className="w-full sm:w-auto" type="submit">
             <SearchIcon aria-hidden="true" data-icon="inline-start" />

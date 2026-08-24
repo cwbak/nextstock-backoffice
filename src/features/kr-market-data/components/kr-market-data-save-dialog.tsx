@@ -175,6 +175,7 @@ function KrMarketDataSaveForm({
           render={({ field }) => (
             <KrMarketDataAdjustedField
               className="sm:col-span-2"
+              description="수정주가는 market_data_adj, 원본주가는 market_data에 저장합니다."
               disabled={mutation.isPending}
               id="save-market-data-adjusted"
               value={field.value}

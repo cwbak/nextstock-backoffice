@@ -12,13 +12,14 @@ import { getPreviousLocalDate } from "@/features/kr-market-data/kr-market-data-d
 export const krMarketDataPageLimit = 100;
 
 function buildMarketDataPath(params: KrMarketDataListParams) {
-  const { stockCode, period, end, limit } =
+  const { adjusted, stockCode, period, end, limit } =
     krMarketDataListParamsSchema.parse(params);
   const searchParams = new URLSearchParams();
 
   searchParams.set("period", period);
   searchParams.set("end", end);
   searchParams.set("limit", String(limit));
+  searchParams.set("adjusted", String(adjusted));
 
   const query = searchParams.toString();
 
@@ -44,7 +45,7 @@ export function krMarketDataInfiniteQueryOptions(
   const parsedParams = krMarketDataListParamsSchema.parse(params);
 
   return infiniteQueryOptions({
-    queryKey: krMarketDataKeys.list(params),
+    queryKey: krMarketDataKeys.list(parsedParams),
     queryFn: ({ pageParam, signal }) =>
       apiRequest(
         buildMarketDataPath({ ...parsedParams, end: pageParam }),

@@ -42,6 +42,7 @@ describe("KR market data queries", () => {
 
     const result = await queryClient.fetchInfiniteQuery(
       krMarketDataInfiniteQueryOptions({
+        adjusted: false,
         stockCode: "005930",
         period: "weekly",
         end: "2026-08-11",
@@ -53,7 +54,7 @@ describe("KR market data queries", () => {
     expect(result.pageParams).toEqual(["2026-08-11"]);
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/005930/market-data?period=weekly&end=2026-08-11&limit=100",
+      "/admin/stocks/005930/market-data?period=weekly&end=2026-08-11&limit=100&adjusted=false",
     );
   });
 
@@ -65,5 +66,26 @@ describe("KR market data queries", () => {
       ),
     ).toBe("2026-08-02");
     expect(getNextKrMarketDataEnd([{ date: "2026-08-10" }], 2)).toBe(undefined);
+  });
+
+  it("수정주가 여부가 다르면 별도의 조회 캐시를 사용한다", () => {
+    const baseParams = {
+      stockCode: "005930",
+      period: "daily" as const,
+      end: "2026-08-11",
+      limit: 100,
+    };
+
+    expect(
+      krMarketDataInfiniteQueryOptions({
+        ...baseParams,
+        adjusted: true,
+      }).queryKey,
+    ).not.toEqual(
+      krMarketDataInfiniteQueryOptions({
+        ...baseParams,
+        adjusted: false,
+      }).queryKey,
+    );
   });
 });

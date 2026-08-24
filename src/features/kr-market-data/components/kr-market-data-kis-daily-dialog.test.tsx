@@ -100,7 +100,7 @@ describe("KrMarketDataKisDailyDialog", () => {
       target: { value: "2026-08-10" },
     });
     fireEvent.click(screen.getByRole("combobox", { name: "주가 기준" }));
-    fireEvent.click(await screen.findByRole("option", { name: "원주가" }));
+    fireEvent.click(await screen.findByRole("option", { name: "원본주가" }));
     fireEvent.click(screen.getByRole("button", { name: "KIS 전 종목 저장" }));
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(result));

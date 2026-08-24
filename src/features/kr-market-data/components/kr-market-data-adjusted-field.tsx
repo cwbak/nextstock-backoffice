@@ -10,6 +10,7 @@ import {
 
 interface KrMarketDataAdjustedFieldProps {
   className?: string;
+  description: string;
   disabled?: boolean;
   id: string;
   onValueChange: (value: boolean) => void;
@@ -18,6 +19,7 @@ interface KrMarketDataAdjustedFieldProps {
 
 export function KrMarketDataAdjustedField({
   className,
+  description,
   disabled = false,
   id,
   onValueChange,
@@ -47,13 +49,11 @@ export function KrMarketDataAdjustedField({
         <SelectContent align="start">
           <SelectGroup>
             <SelectItem value="adjusted">수정주가</SelectItem>
-            <SelectItem value="original">원주가</SelectItem>
+            <SelectItem value="original">원본주가</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FieldDescription id={descriptionId}>
-        수정주가는 market_data_adj, 원주가는 market_data에 저장합니다.
-      </FieldDescription>
+      <FieldDescription id={descriptionId}>{description}</FieldDescription>
     </Field>
   );
 }

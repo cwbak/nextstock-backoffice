@@ -119,6 +119,8 @@ describe("KrMarketDataPage", () => {
       key: "ArrowDown",
     });
     fireEvent.click(await screen.findByRole("option", { name: "주봉" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "주가 기준" }));
+    fireEvent.click(await screen.findByRole("option", { name: "원본주가" }));
     expect(screen.queryByLabelText("시작일")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("종료일")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "조회" }));
@@ -127,7 +129,7 @@ describe("KrMarketDataPage", () => {
       expect(screen.getByText("70,500")).toBeInTheDocument();
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      `/admin/stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
+      `/admin/stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=false`,
     );
     expect(screen.getByText("870,000,000,000")).toBeInTheDocument();
     expect(
@@ -148,7 +150,7 @@ describe("KrMarketDataPage", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      `/admin/stocks/000020/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
+      `/admin/stocks/000020/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
     );
 
     fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
@@ -168,7 +170,7 @@ describe("KrMarketDataPage", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
-      `/admin/stocks/377220/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}`,
+      `/admin/stocks/377220/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
     );
   });
 

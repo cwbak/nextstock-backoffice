@@ -114,6 +114,7 @@ export function KrMarketDataKisDailyDialog({
             toRegistration={register("to")}
           />
           <KrMarketDataAdjustedField
+            description="수정주가는 market_data_adj, 원본주가는 market_data에 저장합니다."
             disabled={isBusy}
             id="save-kis-daily-market-data-adjusted"
             value={adjusted}

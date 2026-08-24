@@ -40,6 +40,7 @@ import { getCurrentLocalDate } from "@/features/kr-market-data/kr-market-data-da
 import { getKrMarketDataPeriodLabel } from "@/features/kr-market-data/kr-market-data-period";
 
 const inactiveParams: KrMarketDataListParams = {
+  adjusted: true,
   stockCode: "000000",
   period: "daily",
   end: "1970-01-01",
@@ -104,7 +105,7 @@ export function KrMarketDataPage() {
     ? `${selectedStock.code} · ${selectedStock.name}`
     : (filters?.stockCode ?? "KR 종목");
   const tableDescription = filters
-    ? `${stockLabel} · ${getKrMarketDataPeriodLabel(filters.period)} · ${queryEnd} 기준 · 최신 날짜순`
+    ? `${stockLabel} · ${getKrMarketDataPeriodLabel(filters.period)} · ${filters.adjusted ? "수정주가" : "원본주가"} · ${queryEnd} 기준 · 최신 날짜순`
     : "종목과 주기를 선택해 ClickHouse에 저장된 캔들을 조회합니다.";
 
   const refresh = () => {
@@ -154,6 +155,7 @@ export function KrMarketDataPage() {
             const sameQuery =
               filters?.stockCode === nextFilters.stockCode &&
               filters.period === nextFilters.period &&
+              filters.adjusted === nextFilters.adjusted &&
               queryEnd === currentDate;
 
             setFilters(nextFilters);
@@ -232,6 +234,7 @@ export function KrMarketDataPage() {
             to: payload.to,
           });
           setFilters({
+            adjusted: payload.adjusted,
             stockCode: payload.stockCode,
             period: "daily",
           });

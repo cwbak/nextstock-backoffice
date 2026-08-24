@@ -53,21 +53,25 @@ describe("KR market data schemas", () => {
   it("조회 필터와 현재 일자 기반 페이지 조건을 검증한다", () => {
     expect(
       krMarketDataFilterSchema.parse({
+        adjusted: false,
         stockCode: "005930",
         period: "weekly",
       }),
     ).toEqual({
+      adjusted: false,
       stockCode: "005930",
       period: "weekly",
     });
     expect(
       krMarketDataListParamsSchema.parse({
+        adjusted: false,
         stockCode: "005930",
         period: "weekly",
         end: "2026-08-11",
         limit: 100,
       }),
     ).toEqual({
+      adjusted: false,
       stockCode: "005930",
       period: "weekly",
       end: "2026-08-11",
@@ -78,6 +82,7 @@ describe("KR market data schemas", () => {
   it("목록 조회 limit이 API 상한을 넘으면 거부한다", () => {
     expect(() =>
       krMarketDataListParamsSchema.parse({
+        adjusted: true,
         stockCode: "005930",
         period: "daily",
         end: "2026-08-11",
