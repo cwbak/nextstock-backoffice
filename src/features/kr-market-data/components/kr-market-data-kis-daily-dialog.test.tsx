@@ -40,7 +40,11 @@ describe("KrMarketDataKisDailyDialog", () => {
       type: "stocks_kis_daily",
       status: "COMPLETED",
       stage: "COMPLETED",
-      parameters: { from: "2026-01-01", to: "2026-08-10" },
+      parameters: {
+        adjusted: false,
+        from: "2026-01-01",
+        to: "2026-08-10",
+      },
       progress: {
         current: 2_800,
         total: 2_800,
@@ -95,6 +99,8 @@ describe("KrMarketDataKisDailyDialog", () => {
     fireEvent.change(screen.getByLabelText("종료일"), {
       target: { value: "2026-08-10" },
     });
+    fireEvent.click(screen.getByRole("combobox", { name: "주가 기준" }));
+    fireEvent.click(await screen.findByRole("option", { name: "원주가" }));
     fireEvent.click(screen.getByRole("button", { name: "KIS 전 종목 저장" }));
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(result));
@@ -103,6 +109,13 @@ describe("KrMarketDataKisDailyDialog", () => {
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       "/admin/stocks/market-data/kis-daily",
+    );
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
+      JSON.stringify({
+        from: "2026-01-01",
+        to: "2026-08-10",
+        adjusted: false,
+      }),
     );
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/52");
   });

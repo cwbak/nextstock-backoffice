@@ -6,6 +6,10 @@ const marketDataDateSchema = z.iso.date({
   error: "날짜는 YYYY-MM-DD 형식이어야 합니다.",
 });
 const marketDataIntegerSchema = z.number().int().nonnegative();
+const marketDataDateRangeShape = {
+  from: marketDataDateSchema,
+  to: marketDataDateSchema,
+};
 
 export const krMarketDataPeriodSchema = z.enum(["daily", "weekly", "monthly"], {
   error: "캔들 주기는 일봉, 주봉, 월봉 중에서 선택해 주세요.",
@@ -48,10 +52,7 @@ export const krMarketDataFilterSchema = z
   .strict();
 
 export const krMarketDataCreateAllPayloadSchema = z
-  .object({
-    from: marketDataDateSchema,
-    to: marketDataDateSchema,
-  })
+  .object(marketDataDateRangeShape)
   .strict()
   .refine(isValidDateRange, {
     message: "종료일은 시작일보다 빠를 수 없습니다.",
@@ -61,8 +62,19 @@ export const krMarketDataCreateAllPayloadSchema = z
 export const krMarketDataCreatePayloadSchema = z
   .object({
     stockCode: krStockCodeSchema,
-    from: marketDataDateSchema,
-    to: marketDataDateSchema,
+    ...marketDataDateRangeShape,
+    adjusted: z.boolean(),
+  })
+  .strict()
+  .refine(isValidDateRange, {
+    message: "종료일은 시작일보다 빠를 수 없습니다.",
+    path: ["to"],
+  });
+
+export const krMarketDataKisDailyPayloadSchema = z
+  .object({
+    ...marketDataDateRangeShape,
+    adjusted: z.boolean(),
   })
   .strict()
   .refine(isValidDateRange, {
@@ -104,6 +116,9 @@ export type KrMarketDataCreatePayload = z.infer<
 >;
 export type KrMarketDataCreateAllPayload = z.infer<
   typeof krMarketDataCreateAllPayloadSchema
+>;
+export type KrMarketDataKisDailyPayload = z.infer<
+  typeof krMarketDataKisDailyPayloadSchema
 >;
 export type KrMarketDataCreateResult = z.infer<
   typeof krMarketDataCreateResultSchema

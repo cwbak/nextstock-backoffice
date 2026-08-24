@@ -135,7 +135,9 @@ describe("KrMarketDataPage", () => {
     ).not.toBeInTheDocument();
     expect(within(dialog).getByLabelText("시작일")).toBeInTheDocument();
     expect(within(dialog).getByLabelText("종료일")).toBeInTheDocument();
-    expect(within(dialog).getByText(/보정주가 일봉/)).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("주가 기준")).toHaveTextContent(
+      "수정주가",
+    );
   });
 
   it("KRX 일자별 전 종목 일봉 저장 화면을 연다", () => {
@@ -152,6 +154,9 @@ describe("KrMarketDataPage", () => {
     expect(within(dialog).getByLabelText("시작일")).toBeInTheDocument();
     expect(within(dialog).getByLabelText("종료일")).toBeInTheDocument();
     expect(
+      within(dialog).queryByLabelText("주가 기준"),
+    ).not.toBeInTheDocument();
+    expect(
       within(dialog).getByText(/같은 종목·날짜가 있어도 새 버전/),
     ).toBeInTheDocument();
   });
@@ -167,6 +172,9 @@ describe("KrMarketDataPage", () => {
 
     expect(within(dialog).getByLabelText("시작일")).toBeInTheDocument();
     expect(within(dialog).getByLabelText("종료일")).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("주가 기준")).toHaveTextContent(
+      "수정주가",
+    );
     expect(
       within(dialog).getByText(/Worker가 종목 코드순/),
     ).toBeInTheDocument();

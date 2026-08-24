@@ -66,6 +66,7 @@ describe("KR market data mutations", () => {
 
     await expect(
       createKrMarketData({
+        adjusted: true,
         stockCode: "005930",
         from: "2026-01-01",
         to: "2026-08-10",
@@ -82,6 +83,7 @@ describe("KR market data mutations", () => {
     );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
+      adjusted: true,
       from: "2026-01-01",
       to: "2026-08-10",
     });
@@ -105,6 +107,7 @@ describe("KR market data mutations", () => {
 
     await expect(
       createKisDailyMarketData({
+        adjusted: false,
         from: "2026-01-01",
         to: "2026-08-10",
       }),
@@ -117,6 +120,7 @@ describe("KR market data mutations", () => {
     );
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
+      adjusted: false,
       from: "2026-01-01",
       to: "2026-08-10",
     });

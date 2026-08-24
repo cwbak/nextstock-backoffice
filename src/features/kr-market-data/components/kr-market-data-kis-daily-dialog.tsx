@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Clock3Icon } from "lucide-react";
 
@@ -22,6 +23,7 @@ import {
   krMarketDataKisDailyResultSchema,
   type KrMarketDataKisDailyResult,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataAdjustedField } from "@/features/kr-market-data/components/kr-market-data-adjusted-field";
 import { KrMarketDataDateRangeFields } from "@/features/kr-market-data/components/kr-market-data-date-range-fields";
 import { useKrMarketDataDateRangeForm } from "@/features/kr-market-data/hooks/use-kr-market-data-date-range-form";
 
@@ -37,8 +39,13 @@ export function KrMarketDataKisDailyDialog({
   open,
 }: KrMarketDataKisDailyDialogProps) {
   const queryClient = useQueryClient();
+  const [adjusted, setAdjusted] = useState(true);
   const { createSubmit, errors, register, resetForm } =
     useKrMarketDataDateRangeForm();
+  const resetInputs = () => {
+    resetForm();
+    setAdjusted(true);
+  };
   const jobTracker = useBackgroundJob({
     expectedType: "stocks_kis_daily",
     resultSchema: krMarketDataKisDailyResultSchema,
@@ -46,7 +53,7 @@ export function KrMarketDataKisDailyDialog({
       await queryClient.invalidateQueries({
         queryKey: krMarketDataKeys.lists(),
       });
-      resetForm();
+      resetInputs();
       onCreated(result);
     },
   });
@@ -58,14 +65,14 @@ export function KrMarketDataKisDailyDialog({
   const submitForm = createSubmit((payload) => {
     jobTracker.reset();
     mutation.reset();
-    mutation.mutate(payload);
+    mutation.mutate({ ...payload, adjusted });
   });
 
   const changeOpen = (nextOpen: boolean) => {
     if (!nextOpen && !isBusy) {
       mutation.reset();
       jobTracker.reset();
-      resetForm();
+      resetInputs();
     }
     onOpenChange(nextOpen);
   };
@@ -76,8 +83,8 @@ export function KrMarketDataKisDailyDialog({
         <DialogHeader>
           <DialogTitle>KIS 전 종목 기간 일봉 저장</DialogTitle>
           <DialogDescription>
-            등록된 모든 KR 종목에 같은 기간을 적용해 KIS 일봉을 ClickHouse에
-            저장합니다.
+            등록된 모든 KR 종목에 같은 기간과 주가 기준을 적용해 KIS 일봉을
+            ClickHouse에 저장합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
@@ -105,6 +112,12 @@ export function KrMarketDataKisDailyDialog({
             idPrefix="save-kis-daily-market-data"
             toError={errors.to}
             toRegistration={register("to")}
+          />
+          <KrMarketDataAdjustedField
+            disabled={isBusy}
+            id="save-kis-daily-market-data-adjusted"
+            value={adjusted}
+            onValueChange={setAdjusted}
           />
           {jobTracker.errorMessage || mutation.isError ? (
             <MutationErrorAlert

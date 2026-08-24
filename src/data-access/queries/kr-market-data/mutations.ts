@@ -7,9 +7,11 @@ import {
   krMarketDataCreateAllPayloadSchema,
   krMarketDataCreatePayloadSchema,
   krMarketDataCreateResultSchema,
+  krMarketDataKisDailyPayloadSchema,
   type KrMarketDataCreateAllPayload,
   type KrMarketDataCreatePayload,
   type KrMarketDataCreateResult,
+  type KrMarketDataKisDailyPayload,
 } from "@/data-access/schemas/kr-market-data";
 
 export function createKrxDailyMarketData(
@@ -26,9 +28,9 @@ export function createKrxDailyMarketData(
 }
 
 export function createKisDailyMarketData(
-  payload: KrMarketDataCreateAllPayload,
+  payload: KrMarketDataKisDailyPayload,
 ): Promise<BackgroundJobRegistration> {
-  const body = krMarketDataCreateAllPayloadSchema.parse(payload);
+  const body = krMarketDataKisDailyPayloadSchema.parse(payload);
 
   return apiRequest(
     "/admin/stocks/market-data/kis-daily",

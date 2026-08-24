@@ -31,6 +31,7 @@ import {
   type KrMarketDataCreatePayload,
   type KrMarketDataCreateResult,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataAdjustedField } from "@/features/kr-market-data/components/kr-market-data-adjusted-field";
 
 interface KrMarketDataSaveDialogProps {
   initialStockCode: string | undefined;
@@ -47,6 +48,7 @@ const createFieldNames = new Set<keyof KrMarketDataCreatePayload>([
   "stockCode",
   "from",
   "to",
+  "adjusted",
 ]);
 
 function isCreateFieldName(
@@ -78,6 +80,7 @@ function KrMarketDataSaveForm({
     setError,
   } = useForm<KrMarketDataCreatePayload>({
     defaultValues: {
+      adjusted: true,
       stockCode: initialStockCode ?? "",
       from: "",
       to: "",
@@ -121,8 +124,8 @@ function KrMarketDataSaveForm({
         <CloudDownloadIcon aria-hidden="true" />
         <AlertTitle>한국투자증권에서 일봉을 조회합니다</AlertTitle>
         <AlertDescription>
-          같은 종목과 날짜의 기존 일봉은 다시 저장하지 않습니다. 기간이 길면
-          외부 API 조회에 시간이 걸릴 수 있습니다.
+          같은 종목과 날짜가 있어도 새 버전으로 저장합니다. 기간이 길면 외부 API
+          조회에 시간이 걸릴 수 있습니다.
         </AlertDescription>
       </Alert>
       <FieldGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -166,6 +169,19 @@ function KrMarketDataSaveForm({
           />
           <FieldError errors={[errors.to]} />
         </Field>
+        <Controller
+          control={control}
+          name="adjusted"
+          render={({ field }) => (
+            <KrMarketDataAdjustedField
+              className="sm:col-span-2"
+              disabled={mutation.isPending}
+              id="save-market-data-adjusted"
+              value={field.value}
+              onValueChange={field.onChange}
+            />
+          )}
+        />
       </FieldGroup>
       {mutation.isError ? (
         <MutationErrorAlert message={getErrorMessage(mutation.error)} />
@@ -201,7 +217,7 @@ export function KrMarketDataSaveDialog({
         <DialogHeader>
           <DialogTitle>KR 일봉 저장</DialogTitle>
           <DialogDescription>
-            종목과 기간을 선택해 보정주가 일봉을 ClickHouse에 저장합니다.
+            종목, 기간과 주가 기준을 선택해 KIS 일봉을 ClickHouse에 저장합니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (
