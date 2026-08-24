@@ -9,7 +9,7 @@ import {
 } from "@/data-access/schemas/kr-market-data";
 import { getPreviousLocalDate } from "@/features/kr-market-data/kr-market-data-date";
 
-export const krMarketDataPageLimit = 100;
+export const krMarketDataPageLimit = 200;
 
 function buildMarketDataPath(params: KrMarketDataListParams) {
   const { adjusted, stockCode, period, end, limit } =

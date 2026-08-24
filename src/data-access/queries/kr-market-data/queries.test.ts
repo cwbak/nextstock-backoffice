@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   getNextKrMarketDataEnd,
   krMarketDataInfiniteQueryOptions,
+  krMarketDataPageLimit,
 } from "@/data-access/queries/kr-market-data/queries";
 
 const marketData = [
@@ -32,6 +33,10 @@ describe("KR market data queries", () => {
     vi.restoreAllMocks();
   });
 
+  it("API 최대 조회 건수인 200개를 페이지 단위로 사용한다", () => {
+    expect(krMarketDataPageLimit).toBe(200);
+  });
+
   it("선택한 주기와 기준일의 KR 캔들을 조회한다", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
@@ -46,7 +51,7 @@ describe("KR market data queries", () => {
         stockCode: "005930",
         period: "weekly",
         end: "2026-08-11",
-        limit: 100,
+        limit: 200,
       }),
     );
 
@@ -54,7 +59,7 @@ describe("KR market data queries", () => {
     expect(result.pageParams).toEqual(["2026-08-11"]);
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/005930/market-data?period=weekly&end=2026-08-11&limit=100&adjusted=false",
+      "/admin/stocks/005930/market-data?period=weekly&end=2026-08-11&limit=200&adjusted=false",
     );
   });
 

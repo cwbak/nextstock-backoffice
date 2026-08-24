@@ -41,7 +41,7 @@ export const krMarketDataListParamsSchema = z
     stockCode: krStockCodeSchema,
     period: krMarketDataPeriodSchema,
     end: marketDataDateSchema,
-    limit: z.number().int().min(1).max(1_000),
+    limit: z.number().int().min(1).max(200),
   })
   .strict();
 

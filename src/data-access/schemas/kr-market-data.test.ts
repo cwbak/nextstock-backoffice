@@ -68,14 +68,14 @@ describe("KR market data schemas", () => {
         stockCode: "005930",
         period: "weekly",
         end: "2026-08-11",
-        limit: 100,
+        limit: 200,
       }),
     ).toEqual({
       adjusted: false,
       stockCode: "005930",
       period: "weekly",
       end: "2026-08-11",
-      limit: 100,
+      limit: 200,
     });
   });
 
@@ -86,7 +86,7 @@ describe("KR market data schemas", () => {
         stockCode: "005930",
         period: "daily",
         end: "2026-08-11",
-        limit: 1_001,
+        limit: 201,
       }),
     ).toThrow();
   });
