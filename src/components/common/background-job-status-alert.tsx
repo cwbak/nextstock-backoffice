@@ -9,11 +9,22 @@ const stageLabels: Readonly<Record<string, string>> = {
   FETCHING_KOSDAQ: "KOSDAQ 종목 조회",
   FETCHING_KOSPI: "KOSPI 종목 조회",
   PROCESSING_CORPORATIONS: "법인별 출자현황 처리",
-  PROCESSING_STOCKS: "KR 종목별 KIS 일봉 처리",
   SAVING_CORPORATIONS: "법인 정보 저장",
   SAVING_CORPORATION_NAMES: "법인명 저장",
   UPDATING_STOCKS: "KR 종목 갱신",
 };
+
+function getStageLabel(job: BackgroundJob | undefined) {
+  if (!job?.stage) {
+    return null;
+  }
+  if (job.stage === "PROCESSING_STOCKS") {
+    return job.type === "stocks_market_data_adjust"
+      ? "KR 종목별 수정주가 반영"
+      : "KR 종목별 KIS 일봉 처리";
+  }
+  return stageLabels[job.stage] ?? job.stage;
+}
 
 interface BackgroundJobStatusAlertProps {
   job: BackgroundJob | undefined;
@@ -26,7 +37,7 @@ export function BackgroundJobStatusAlert({
 }: BackgroundJobStatusAlertProps) {
   const isQueued = !job || job.status === "QUEUED";
   const progress = job?.progress;
-  const stage = job?.stage ? (stageLabels[job.stage] ?? job.stage) : null;
+  const stage = getStageLabel(job);
 
   return (
     <Alert aria-live="polite">

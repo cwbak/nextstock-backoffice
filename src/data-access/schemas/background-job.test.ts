@@ -4,6 +4,7 @@ import {
   backgroundJobSchema,
   corporationsSyncJobRegistrationSchema,
   krStocksKisDailyJobRegistrationSchema,
+  krStocksMarketDataAdjustJobRegistrationSchema,
 } from "@/data-access/schemas/background-job";
 
 describe("background job schemas", () => {
@@ -61,5 +62,20 @@ describe("background job schemas", () => {
     expect(krStocksKisDailyJobRegistrationSchema.parse(response)).toEqual(
       response,
     );
+  });
+
+  it("KR 전 종목 수정주가 작업 등록 응답을 검증한다", () => {
+    const response = {
+      jobId: 53,
+      type: "stocks_market_data_adjust",
+      status: "QUEUED",
+      statusUrl: "/admin/jobs/53",
+      created: true,
+      createdAt: "2026-08-25T10:00:00+09:00",
+    } as const;
+
+    expect(
+      krStocksMarketDataAdjustJobRegistrationSchema.parse(response),
+    ).toEqual(response);
   });
 });

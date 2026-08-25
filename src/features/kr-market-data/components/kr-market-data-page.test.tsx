@@ -261,6 +261,16 @@ describe("KrMarketDataPage", () => {
     });
   });
 
+  it("전 종목 수정주가 반영 화면을 연다", () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "전체 수정주가 반영" }));
+
+    expect(
+      screen.getByRole("dialog", { name: "KR 전 종목 수정주가 반영" }),
+    ).toBeInTheDocument();
+  });
+
   it("KRX 일자별 전 종목 일봉 저장 화면을 연다", () => {
     renderPage();
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   krMarketDataAdjustPayloadSchema,
+  krMarketDataAdjustAllResultSchema,
   krMarketDataAdjustResultSchema,
   krMarketDataCreateAllPayloadSchema,
   krMarketDataCreatePayloadSchema,
@@ -147,6 +148,18 @@ describe("KR market data schemas", () => {
         adjustedCount: 20,
       }),
     ).toThrow();
+  });
+
+  it("전 종목 수정주가 반영 결과를 검증한다", () => {
+    const result = {
+      stockCount: 2_800,
+      processedCount: 2_798,
+      failedCount: 2,
+      copiedCount: 15_000,
+      adjustedCount: 420_000,
+    };
+
+    expect(krMarketDataAdjustAllResultSchema.parse(result)).toEqual(result);
   });
 
   it("전체 종목 저장 날짜 구간을 검증한다", () => {

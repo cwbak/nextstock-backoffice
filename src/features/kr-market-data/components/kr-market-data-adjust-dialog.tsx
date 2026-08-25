@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
-import { TriangleAlertIcon } from "lucide-react";
 
 import { KrStockCombobox } from "@/components/common/kr-stock-combobox";
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +23,7 @@ import {
   type KrMarketDataAdjustPayload,
   type KrMarketDataAdjustResult,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataAdjustmentWarning } from "@/features/kr-market-data/components/kr-market-data-adjustment-warning";
 
 interface KrMarketDataAdjustDialogProps {
   initialStockCode: string | undefined;
@@ -94,15 +93,7 @@ function KrMarketDataAdjustForm({
       noValidate
       onSubmit={(event) => void submitForm(event)}
     >
-      <Alert>
-        <TriangleAlertIcon aria-hidden="true" />
-        <AlertTitle>원본주가의 전일대비를 먼저 확인하세요</AlertTitle>
-        <AlertDescription>
-          전일대비가 누락되어 0으로 저장된 원본 데이터는 일반 가격 변동을
-          액면분할·병합으로 오인할 수 있습니다. 선택한 종목 전체 수정주가가 다시
-          계산될 수 있습니다.
-        </AlertDescription>
-      </Alert>
+      <KrMarketDataAdjustmentWarning />
       <Field data-invalid={Boolean(errors.stockCode)}>
         <FieldLabel htmlFor="adjust-market-data-stock-code">KR 종목</FieldLabel>
         <Controller

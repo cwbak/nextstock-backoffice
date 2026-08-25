@@ -22,12 +22,14 @@ import {
 } from "@/data-access/queries/kr-market-data/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type {
+  KrMarketDataAdjustAllResult,
   KrMarketDataAdjustResult,
   KrMarketDataCreateResult,
   KrMarketDataFilterValues,
   KrMarketDataKisDailyResult,
   KrMarketDataListParams,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataAdjustAllDialog } from "@/features/kr-market-data/components/kr-market-data-adjust-all-dialog";
 import { KrMarketDataAdjustDialog } from "@/features/kr-market-data/components/kr-market-data-adjust-dialog";
 import { KrMarketDataAdjustSummary } from "@/features/kr-market-data/components/kr-market-data-adjust-summary";
 import { KrMarketDataCreateAllDialog } from "@/features/kr-market-data/components/kr-market-data-create-all-dialog";
@@ -58,7 +60,7 @@ interface SaveSummary {
 }
 
 interface AdjustmentSummary {
-  result: KrMarketDataAdjustResult;
+  result: KrMarketDataAdjustResult | KrMarketDataAdjustAllResult;
   stockLabel: string;
 }
 
@@ -66,6 +68,7 @@ export function KrMarketDataPage() {
   const krStocksQuery = useSuspenseQuery(krStocksQueryOptions);
   const [filters, setFilters] = useState<KrMarketDataFilterValues | null>(null);
   const [queryEnd, setQueryEnd] = useState(getCurrentLocalDate);
+  const [adjustAllOpen, setAdjustAllOpen] = useState(false);
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [adjustmentSummary, setAdjustmentSummary] =
     useState<AdjustmentSummary | null>(null);
@@ -139,6 +142,7 @@ export function KrMarketDataPage() {
               canRefresh={filters !== null}
               canSaveStock={krStocksQuery.data.length > 0}
               isRefreshing={marketDataQuery.isFetching}
+              onAdjustAll={() => setAdjustAllOpen(true)}
               onAdjustStock={() => setAdjustOpen(true)}
               onRefresh={refresh}
               onSaveAll={() => setSaveAllOpen(true)}
@@ -242,6 +246,18 @@ export function KrMarketDataPage() {
           )}
         </DataTableCard>
       </section>
+      <KrMarketDataAdjustAllDialog
+        open={adjustAllOpen}
+        onAdjusted={(result) => {
+          setAdjustmentSummary({
+            result,
+            stockLabel: "KR 전 종목",
+          });
+          setSaveSummary(null);
+          setAdjustAllOpen(false);
+        }}
+        onOpenChange={setAdjustAllOpen}
+      />
       <KrMarketDataAdjustDialog
         initialStockCode={filters?.stockCode}
         open={adjustOpen}

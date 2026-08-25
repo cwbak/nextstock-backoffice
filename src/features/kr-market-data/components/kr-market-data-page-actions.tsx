@@ -13,6 +13,7 @@ interface KrMarketDataPageActionsProps {
   canRefresh: boolean;
   canSaveStock: boolean;
   isRefreshing: boolean;
+  onAdjustAll: () => void;
   onAdjustStock: () => void;
   onRefresh: () => void;
   onSaveAll: () => void;
@@ -25,6 +26,7 @@ export function KrMarketDataPageActions({
   canRefresh,
   canSaveStock,
   isRefreshing,
+  onAdjustAll,
   onAdjustStock,
   onRefresh,
   onSaveAll,
@@ -53,6 +55,10 @@ export function KrMarketDataPageActions({
       <Button disabled={!canAdjustStock} type="button" onClick={onAdjustStock}>
         <SlidersHorizontalIcon aria-hidden="true" data-icon="inline-start" />
         수정주가 반영
+      </Button>
+      <Button type="button" onClick={onAdjustAll}>
+        <SlidersHorizontalIcon aria-hidden="true" data-icon="inline-start" />
+        전체 수정주가 반영
       </Button>
       <Button type="button" onClick={onSaveAll}>
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />

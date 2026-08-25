@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  adjustAllKrMarketData,
   adjustKrMarketData,
   createKisDailyMarketData,
   createKrxDailyMarketData,
@@ -107,6 +108,33 @@ describe("KR market data mutations", () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       "/admin/stocks/005930/market-data/adjust",
+    );
+    expect(request?.method).toBe("POST");
+    expect(request?.body).toBeUndefined();
+  });
+
+  it("KR 전 종목 수정주가 반영 작업을 등록한다", async () => {
+    const registration = {
+      jobId: 53,
+      type: "stocks_market_data_adjust",
+      status: "QUEUED",
+      statusUrl: "/admin/jobs/53",
+      created: true,
+      createdAt: "2026-08-25T10:00:00+09:00",
+    } as const;
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(registration), {
+        headers: { "Content-Type": "application/json" },
+        status: 202,
+      }),
+    );
+
+    await expect(adjustAllKrMarketData()).resolves.toEqual(registration);
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/stocks/market-data/adjust",
     );
     expect(request?.method).toBe("POST");
     expect(request?.body).toBeUndefined();
