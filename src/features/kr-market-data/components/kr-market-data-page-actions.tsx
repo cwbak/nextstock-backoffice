@@ -1,12 +1,19 @@
-import { CloudDownloadIcon, DatabaseIcon, RefreshCwIcon } from "lucide-react";
+import {
+  CloudDownloadIcon,
+  DatabaseIcon,
+  RefreshCwIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 interface KrMarketDataPageActionsProps {
+  canAdjustStock: boolean;
   canRefresh: boolean;
   canSaveStock: boolean;
   isRefreshing: boolean;
+  onAdjustStock: () => void;
   onRefresh: () => void;
   onSaveAll: () => void;
   onSaveKisDaily: () => void;
@@ -14,9 +21,11 @@ interface KrMarketDataPageActionsProps {
 }
 
 export function KrMarketDataPageActions({
+  canAdjustStock,
   canRefresh,
   canSaveStock,
   isRefreshing,
+  onAdjustStock,
   onRefresh,
   onSaveAll,
   onSaveKisDaily,
@@ -40,6 +49,10 @@ export function KrMarketDataPageActions({
       <Button disabled={!canSaveStock} type="button" onClick={onSaveStock}>
         <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
         일봉 저장
+      </Button>
+      <Button disabled={!canAdjustStock} type="button" onClick={onAdjustStock}>
+        <SlidersHorizontalIcon aria-hidden="true" data-icon="inline-start" />
+        수정주가 반영
       </Button>
       <Button type="button" onClick={onSaveAll}>
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />

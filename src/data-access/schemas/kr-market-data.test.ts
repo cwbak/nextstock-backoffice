@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  krMarketDataAdjustPayloadSchema,
+  krMarketDataAdjustResultSchema,
   krMarketDataCreateAllPayloadSchema,
   krMarketDataCreatePayloadSchema,
   krMarketDataCreateResultSchema,
@@ -127,6 +129,24 @@ describe("KR market data schemas", () => {
       from: "2026-08-01",
       to: "2026-08-10",
     });
+  });
+
+  it("수정주가 반영 요청과 결과를 검증한다", () => {
+    expect(
+      krMarketDataAdjustPayloadSchema.parse({ stockCode: "005930" }),
+    ).toEqual({ stockCode: "005930" });
+    expect(
+      krMarketDataAdjustResultSchema.parse({
+        copiedCount: 3,
+        adjustedCount: 20,
+      }),
+    ).toEqual({ copiedCount: 3, adjustedCount: 20 });
+    expect(() =>
+      krMarketDataAdjustResultSchema.parse({
+        copiedCount: -1,
+        adjustedCount: 20,
+      }),
+    ).toThrow();
   });
 
   it("전체 종목 저장 날짜 구간을 검증한다", () => {

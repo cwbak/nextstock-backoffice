@@ -22,11 +22,14 @@ import {
 } from "@/data-access/queries/kr-market-data/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type {
+  KrMarketDataAdjustResult,
   KrMarketDataCreateResult,
   KrMarketDataFilterValues,
   KrMarketDataKisDailyResult,
   KrMarketDataListParams,
 } from "@/data-access/schemas/kr-market-data";
+import { KrMarketDataAdjustDialog } from "@/features/kr-market-data/components/kr-market-data-adjust-dialog";
+import { KrMarketDataAdjustSummary } from "@/features/kr-market-data/components/kr-market-data-adjust-summary";
 import { KrMarketDataCreateAllDialog } from "@/features/kr-market-data/components/kr-market-data-create-all-dialog";
 import { KrMarketDataEmptyState } from "@/features/kr-market-data/components/kr-market-data-empty-state";
 import { KrMarketDataFilterForm } from "@/features/kr-market-data/components/kr-market-data-filter-form";
@@ -54,10 +57,18 @@ interface SaveSummary {
   to: string;
 }
 
+interface AdjustmentSummary {
+  result: KrMarketDataAdjustResult;
+  stockLabel: string;
+}
+
 export function KrMarketDataPage() {
   const krStocksQuery = useSuspenseQuery(krStocksQueryOptions);
   const [filters, setFilters] = useState<KrMarketDataFilterValues | null>(null);
   const [queryEnd, setQueryEnd] = useState(getCurrentLocalDate);
+  const [adjustOpen, setAdjustOpen] = useState(false);
+  const [adjustmentSummary, setAdjustmentSummary] =
+    useState<AdjustmentSummary | null>(null);
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveAllOpen, setSaveAllOpen] = useState(false);
   const [saveKisDailyOpen, setSaveKisDailyOpen] = useState(false);
@@ -124,21 +135,29 @@ export function KrMarketDataPage() {
         <DataPageHeader
           actions={
             <KrMarketDataPageActions
+              canAdjustStock={krStocksQuery.data.length > 0}
               canRefresh={filters !== null}
               canSaveStock={krStocksQuery.data.length > 0}
               isRefreshing={marketDataQuery.isFetching}
+              onAdjustStock={() => setAdjustOpen(true)}
               onRefresh={refresh}
               onSaveAll={() => setSaveAllOpen(true)}
               onSaveKisDaily={() => setSaveKisDailyOpen(true)}
               onSaveStock={() => setSaveOpen(true)}
             />
           }
-          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고 한국투자증권 종목별 일봉 또는 KRX 일자별 전 종목 일봉을 저장합니다."
+          description="저장된 일봉을 일봉·주봉·월봉으로 조회하고, 원본주가 저장과 수정주가 반영 작업을 실행합니다."
           eyebrow="KR candle market data"
           recordCount={totalRecords}
           title="KR 캔들"
         />
-        {saveSummary ? (
+        {adjustmentSummary ? (
+          <KrMarketDataAdjustSummary
+            result={adjustmentSummary.result}
+            stockLabel={adjustmentSummary.stockLabel}
+            onClose={() => setAdjustmentSummary(null)}
+          />
+        ) : saveSummary ? (
           <KrMarketDataSaveSummary
             from={saveSummary.from}
             result={saveSummary.result}
@@ -223,11 +242,32 @@ export function KrMarketDataPage() {
           )}
         </DataTableCard>
       </section>
+      <KrMarketDataAdjustDialog
+        initialStockCode={filters?.stockCode}
+        open={adjustOpen}
+        stocks={krStocksQuery.data}
+        onAdjusted={(result, payload) => {
+          const selectedAdjustmentStock = krStocksQuery.data.find(
+            (stock) => stock.code === payload.stockCode,
+          );
+
+          setAdjustmentSummary({
+            result,
+            stockLabel: selectedAdjustmentStock
+              ? `${selectedAdjustmentStock.code} · ${selectedAdjustmentStock.name}`
+              : payload.stockCode,
+          });
+          setSaveSummary(null);
+          setAdjustOpen(false);
+        }}
+        onOpenChange={setAdjustOpen}
+      />
       <KrMarketDataSaveDialog
         initialStockCode={filters?.stockCode}
         open={saveOpen}
         stocks={krStocksQuery.data}
         onCreated={(result, payload) => {
+          setAdjustmentSummary(null);
           setSaveSummary({
             from: payload.from,
             result,
@@ -250,6 +290,7 @@ export function KrMarketDataPage() {
       <KrMarketDataCreateAllDialog
         open={saveAllOpen}
         onCreated={(result, payload) => {
+          setAdjustmentSummary(null);
           setSaveSummary({
             from: payload.from,
             result,
@@ -263,6 +304,7 @@ export function KrMarketDataPage() {
       <KrMarketDataKisDailyDialog
         open={saveKisDailyOpen}
         onCreated={(result) => {
+          setAdjustmentSummary(null);
           setSaveSummary({
             from: result.from,
             result,

@@ -49,8 +49,8 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "korea investment market data lookup failed":
     "한국투자증권에서 KR 일봉을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",
-  "limit must be between 1 and 1000":
-    "캔들 조회 개수는 1개 이상 1,000개 이하여야 합니다.",
+  "limit must be between 1 and 200":
+    "캔들 조회 개수는 1개 이상 200개 이하여야 합니다.",
   "parent theme id must be a positive integer":
     "상위 테마 ID는 양의 정수여야 합니다.",
   "parent theme id must differ from id":

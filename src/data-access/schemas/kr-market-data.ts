@@ -84,10 +84,23 @@ export const krMarketDataKisDailyPayloadSchema = z
     path: ["to"],
   });
 
+export const krMarketDataAdjustPayloadSchema = z
+  .object({
+    stockCode: krStockCodeSchema,
+  })
+  .strict();
+
 export const krMarketDataCreateResultSchema = z
   .object({
     fetchedCount: z.number().int().nonnegative(),
     insertedCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+export const krMarketDataAdjustResultSchema = z
+  .object({
+    copiedCount: z.number().int().nonnegative(),
+    adjustedCount: z.number().int().nonnegative(),
   })
   .strict();
 
@@ -122,8 +135,14 @@ export type KrMarketDataCreateAllPayload = z.infer<
 export type KrMarketDataKisDailyPayload = z.infer<
   typeof krMarketDataKisDailyPayloadSchema
 >;
+export type KrMarketDataAdjustPayload = z.infer<
+  typeof krMarketDataAdjustPayloadSchema
+>;
 export type KrMarketDataCreateResult = z.infer<
   typeof krMarketDataCreateResultSchema
+>;
+export type KrMarketDataAdjustResult = z.infer<
+  typeof krMarketDataAdjustResultSchema
 >;
 export type KrMarketDataKisDailyResult = z.infer<
   typeof krMarketDataKisDailyResultSchema

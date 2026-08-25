@@ -4,6 +4,8 @@ import {
   type BackgroundJobRegistration,
 } from "@/data-access/schemas/background-job";
 import {
+  krMarketDataAdjustPayloadSchema,
+  krMarketDataAdjustResultSchema,
   krMarketDataCreateAllPayloadSchema,
   krMarketDataCreatePayloadSchema,
   krMarketDataCreateResultSchema,
@@ -11,8 +13,22 @@ import {
   type KrMarketDataCreateAllPayload,
   type KrMarketDataCreatePayload,
   type KrMarketDataCreateResult,
+  type KrMarketDataAdjustPayload,
+  type KrMarketDataAdjustResult,
   type KrMarketDataKisDailyPayload,
 } from "@/data-access/schemas/kr-market-data";
+
+export function adjustKrMarketData(
+  payload: KrMarketDataAdjustPayload,
+): Promise<KrMarketDataAdjustResult> {
+  const { stockCode } = krMarketDataAdjustPayloadSchema.parse(payload);
+
+  return apiRequest(
+    `/admin/stocks/${encodeURIComponent(stockCode)}/market-data/adjust`,
+    krMarketDataAdjustResultSchema,
+    { method: "POST" },
+  );
+}
 
 export function createKrxDailyMarketData(
   payload: KrMarketDataCreateAllPayload,

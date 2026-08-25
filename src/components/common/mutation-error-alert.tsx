@@ -4,13 +4,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface MutationErrorAlertProps {
   message: string;
+  title?: string;
 }
 
-export function MutationErrorAlert({ message }: MutationErrorAlertProps) {
+export function MutationErrorAlert({
+  message,
+  title = "저장하지 못했습니다",
+}: MutationErrorAlertProps) {
   return (
     <Alert variant="destructive">
       <CircleAlertIcon aria-hidden="true" />
-      <AlertTitle>저장하지 못했습니다</AlertTitle>
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{message}</AlertDescription>
     </Alert>
   );

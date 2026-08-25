@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  adjustKrMarketData,
   createKisDailyMarketData,
   createKrxDailyMarketData,
   createKrMarketData,
@@ -87,6 +88,28 @@ describe("KR market data mutations", () => {
       from: "2026-01-01",
       to: "2026-08-10",
     });
+  });
+
+  it("원본주가를 기준으로 단일 종목 수정주가를 반영한다", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      jsonResponse({
+        copiedCount: 3,
+        adjustedCount: 20,
+      }),
+    );
+
+    await expect(adjustKrMarketData({ stockCode: "005930" })).resolves.toEqual({
+      copiedCount: 3,
+      adjustedCount: 20,
+    });
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/stocks/005930/market-data/adjust",
+    );
+    expect(request?.method).toBe("POST");
+    expect(request?.body).toBeUndefined();
   });
 
   it("KIS 전 종목 기간 일봉 작업을 등록한다", async () => {

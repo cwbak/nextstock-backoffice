@@ -18,6 +18,7 @@ import {
 } from "vitest";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { krMarketDataKeys } from "@/data-access/queries/kr-market-data/keys";
 import { krMarketDataPageLimit } from "@/data-access/queries/kr-market-data/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import type { KrStock } from "@/data-access/schemas/kr-stock";
@@ -77,6 +78,8 @@ function renderPage(stocks: ReadonlyArray<KrStock> = [stock]) {
       </TooltipProvider>
     </QueryClientProvider>,
   );
+
+  return queryClient;
 }
 
 describe("KrMarketDataPage", () => {
@@ -220,6 +223,42 @@ describe("KrMarketDataPage", () => {
     expect(within(dialog).getByLabelText("주가 기준")).toHaveTextContent(
       "수정주가",
     );
+  });
+
+  it("선택한 종목의 원본주가를 수정주가에 반영한다", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      jsonResponse({
+        copiedCount: 3,
+        adjustedCount: 20,
+      }),
+    );
+    const queryClient = renderPage();
+    const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
+
+    fireEvent.click(screen.getByRole("button", { name: "수정주가 반영" }));
+
+    const dialog = screen.getByRole("dialog", { name: "KR 수정주가 반영" });
+
+    fireEvent.click(within(dialog).getByRole("combobox", { name: "KR 종목" }));
+    fireEvent.click(screen.getByRole("option", { name: /삼성전자/ }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "수정주가 반영" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("005930 · 삼성전자 수정주가를 반영했습니다"),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByText(/원본주가에서 신규 3거래일/)).toBeInTheDocument();
+    expect(screen.getByText(/실제로 달라진 캔들 20건/)).toBeInTheDocument();
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/stocks/005930/market-data/adjust",
+    );
+    expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: krMarketDataKeys.stock("005930"),
+    });
   });
 
   it("KRX 일자별 전 종목 일봉 저장 화면을 연다", () => {
