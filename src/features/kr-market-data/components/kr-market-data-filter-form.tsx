@@ -133,7 +133,6 @@ export function KrMarketDataFilterForm({
           name="adjusted"
           render={({ field }) => (
             <KrMarketDataAdjustedField
-              description="수정주가는 market_data_adj, 원본주가는 market_data에서 조회합니다."
               id="market-data-adjusted"
               value={field.value}
               onValueChange={field.onChange}

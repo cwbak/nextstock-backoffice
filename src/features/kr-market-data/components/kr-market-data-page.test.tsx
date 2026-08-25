@@ -116,6 +116,15 @@ describe("KrMarketDataPage", () => {
     );
     renderPage();
 
+    expect(
+      screen.queryByText(
+        "수정주가는 market_data_adj, 원본주가는 market_data에서 조회합니다.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", { name: "주가 기준" }),
+    ).not.toHaveAttribute("aria-describedby");
+
     fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
     fireEvent.click(screen.getByRole("option", { name: /삼성전자/ }));
     fireEvent.keyDown(screen.getByRole("combobox", { name: "캔들 주기" }), {

@@ -10,7 +10,7 @@ import {
 
 interface KrMarketDataAdjustedFieldProps {
   className?: string;
-  description: string;
+  description?: string;
   disabled?: boolean;
   id: string;
   onValueChange: (value: boolean) => void;
@@ -25,7 +25,7 @@ export function KrMarketDataAdjustedField({
   onValueChange,
   value,
 }: KrMarketDataAdjustedFieldProps) {
-  const descriptionId = `${id}-description`;
+  const descriptionId = description ? `${id}-description` : undefined;
 
   return (
     <Field className={className} data-disabled={disabled}>
@@ -53,7 +53,9 @@ export function KrMarketDataAdjustedField({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <FieldDescription id={descriptionId}>{description}</FieldDescription>
+      {description && descriptionId ? (
+        <FieldDescription id={descriptionId}>{description}</FieldDescription>
+      ) : null}
     </Field>
   );
 }
