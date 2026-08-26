@@ -98,6 +98,28 @@ describe("KrMarketDataPage", () => {
     vi.restoreAllMocks();
   });
 
+  it("페이지 액션을 작업 흐름 순서로 표시한다", () => {
+    renderPage();
+
+    const pageHeader = screen
+      .getByRole("heading", { name: "KR 캔들" })
+      .closest("header");
+
+    expect(pageHeader).not.toBeNull();
+    expect(
+      within(pageHeader as HTMLElement)
+        .getAllByRole("button")
+        .map((button) => button.textContent?.trim()),
+    ).toEqual([
+      "새로고침",
+      "수정주가 반영",
+      "전체 수정주가 반영",
+      "KIS 일봉 저장",
+      "KIS 전 종목 저장",
+      "KRX 일자별 저장",
+    ]);
+  });
+
   it("종목과 주기를 선택하면 현재 일자 기준 KR 캔들을 조회한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse([
@@ -229,7 +251,7 @@ describe("KrMarketDataPage", () => {
   it("일봉 전용 저장 화면을 연다", () => {
     renderPage();
 
-    fireEvent.click(screen.getByRole("button", { name: "일봉 저장" }));
+    fireEvent.click(screen.getByRole("button", { name: "KIS 일봉 저장" }));
 
     const dialog = screen.getByRole("dialog", { name: "KR 일봉 저장" });
 

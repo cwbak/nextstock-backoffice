@@ -48,10 +48,6 @@ export function KrMarketDataPageActions({
         )}
         새로고침
       </Button>
-      <Button disabled={!canSaveStock} type="button" onClick={onSaveStock}>
-        <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
-        일봉 저장
-      </Button>
       <Button disabled={!canAdjustStock} type="button" onClick={onAdjustStock}>
         <SlidersHorizontalIcon aria-hidden="true" data-icon="inline-start" />
         수정주가 반영
@@ -60,13 +56,17 @@ export function KrMarketDataPageActions({
         <SlidersHorizontalIcon aria-hidden="true" data-icon="inline-start" />
         전체 수정주가 반영
       </Button>
-      <Button type="button" onClick={onSaveAll}>
-        <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
-        KRX 일자별 저장
+      <Button disabled={!canSaveStock} type="button" onClick={onSaveStock}>
+        <DatabaseIcon aria-hidden="true" data-icon="inline-start" />
+        KIS 일봉 저장
       </Button>
       <Button type="button" onClick={onSaveKisDaily}>
         <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
         KIS 전 종목 저장
+      </Button>
+      <Button type="button" onClick={onSaveAll}>
+        <CloudDownloadIcon aria-hidden="true" data-icon="inline-start" />
+        KRX 일자별 저장
       </Button>
     </>
   );
