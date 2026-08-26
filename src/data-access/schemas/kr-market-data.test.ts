@@ -22,6 +22,7 @@ const dailyPrice = {
   high: 71_000,
   close: 70_500,
   priceChange: 500,
+  priceChangeRate: 0.71,
   volume: 12_345_678,
   value: 870_000_000_000,
 } as const;
@@ -44,6 +45,17 @@ describe("KR market data schemas", () => {
     ).toBe(-500);
     expect(
       krMarketDataSchema.parse({ ...dailyPrice, priceChange: 0 }).priceChange,
+    ).toBe(0);
+  });
+
+  it("등락률은 소수와 음수 및 0을 허용한다", () => {
+    expect(
+      krMarketDataSchema.parse({ ...dailyPrice, priceChangeRate: -1.67 })
+        .priceChangeRate,
+    ).toBe(-1.67);
+    expect(
+      krMarketDataSchema.parse({ ...dailyPrice, priceChangeRate: 0 })
+        .priceChangeRate,
     ).toBe(0);
   });
 

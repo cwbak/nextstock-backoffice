@@ -109,6 +109,7 @@ describe("KrMarketDataPage", () => {
           high: 71_000,
           close: 70_500,
           priceChange: 500,
+          priceChangeRate: 0.71,
           volume: 12_345_678,
           value: 870_000_000_000,
         },
@@ -148,9 +149,13 @@ describe("KrMarketDataPage", () => {
       screen.getByRole("columnheader", { name: "전일대비" }),
     ).toBeInTheDocument();
     expect(screen.getByText("+500")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "등락률" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("+0.71%")).toBeInTheDocument();
   });
 
-  it("수정주가 조회에서는 전일대비 컬럼을 표시하지 않는다", async () => {
+  it("수정주가 조회에서는 전일대비 없이 등락률을 표시한다", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse([
         {
@@ -161,6 +166,7 @@ describe("KrMarketDataPage", () => {
           high: 71_000,
           close: 70_500,
           priceChange: 0,
+          priceChangeRate: -1.67,
           volume: 12_345_678,
           value: 870_000_000_000,
         },
@@ -178,6 +184,10 @@ describe("KrMarketDataPage", () => {
     expect(
       screen.queryByRole("columnheader", { name: "전일대비" }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "등락률" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("-1.67%")).toBeInTheDocument();
   });
 
   it("조회 종목을 바꾸면 새 종목 코드로 캔들을 요청한다", async () => {

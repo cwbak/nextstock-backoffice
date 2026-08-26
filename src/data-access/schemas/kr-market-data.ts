@@ -28,6 +28,7 @@ export const krMarketDataSchema = z
     high: marketDataIntegerSchema,
     close: marketDataIntegerSchema,
     priceChange: z.number().int(),
+    priceChangeRate: z.number(),
     volume: marketDataIntegerSchema,
     value: marketDataIntegerSchema,
   })

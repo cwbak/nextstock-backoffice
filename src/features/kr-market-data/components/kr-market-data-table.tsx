@@ -12,10 +12,19 @@ import { getKrMarketDataPeriodLabel } from "@/features/kr-market-data/kr-market-
 import { formatDate } from "@/lib/format";
 
 const numberFormatter = new Intl.NumberFormat("ko-KR");
+const priceChangeRateFormatter = new Intl.NumberFormat("ko-KR", {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+});
 
 function formatPriceChange(priceChange: number) {
   const formatted = numberFormatter.format(priceChange);
   return priceChange > 0 ? `+${formatted}` : formatted;
+}
+
+function formatPriceChangeRate(priceChangeRate: number) {
+  const formatted = `${priceChangeRateFormatter.format(priceChangeRate)}%`;
+  return priceChangeRate > 0 ? `+${formatted}` : formatted;
 }
 
 interface KrMarketDataTableProps {
@@ -33,8 +42,8 @@ export function KrMarketDataTable({
     <Table
       className={
         showPriceChange
-          ? "min-w-[72rem] table-fixed"
-          : "min-w-[64rem] table-fixed"
+          ? "min-w-[80rem] table-fixed"
+          : "min-w-[72rem] table-fixed"
       }
     >
       <TableCaption className="sr-only">{stockName} KR 캔들</TableCaption>
@@ -46,6 +55,7 @@ export function KrMarketDataTable({
         <col className="w-32" />
         <col className="w-32" />
         {showPriceChange ? <col className="w-32" /> : null}
+        <col className="w-32" />
         <col className="w-44" />
         <col className="w-52" />
       </colgroup>
@@ -60,6 +70,7 @@ export function KrMarketDataTable({
           {showPriceChange ? (
             <TableHead className="text-right">전일대비</TableHead>
           ) : null}
+          <TableHead className="text-right">등락률</TableHead>
           <TableHead className="text-right">거래량</TableHead>
           <TableHead className="pr-4 text-right">거래대금</TableHead>
         </TableRow>
@@ -88,6 +99,9 @@ export function KrMarketDataTable({
                 {formatPriceChange(item.priceChange)}
               </TableCell>
             ) : null}
+            <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
+              {formatPriceChangeRate(item.priceChangeRate)}
+            </TableCell>
             <TableCell className="text-right font-mono text-xs tabular-nums">
               {numberFormatter.format(item.volume)}
             </TableCell>
