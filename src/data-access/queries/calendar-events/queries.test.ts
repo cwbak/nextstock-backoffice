@@ -38,6 +38,6 @@ describe("calendar event queries", () => {
     await expect(
       queryClient.fetchQuery(calendarEventsQueryOptions),
     ).resolves.toEqual(listResult);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar-events");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar/events");
   });
 });

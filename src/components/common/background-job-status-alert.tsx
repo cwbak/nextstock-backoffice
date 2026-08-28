@@ -11,6 +11,7 @@ const stageLabels: Readonly<Record<string, string>> = {
   PROCESSING_CORPORATIONS: "법인별 출자현황 처리",
   SAVING_CORPORATIONS: "법인 정보 저장",
   SAVING_CORPORATION_NAMES: "법인명 저장",
+  SYNCING_HOLIDAYS: "공휴일 조회 및 저장",
   UPDATING_STOCKS: "KR 종목 갱신",
 };
 

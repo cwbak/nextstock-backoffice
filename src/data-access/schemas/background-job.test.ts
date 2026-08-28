@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   backgroundJobSchema,
   corporationsSyncJobRegistrationSchema,
+  holidaysSyncJobRegistrationSchema,
   krStocksKisDailyJobRegistrationSchema,
   krStocksMarketDataAdjustJobRegistrationSchema,
 } from "@/data-access/schemas/background-job";
@@ -62,6 +63,19 @@ describe("background job schemas", () => {
     expect(krStocksKisDailyJobRegistrationSchema.parse(response)).toEqual(
       response,
     );
+  });
+
+  it("공휴일 동기화 작업 등록 응답을 검증한다", () => {
+    const response = {
+      jobId: 55,
+      type: "holidays_sync",
+      status: "QUEUED",
+      statusUrl: "/admin/jobs/55",
+      created: true,
+      createdAt: "2026-08-28T10:00:00+09:00",
+    } as const;
+
+    expect(holidaysSyncJobRegistrationSchema.parse(response)).toEqual(response);
   });
 
   it("KR 전 종목 수정주가 작업 등록 응답을 검증한다", () => {

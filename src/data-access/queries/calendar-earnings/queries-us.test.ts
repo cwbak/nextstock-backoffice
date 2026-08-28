@@ -41,6 +41,6 @@ describe("calendar earning queries", () => {
     await expect(
       queryClient.fetchQuery(usCalendarEarningsQueryOptions),
     ).resolves.toEqual(listResult);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar-earnings/us");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar/earnings/us");
   });
 });

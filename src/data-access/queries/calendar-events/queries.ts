@@ -7,6 +7,6 @@ import { calendarEventListSchema } from "@/data-access/schemas/calendar-event";
 export const calendarEventsQueryOptions = queryOptions({
   queryKey: calendarEventKeys.list(),
   queryFn: ({ signal }) =>
-    apiRequest("/admin/calendar-events", calendarEventListSchema, { signal }),
+    apiRequest("/admin/calendar/events", calendarEventListSchema, { signal }),
   staleTime: 30 * 1000,
 });

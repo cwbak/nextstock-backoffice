@@ -3,6 +3,7 @@ import { z } from "zod";
 export const backgroundJobTypeSchema = z.enum([
   "corporations_sync",
   "equity_investments_all",
+  "holidays_sync",
   "stocks_kis_daily",
   "stocks_market_data_adjust",
   "stocks_sync",
@@ -70,6 +71,11 @@ export const corporationsSyncJobRegistrationSchema =
 export const equityInvestmentsAllJobRegistrationSchema =
   backgroundJobRegistrationSchema.extend({
     type: z.literal("equity_investments_all"),
+  });
+
+export const holidaysSyncJobRegistrationSchema =
+  backgroundJobRegistrationSchema.extend({
+    type: z.literal("holidays_sync"),
   });
 
 export const krStocksSyncJobRegistrationSchema =

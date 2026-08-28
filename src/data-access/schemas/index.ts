@@ -3,6 +3,7 @@ export * from "@/data-access/schemas/calendar-event";
 export * from "@/data-access/schemas/corporation";
 export * from "@/data-access/schemas/corporation-industry";
 export * from "@/data-access/schemas/equity-investment";
+export * from "@/data-access/schemas/holiday";
 export * from "@/data-access/schemas/kr-calendar-earning";
 export * from "@/data-access/schemas/kr-market-data";
 export * from "@/data-access/schemas/kr-stock";

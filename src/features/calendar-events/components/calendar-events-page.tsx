@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { RefreshCwIcon } from "lucide-react";
+import { CalendarSyncIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import {
@@ -18,8 +18,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { calendarEventsQueryOptions } from "@/data-access/queries/calendar-events/queries";
+import type { HolidaySyncResult } from "@/data-access/schemas/holiday";
 import { CalendarEventsEmptyState } from "@/features/calendar-events/components/calendar-events-empty-state";
 import { CalendarEventsTable } from "@/features/calendar-events/components/calendar-events-table";
+import { HolidaySyncDialog } from "@/features/calendar-events/components/holiday-sync-dialog";
+import { HolidaySyncSummary } from "@/features/calendar-events/components/holiday-sync-summary";
 
 const pageSize = 50;
 const initialTableState: DataTableState = {
@@ -40,6 +43,9 @@ const importanceSearchLabels = {
 
 export function CalendarEventsPage() {
   const calendarEventsQuery = useSuspenseQuery(calendarEventsQueryOptions);
+  const [holidaySyncOpen, setHolidaySyncOpen] = useState(false);
+  const [holidaySyncResult, setHolidaySyncResult] =
+    useState<HolidaySyncResult | null>(null);
   const {
     state: tableState,
     updatePage,
@@ -77,61 +83,86 @@ export function CalendarEventsPage() {
   const visibleItems = filteredItems.slice(startIndex, startIndex + pageSize);
 
   return (
-    <section className="flex flex-col gap-6">
-      <DataPageHeader
-        actions={
-          <Button
-            disabled={calendarEventsQuery.isFetching}
-            type="button"
-            variant="outline"
-            onClick={() => void calendarEventsQuery.refetch()}
-          >
-            {calendarEventsQuery.isFetching ? (
-              <Spinner data-icon="inline-start" />
-            ) : (
-              <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
-            )}
-            새로고침
-          </Button>
-        }
-        description="경제지표와 기업 실적 일정을 날짜와 시간 순서로 조회합니다."
-        eyebrow="Calendar"
-        recordCount={calendarEventsQuery.data.length}
-        title="일정"
-      />
-      <DataTableToolbar
-        label="일정 검색"
-        placeholder="날짜, 국가, 유형, 중요도, 제목 검색"
-        query={tableState.q}
-        onFilterChange={updateFilterQuery}
-        onQueryChange={updateQuery}
-      />
-      <DataTableCard
-        description="같은 날짜에는 종일 일정이 먼저 표시되며, 이후 시간 순서로 표시됩니다."
-        recordCount={filteredItems.length}
-        title="캘린더 일정"
-      >
-        {calendarEventsQuery.data.length === 0 ? (
-          <CalendarEventsEmptyState />
-        ) : filteredItems.length === 0 ? (
-          <NoSearchResults
-            query={filterQuery}
-            onClear={() => updateQuery("")}
+    <>
+      <section className="flex flex-col gap-6">
+        <DataPageHeader
+          actions={
+            <>
+              <Button
+                disabled={calendarEventsQuery.isFetching}
+                type="button"
+                variant="outline"
+                onClick={() => void calendarEventsQuery.refetch()}
+              >
+                {calendarEventsQuery.isFetching ? (
+                  <Spinner data-icon="inline-start" />
+                ) : (
+                  <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
+                )}
+                새로고침
+              </Button>
+              <Button type="button" onClick={() => setHolidaySyncOpen(true)}>
+                <CalendarSyncIcon aria-hidden="true" data-icon="inline-start" />
+                공휴일 동기화
+              </Button>
+            </>
+          }
+          description="경제지표와 기업 실적 일정을 날짜와 시간 순서로 조회합니다."
+          eyebrow="Calendar"
+          recordCount={calendarEventsQuery.data.length}
+          title="일정"
+        />
+        {holidaySyncResult ? (
+          <HolidaySyncSummary
+            result={holidaySyncResult}
+            onClose={() => setHolidaySyncResult(null)}
           />
-        ) : (
-          <>
-            <CalendarEventsTable items={visibleItems} />
-            <DataPagination
-              endRecord={Math.min(startIndex + pageSize, filteredItems.length)}
-              page={currentPage}
-              startRecord={startIndex + 1}
-              totalPages={totalPages}
-              totalRecords={filteredItems.length}
-              onPageChange={updatePage}
+        ) : null}
+        <DataTableToolbar
+          label="일정 검색"
+          placeholder="날짜, 국가, 유형, 중요도, 제목 검색"
+          query={tableState.q}
+          onFilterChange={updateFilterQuery}
+          onQueryChange={updateQuery}
+        />
+        <DataTableCard
+          description="같은 날짜에는 종일 일정이 먼저 표시되며, 이후 시간 순서로 표시됩니다."
+          recordCount={filteredItems.length}
+          title="캘린더 일정"
+        >
+          {calendarEventsQuery.data.length === 0 ? (
+            <CalendarEventsEmptyState />
+          ) : filteredItems.length === 0 ? (
+            <NoSearchResults
+              query={filterQuery}
+              onClear={() => updateQuery("")}
             />
-          </>
-        )}
-      </DataTableCard>
-    </section>
+          ) : (
+            <>
+              <CalendarEventsTable items={visibleItems} />
+              <DataPagination
+                endRecord={Math.min(
+                  startIndex + pageSize,
+                  filteredItems.length,
+                )}
+                page={currentPage}
+                startRecord={startIndex + 1}
+                totalPages={totalPages}
+                totalRecords={filteredItems.length}
+                onPageChange={updatePage}
+              />
+            </>
+          )}
+        </DataTableCard>
+      </section>
+      <HolidaySyncDialog
+        open={holidaySyncOpen}
+        onOpenChange={setHolidaySyncOpen}
+        onSynced={(result) => {
+          setHolidaySyncResult(result);
+          setHolidaySyncOpen(false);
+        }}
+      />
+    </>
   );
 }

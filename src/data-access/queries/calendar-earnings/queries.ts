@@ -8,7 +8,7 @@ import { krCalendarEarningListSchema } from "@/data-access/schemas/kr-calendar-e
 export const usCalendarEarningsQueryOptions = queryOptions({
   queryKey: calendarEarningKeys.us(),
   queryFn: ({ signal }) =>
-    apiRequest("/admin/calendar-earnings/us", usCalendarEarningListSchema, {
+    apiRequest("/admin/calendar/earnings/us", usCalendarEarningListSchema, {
       signal,
     }),
   staleTime: 30 * 1000,
@@ -17,7 +17,7 @@ export const usCalendarEarningsQueryOptions = queryOptions({
 export const krCalendarEarningsQueryOptions = queryOptions({
   queryKey: calendarEarningKeys.kr(),
   queryFn: ({ signal }) =>
-    apiRequest("/admin/calendar-earnings/kr", krCalendarEarningListSchema, {
+    apiRequest("/admin/calendar/earnings/kr", krCalendarEarningListSchema, {
       signal,
     }),
   staleTime: 30 * 1000,

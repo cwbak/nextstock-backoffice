@@ -23,7 +23,7 @@ describe("calendar earning mutations", () => {
 
     await expect(createUsCalendarEarnings()).resolves.toEqual(result);
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar-earnings/us");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/calendar/earnings/us");
     const request = fetchMock.mock.calls[0]?.[1];
     expect(request?.method).toBe("POST");
     expect(request?.body).toBeUndefined();

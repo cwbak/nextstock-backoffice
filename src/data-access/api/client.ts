@@ -31,6 +31,10 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "industry code not found": "업종 분류 정보를 찾을 수 없습니다.",
   "internal server error": "서버 내부 오류가 발생했습니다.",
   "from must not be after to": "종료일은 시작일보다 빠를 수 없습니다.",
+  "fromYear must be a four-digit integer":
+    "시작 연도는 네 자리 정수여야 합니다.",
+  "fromYear must not exceed toYear":
+    "종료 연도는 시작 연도보다 빠를 수 없습니다.",
   "from must use YYYY-MM-DD format": "시작일은 YYYY-MM-DD 형식이어야 합니다.",
   "invalid dart corporation investments response":
     "DART 출자현황 응답 값이 올바르지 않습니다.",
@@ -69,6 +73,7 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "theme already exists": "같은 ID 또는 이름의 테마가 이미 있습니다.",
   "theme not found": "테마를 찾을 수 없습니다.",
   "to must use YYYY-MM-DD format": "종료일은 YYYY-MM-DD 형식이어야 합니다.",
+  "toYear must be a four-digit integer": "종료 연도는 네 자리 정수여야 합니다.",
 };
 
 export class ApiError extends Error {
