@@ -115,6 +115,13 @@ export const krMarketDataAdjustAllResultSchema = z
   })
   .strict();
 
+export const krMarketDataStatisticsResultSchema = z
+  .object({
+    stockCount: z.number().int().nonnegative(),
+    storedCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
 export const krMarketDataKisDailyResultSchema = z
   .object({
     from: marketDataDateSchema,
@@ -157,6 +164,9 @@ export type KrMarketDataAdjustResult = z.infer<
 >;
 export type KrMarketDataAdjustAllResult = z.infer<
   typeof krMarketDataAdjustAllResultSchema
+>;
+export type KrMarketDataStatisticsResult = z.infer<
+  typeof krMarketDataStatisticsResultSchema
 >;
 export type KrMarketDataKisDailyResult = z.infer<
   typeof krMarketDataKisDailyResultSchema

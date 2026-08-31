@@ -1,4 +1,5 @@
 import {
+  ChartNoAxesCombinedIcon,
   CloudDownloadIcon,
   DatabaseIcon,
   RefreshCwIcon,
@@ -15,6 +16,7 @@ interface KrMarketDataPageActionsProps {
   isRefreshing: boolean;
   onAdjustAll: () => void;
   onAdjustStock: () => void;
+  onGenerateStatistics: () => void;
   onRefresh: () => void;
   onSaveAll: () => void;
   onSaveKisDaily: () => void;
@@ -28,6 +30,7 @@ export function KrMarketDataPageActions({
   isRefreshing,
   onAdjustAll,
   onAdjustStock,
+  onGenerateStatistics,
   onRefresh,
   onSaveAll,
   onSaveKisDaily,
@@ -55,6 +58,10 @@ export function KrMarketDataPageActions({
       <Button type="button" onClick={onAdjustAll}>
         <SlidersHorizontalIcon aria-hidden="true" data-icon="inline-start" />
         전체 수정주가 반영
+      </Button>
+      <Button type="button" onClick={onGenerateStatistics}>
+        <ChartNoAxesCombinedIcon aria-hidden="true" data-icon="inline-start" />
+        수정주가 통계 반영
       </Button>
       <Button disabled={!canSaveStock} type="button" onClick={onSaveStock}>
         <DatabaseIcon aria-hidden="true" data-icon="inline-start" />

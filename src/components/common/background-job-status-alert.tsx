@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { BackgroundJob } from "@/data-access/schemas/background-job";
 
 const stageLabels: Readonly<Record<string, string>> = {
+  CALCULATING_STATISTICS: "수정주가 통계 계산",
   FETCHING_COMPANIES: "기업개황 조회",
   FETCHING_CORPORATION_CODES: "DART 고유번호 조회",
   FETCHING_KOSDAQ: "KOSDAQ 종목 조회",
@@ -11,6 +12,7 @@ const stageLabels: Readonly<Record<string, string>> = {
   PROCESSING_CORPORATIONS: "법인별 출자현황 처리",
   SAVING_CORPORATIONS: "법인 정보 저장",
   SAVING_CORPORATION_NAMES: "법인명 저장",
+  STORING_STATISTICS: "수정주가 통계 저장",
   SYNCING_HOLIDAYS: "공휴일 조회 및 저장",
   UPDATING_STOCKS: "KR 종목 갱신",
 };

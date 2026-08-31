@@ -114,6 +114,7 @@ describe("KrMarketDataPage", () => {
       "새로고침",
       "수정주가 반영",
       "전체 수정주가 반영",
+      "수정주가 통계 반영",
       "KIS 일봉 저장",
       "KIS 전 종목 저장",
       "KRX 일자별 저장",
@@ -309,6 +310,21 @@ describe("KrMarketDataPage", () => {
 
     expect(
       screen.getByRole("dialog", { name: "KR 전 종목 수정주가 반영" }),
+    ).toBeInTheDocument();
+  });
+
+  it("전 종목 수정주가 통계 반영 화면을 연다", () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "수정주가 통계 반영" }));
+
+    expect(
+      screen.getByRole("dialog", {
+        name: "KR 전 종목 수정주가 통계 반영",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/52주·역대 고가와 저가를 다시 계산/),
     ).toBeInTheDocument();
   });
 

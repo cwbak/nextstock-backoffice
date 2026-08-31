@@ -6,6 +6,7 @@ import {
   createKisDailyMarketData,
   createKrxDailyMarketData,
   createKrMarketData,
+  generateKrMarketDataStatistics,
 } from "@/data-access/queries/kr-market-data/mutations";
 
 function jsonResponse(body: unknown) {
@@ -135,6 +136,35 @@ describe("KR market data mutations", () => {
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       "/admin/stocks/market-data/adjust",
+    );
+    expect(request?.method).toBe("POST");
+    expect(request?.body).toBeUndefined();
+  });
+
+  it("KR 전 종목 수정주가 통계 작업을 등록한다", async () => {
+    const registration = {
+      jobId: 54,
+      type: "stocks_market_data_statistics_generate",
+      status: "QUEUED",
+      statusUrl: "/admin/jobs/54",
+      created: true,
+      createdAt: "2026-08-30T10:00:00+09:00",
+    } as const;
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(registration), {
+        headers: { "Content-Type": "application/json" },
+        status: 202,
+      }),
+    );
+
+    await expect(generateKrMarketDataStatistics()).resolves.toEqual(
+      registration,
+    );
+
+    const request = fetchMock.mock.calls[0]?.[1];
+
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "/admin/stocks/market-data/statistics",
     );
     expect(request?.method).toBe("POST");
     expect(request?.body).toBeUndefined();

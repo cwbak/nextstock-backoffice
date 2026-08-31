@@ -12,6 +12,7 @@ import {
   krMarketDataKisDailyResultSchema,
   krMarketDataListParamsSchema,
   krMarketDataSchema,
+  krMarketDataStatisticsResultSchema,
 } from "@/data-access/schemas/kr-market-data";
 
 const dailyPrice = {
@@ -172,6 +173,21 @@ describe("KR market data schemas", () => {
     };
 
     expect(krMarketDataAdjustAllResultSchema.parse(result)).toEqual(result);
+  });
+
+  it("전 종목 수정주가 통계 결과를 검증한다", () => {
+    const result = {
+      stockCount: 2_800,
+      storedCount: 2_800,
+    };
+
+    expect(krMarketDataStatisticsResultSchema.parse(result)).toEqual(result);
+    expect(() =>
+      krMarketDataStatisticsResultSchema.parse({
+        stockCount: 2_800,
+        storedCount: -1,
+      }),
+    ).toThrow();
   });
 
   it("전체 종목 저장 날짜 구간을 검증한다", () => {

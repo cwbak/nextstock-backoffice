@@ -1,6 +1,7 @@
 import { apiRequest } from "@/data-access/api/client";
 import {
   krStocksMarketDataAdjustJobRegistrationSchema,
+  krStocksMarketDataStatisticsJobRegistrationSchema,
   krStocksKisDailyJobRegistrationSchema,
   type BackgroundJobRegistration,
 } from "@/data-access/schemas/background-job";
@@ -23,6 +24,14 @@ export function adjustAllKrMarketData(): Promise<BackgroundJobRegistration> {
   return apiRequest(
     "/admin/stocks/market-data/adjust",
     krStocksMarketDataAdjustJobRegistrationSchema,
+    { method: "POST" },
+  );
+}
+
+export function generateKrMarketDataStatistics(): Promise<BackgroundJobRegistration> {
+  return apiRequest(
+    "/admin/stocks/market-data/statistics",
+    krStocksMarketDataStatisticsJobRegistrationSchema,
     { method: "POST" },
   );
 }
