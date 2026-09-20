@@ -29,23 +29,15 @@ function formatPriceChangeRate(priceChangeRate: number) {
 
 interface KrMarketDataTableProps {
   items: ReadonlyArray<KrMarketData>;
-  showPriceChange: boolean;
   stockName: string;
 }
 
 export function KrMarketDataTable({
   items,
-  showPriceChange,
   stockName,
 }: KrMarketDataTableProps) {
   return (
-    <Table
-      className={
-        showPriceChange
-          ? "min-w-[80rem] table-fixed"
-          : "min-w-[72rem] table-fixed"
-      }
-    >
+    <Table className="min-w-[80rem] table-fixed">
       <TableCaption className="sr-only">{stockName} KR 캔들</TableCaption>
       <colgroup>
         <col className="w-36" />
@@ -54,7 +46,7 @@ export function KrMarketDataTable({
         <col className="w-32" />
         <col className="w-32" />
         <col className="w-32" />
-        {showPriceChange ? <col className="w-32" /> : null}
+        <col className="w-32" />
         <col className="w-32" />
         <col className="w-44" />
         <col className="w-52" />
@@ -67,9 +59,7 @@ export function KrMarketDataTable({
           <TableHead className="text-right">고가</TableHead>
           <TableHead className="text-right">저가</TableHead>
           <TableHead className="text-right">종가</TableHead>
-          {showPriceChange ? (
-            <TableHead className="text-right">전일대비</TableHead>
-          ) : null}
+          <TableHead className="text-right">전일대비</TableHead>
           <TableHead className="text-right">등락률</TableHead>
           <TableHead className="text-right">거래량</TableHead>
           <TableHead className="pr-4 text-right">거래대금</TableHead>
@@ -94,11 +84,9 @@ export function KrMarketDataTable({
             <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
               {numberFormatter.format(item.close)}
             </TableCell>
-            {showPriceChange ? (
-              <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
-                {formatPriceChange(item.priceChange)}
-              </TableCell>
-            ) : null}
+            <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
+              {formatPriceChange(item.priceChange)}
+            </TableCell>
             <TableCell className="text-right font-mono text-xs font-medium tabular-nums">
               {formatPriceChangeRate(item.priceChangeRate)}
             </TableCell>

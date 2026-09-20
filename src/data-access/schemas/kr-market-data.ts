@@ -100,7 +100,6 @@ export const krMarketDataCreateResultSchema = z
 
 export const krMarketDataAdjustResultSchema = z
   .object({
-    copiedCount: z.number().int().nonnegative(),
     adjustedCount: z.number().int().nonnegative(),
   })
   .strict();
@@ -110,7 +109,6 @@ export const krMarketDataAdjustAllResultSchema = z
     stockCount: z.number().int().nonnegative(),
     processedCount: z.number().int().nonnegative(),
     failedCount: z.number().int().nonnegative(),
-    copiedCount: z.number().int().nonnegative(),
     adjustedCount: z.number().int().nonnegative(),
   })
   .strict();

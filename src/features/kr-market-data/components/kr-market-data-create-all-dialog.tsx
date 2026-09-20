@@ -74,7 +74,7 @@ export function KrMarketDataCreateAllDialog({
           <DialogTitle>KRX 일자별 전 종목 일봉 저장</DialogTitle>
           <DialogDescription>
             날짜 구간을 하루씩 순회해 각 거래일의 KRX 전 종목 일봉을
-            ClickHouse에 저장합니다.
+            PostgreSQL에 저장합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>

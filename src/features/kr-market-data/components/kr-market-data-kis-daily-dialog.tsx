@@ -84,7 +84,7 @@ export function KrMarketDataKisDailyDialog({
           <DialogTitle>KIS 전 종목 기간 일봉 저장</DialogTitle>
           <DialogDescription>
             등록된 모든 KR 종목에 같은 기간과 주가 기준을 적용해 KIS 일봉을
-            ClickHouse에 저장합니다.
+            PostgreSQL에 저장합니다.
           </DialogDescription>
         </DialogHeader>
         <Alert>
@@ -114,7 +114,7 @@ export function KrMarketDataKisDailyDialog({
             toRegistration={register("to")}
           />
           <KrMarketDataAdjustedField
-            description="수정주가는 market_data_adj, 원본주가는 market_data에 저장합니다."
+            description="수정주가는 액면분할·병합을 반영하고, 원본주가는 수집한 값을 그대로 저장합니다."
             disabled={isBusy}
             id="save-kis-daily-market-data-adjusted"
             value={adjusted}

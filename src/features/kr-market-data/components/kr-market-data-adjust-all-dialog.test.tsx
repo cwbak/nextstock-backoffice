@@ -22,8 +22,7 @@ describe("KrMarketDataAdjustAllDialog", () => {
       stockCount: 2_800,
       processedCount: 2_798,
       failedCount: 2,
-      copiedCount: 15_000,
-      adjustedCount: 420_000,
+      adjustedCount: 420,
     };
     const registration = {
       jobId: 53,

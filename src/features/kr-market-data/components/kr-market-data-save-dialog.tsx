@@ -175,7 +175,7 @@ function KrMarketDataSaveForm({
           render={({ field }) => (
             <KrMarketDataAdjustedField
               className="sm:col-span-2"
-              description="수정주가는 market_data_adj, 원본주가는 market_data에 저장합니다."
+              description="수정주가는 액면분할·병합을 반영하고, 원본주가는 수집한 값을 그대로 저장합니다."
               disabled={mutation.isPending}
               id="save-market-data-adjusted"
               value={field.value}
@@ -218,7 +218,7 @@ export function KrMarketDataSaveDialog({
         <DialogHeader>
           <DialogTitle>KR 일봉 저장</DialogTitle>
           <DialogDescription>
-            종목, 기간과 주가 기준을 선택해 KIS 일봉을 ClickHouse에 저장합니다.
+            종목, 기간과 주가 기준을 선택해 KIS 일봉을 PostgreSQL에 저장합니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (

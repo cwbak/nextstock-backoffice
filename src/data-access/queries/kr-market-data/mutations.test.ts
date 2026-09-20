@@ -95,14 +95,12 @@ describe("KR market data mutations", () => {
   it("원본주가를 기준으로 단일 종목 수정주가를 반영한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({
-        copiedCount: 3,
-        adjustedCount: 20,
+        adjustedCount: 1,
       }),
     );
 
     await expect(adjustKrMarketData({ stockCode: "005930" })).resolves.toEqual({
-      copiedCount: 3,
-      adjustedCount: 20,
+      adjustedCount: 1,
     });
 
     const request = fetchMock.mock.calls[0]?.[1];

@@ -148,8 +148,8 @@ export function KrMarketDataAdjustDialog({
         <DialogHeader>
           <DialogTitle>KR 수정주가 반영</DialogTitle>
           <DialogDescription>
-            원본주가를 기준으로 수정주가를 증분 반영하고, 조정 경계가 발견되면
-            해당 종목의 수정주가 이력을 다시 계산합니다.
+            원본 일봉 전체에서 액면분할·병합 경계를 탐지하고, 날짜별 수정 계수를
+            다시 계산해 반영합니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (

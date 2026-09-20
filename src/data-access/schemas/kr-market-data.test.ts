@@ -151,14 +151,12 @@ describe("KR market data schemas", () => {
     ).toEqual({ stockCode: "005930" });
     expect(
       krMarketDataAdjustResultSchema.parse({
-        copiedCount: 3,
-        adjustedCount: 20,
+        adjustedCount: 1,
       }),
-    ).toEqual({ copiedCount: 3, adjustedCount: 20 });
+    ).toEqual({ adjustedCount: 1 });
     expect(() =>
       krMarketDataAdjustResultSchema.parse({
-        copiedCount: -1,
-        adjustedCount: 20,
+        adjustedCount: -1,
       }),
     ).toThrow();
   });
@@ -168,8 +166,7 @@ describe("KR market data schemas", () => {
       stockCount: 2_800,
       processedCount: 2_798,
       failedCount: 2,
-      copiedCount: 15_000,
-      adjustedCount: 420_000,
+      adjustedCount: 420,
     };
 
     expect(krMarketDataAdjustAllResultSchema.parse(result)).toEqual(result);

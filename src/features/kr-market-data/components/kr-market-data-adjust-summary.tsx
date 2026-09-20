@@ -23,7 +23,7 @@ export function KrMarketDataAdjustSummary({
   result,
   stockLabel,
 }: KrMarketDataAdjustSummaryProps) {
-  const hasChanges = result.copiedCount > 0 || result.adjustedCount > 0;
+  const hasChanges = result.adjustedCount > 0;
   const isAllResult = "stockCount" in result;
 
   return (
@@ -33,8 +33,8 @@ export function KrMarketDataAdjustSummary({
       <AlertDescription className="flex flex-col gap-1">
         <span>
           {hasChanges
-            ? `원본주가에서 신규 ${result.copiedCount.toLocaleString("ko-KR")}거래일을 복사했고, 조정으로 OHLC 또는 거래량이 실제로 달라진 캔들 ${result.adjustedCount.toLocaleString("ko-KR")}건을 반영했습니다.`
-            : "추가로 복사하거나 조정할 캔들이 없습니다."}
+            ? `액면분할·병합 경계 ${result.adjustedCount.toLocaleString("ko-KR")}건을 탐지해 수정 계수를 반영했습니다.`
+            : "반영할 수정 계수 변경이 없습니다."}
         </span>
         {isAllResult ? (
           <span>

@@ -141,10 +141,8 @@ describe("KrMarketDataPage", () => {
     renderPage();
 
     expect(
-      screen.queryByText(
-        "수정주가는 market_data_adj, 원본주가는 market_data에서 조회합니다.",
-      ),
-    ).not.toBeInTheDocument();
+      screen.getByText(/PostgreSQL에 저장된 캔들을 조회합니다/),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("combobox", { name: "주가 기준" }),
     ).not.toHaveAttribute("aria-describedby");
@@ -178,7 +176,7 @@ describe("KrMarketDataPage", () => {
     expect(screen.getByText("+0.71%")).toBeInTheDocument();
   });
 
-  it("수정주가 조회에서는 전일대비 없이 등락률을 표시한다", async () => {
+  it("수정주가 조회에서도 수정 종가 기준 전일대비와 등락률을 표시한다", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse([
         {
@@ -188,7 +186,7 @@ describe("KrMarketDataPage", () => {
           low: 69_500,
           high: 71_000,
           close: 70_500,
-          priceChange: 0,
+          priceChange: -1_200,
           priceChangeRate: -1.67,
           volume: 12_345_678,
           value: 870_000_000_000,
@@ -205,8 +203,9 @@ describe("KrMarketDataPage", () => {
       expect(screen.getByText("70,500")).toBeInTheDocument();
     });
     expect(
-      screen.queryByRole("columnheader", { name: "전일대비" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("columnheader", { name: "전일대비" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("-1,200")).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "등락률" }),
     ).toBeInTheDocument();
@@ -265,13 +264,13 @@ describe("KrMarketDataPage", () => {
     expect(within(dialog).getByLabelText("주가 기준")).toHaveTextContent(
       "수정주가",
     );
+    expect(within(dialog).getByText(/PostgreSQL에 저장합니다/)).toBeVisible();
   });
 
   it("선택한 종목의 원본주가를 수정주가에 반영한다", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       jsonResponse({
-        copiedCount: 3,
-        adjustedCount: 20,
+        adjustedCount: 1,
       }),
     );
     const queryClient = renderPage();
@@ -292,8 +291,9 @@ describe("KrMarketDataPage", () => {
         screen.getByText("005930 · 삼성전자 수정주가를 반영했습니다"),
       ).toBeInTheDocument();
     });
-    expect(screen.getByText(/원본주가에서 신규 3거래일/)).toBeInTheDocument();
-    expect(screen.getByText(/실제로 달라진 캔들 20건/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/액면분할·병합 경계 1건을 탐지/),
+    ).toBeInTheDocument();
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       "/admin/stocks/005930/market-data/adjust",
     );
@@ -347,6 +347,7 @@ describe("KrMarketDataPage", () => {
     expect(
       within(dialog).getByText(/같은 종목·날짜가 있어도 새 버전/),
     ).toBeInTheDocument();
+    expect(within(dialog).getByText(/PostgreSQL에 저장합니다/)).toBeVisible();
   });
 
   it("KIS 전 종목 기간 일봉 저장 화면을 연다", () => {
@@ -366,5 +367,6 @@ describe("KrMarketDataPage", () => {
     expect(
       within(dialog).getByText(/Worker가 종목 코드순/),
     ).toBeInTheDocument();
+    expect(within(dialog).getByText(/PostgreSQL에 저장합니다/)).toBeVisible();
   });
 });

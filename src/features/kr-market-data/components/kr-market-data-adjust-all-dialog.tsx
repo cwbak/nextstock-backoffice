@@ -72,7 +72,7 @@ export function KrMarketDataAdjustAllDialog({
         <DialogHeader>
           <DialogTitle>KR 전 종목 수정주가 반영</DialogTitle>
           <DialogDescription>
-            등록된 모든 KR 종목의 원본주가를 수정주가에 증분 반영합니다.
+            등록된 모든 KR 종목의 수정 계수를 원본주가 기준으로 다시 계산합니다.
           </DialogDescription>
         </DialogHeader>
         <KrMarketDataAdjustmentWarning />

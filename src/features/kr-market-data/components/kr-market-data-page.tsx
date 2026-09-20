@@ -126,7 +126,7 @@ export function KrMarketDataPage() {
     : (filters?.stockCode ?? "KR 종목");
   const tableDescription = filters
     ? `${stockLabel} · ${getKrMarketDataPeriodLabel(filters.period)} · ${filters.adjusted ? "수정주가" : "원본주가"} · ${queryEnd} 기준 · 최신 날짜순`
-    : "종목과 주기를 선택해 ClickHouse에 저장된 캔들을 조회합니다.";
+    : "종목과 주기를 선택해 PostgreSQL에 저장된 캔들을 조회합니다.";
 
   const refresh = () => {
     const currentDate = getCurrentLocalDate();
@@ -238,11 +238,7 @@ export function KrMarketDataPage() {
             <KrMarketDataEmptyState mode="no-results" />
           ) : (
             <>
-              <KrMarketDataTable
-                items={visibleItems}
-                showPriceChange={!filters.adjusted}
-                stockName={stockLabel}
-              />
+              <KrMarketDataTable items={visibleItems} stockName={stockLabel} />
               <KrMarketDataInfiniteLoader
                 error={
                   marketDataQuery.isFetchNextPageError
