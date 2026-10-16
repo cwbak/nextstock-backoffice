@@ -10,7 +10,7 @@ describe("BackgroundJobStatusAlert", () => {
   it("전 종목 수정주가 작업의 처리 단계를 구분해 표시한다", () => {
     const job: BackgroundJob = {
       jobId: 53,
-      type: "stocks_market_data_adjust",
+      type: "stock_prices_adjust",
       status: "RUNNING",
       stage: "PROCESSING_STOCKS",
       parameters: {},
@@ -72,7 +72,7 @@ describe("BackgroundJobStatusAlert", () => {
   ])("수정주가 통계 단계 %s를 사용자용 문구로 표시한다", (stage, label) => {
     const job: BackgroundJob = {
       jobId: 54,
-      type: "stocks_market_data_statistics_generate",
+      type: "stock_price_statistics_generate",
       status: "RUNNING",
       stage,
       parameters: {},

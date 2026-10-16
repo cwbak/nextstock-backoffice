@@ -23,7 +23,7 @@ describe("KrMarketDataStatisticsDialog", () => {
     };
     const registration = {
       jobId: 54,
-      type: "stocks_market_data_statistics_generate",
+      type: "stock_price_statistics_generate",
       status: "QUEUED",
       statusUrl: "/admin/jobs/54",
       created: true,
@@ -31,7 +31,7 @@ describe("KrMarketDataStatisticsDialog", () => {
     };
     const completedJob = {
       jobId: 54,
-      type: "stocks_market_data_statistics_generate",
+      type: "stock_price_statistics_generate",
       status: "COMPLETED",
       stage: "COMPLETED",
       parameters: {},
@@ -85,9 +85,7 @@ describe("KrMarketDataStatisticsDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "수정주가 통계 반영" }));
 
     await waitFor(() => expect(onGenerated).toHaveBeenCalledWith(result));
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/market-data/statistics",
-    );
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stock-prices/statistics");
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
     expect(fetchMock.mock.calls[0]?.[1]?.body).toBeUndefined();
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/54");

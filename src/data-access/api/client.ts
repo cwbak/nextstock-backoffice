@@ -46,11 +46,11 @@ const serverErrorMessages: Readonly<Record<string, string>> = {
   "job id must be a positive integer": "작업 ID는 양의 정수여야 합니다.",
   "stock lookup failed": "KR 종목 정보를 조회하지 못했습니다.",
   "stock not found": "KR 종목을 찾을 수 없습니다.",
-  "krx website market data lookup failed":
+  "krx website stock prices lookup failed":
     "KRX 정보데이터시스템에서 전체 종목 일봉을 조회하지 못했습니다.",
   "krx stocks lookup failed": "KRX 전체 종목을 조회하지 못했습니다.",
   "invalid krx stocks response": "KRX 종목 응답 값이 올바르지 않습니다.",
-  "korea investment market data lookup failed":
+  "korea investment stock prices lookup failed":
     "한국투자증권에서 KR 일봉을 조회하지 못했습니다.",
   "name is required": "이름을 입력해 주세요.",
   "limit must be between 1 and 200":

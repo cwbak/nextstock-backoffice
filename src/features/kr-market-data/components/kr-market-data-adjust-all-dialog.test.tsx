@@ -26,7 +26,7 @@ describe("KrMarketDataAdjustAllDialog", () => {
     };
     const registration = {
       jobId: 53,
-      type: "stocks_market_data_adjust",
+      type: "stock_prices_adjust",
       status: "QUEUED",
       statusUrl: "/admin/jobs/53",
       created: true,
@@ -34,7 +34,7 @@ describe("KrMarketDataAdjustAllDialog", () => {
     };
     const completedJob = {
       jobId: 53,
-      type: "stocks_market_data_adjust",
+      type: "stock_prices_adjust",
       status: "COMPLETED",
       stage: "COMPLETED",
       parameters: {},
@@ -92,9 +92,7 @@ describe("KrMarketDataAdjustAllDialog", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: krMarketDataKeys.lists(),
     });
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/market-data/adjust",
-    );
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stock-prices/adjust");
     expect(fetchMock.mock.calls[0]?.[1]?.body).toBeUndefined();
     expect(fetchMock.mock.calls[1]?.[0]).toBe("/admin/jobs/53");
   });

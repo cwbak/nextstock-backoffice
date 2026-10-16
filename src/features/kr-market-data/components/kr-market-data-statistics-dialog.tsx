@@ -34,7 +34,7 @@ export function KrMarketDataStatisticsDialog({
   open,
 }: KrMarketDataStatisticsDialogProps) {
   const jobTracker = useBackgroundJob({
-    expectedType: "stocks_market_data_statistics_generate",
+    expectedType: "stock_price_statistics_generate",
     resultSchema: krMarketDataStatisticsResultSchema,
     onCompleted: onGenerated,
   });

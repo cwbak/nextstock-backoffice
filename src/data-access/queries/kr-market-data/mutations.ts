@@ -22,7 +22,7 @@ import {
 
 export function adjustAllKrMarketData(): Promise<BackgroundJobRegistration> {
   return apiRequest(
-    "/admin/stocks/market-data/adjust",
+    "/admin/stock-prices/adjust",
     krStocksMarketDataAdjustJobRegistrationSchema,
     { method: "POST" },
   );
@@ -30,7 +30,7 @@ export function adjustAllKrMarketData(): Promise<BackgroundJobRegistration> {
 
 export function generateKrMarketDataStatistics(): Promise<BackgroundJobRegistration> {
   return apiRequest(
-    "/admin/stocks/market-data/statistics",
+    "/admin/stock-prices/statistics",
     krStocksMarketDataStatisticsJobRegistrationSchema,
     { method: "POST" },
   );
@@ -42,7 +42,7 @@ export function adjustKrMarketData(
   const { stockCode } = krMarketDataAdjustPayloadSchema.parse(payload);
 
   return apiRequest(
-    `/admin/stocks/${encodeURIComponent(stockCode)}/market-data/adjust`,
+    `/admin/stock-prices/${encodeURIComponent(stockCode)}/adjust`,
     krMarketDataAdjustResultSchema,
     { method: "POST" },
   );
@@ -54,7 +54,7 @@ export function createKrxDailyMarketData(
   const body = krMarketDataCreateAllPayloadSchema.parse(payload);
 
   return apiRequest(
-    "/admin/stocks/market-data/krx-daily",
+    "/admin/stock-prices/krx-daily",
     krMarketDataCreateResultSchema,
     { method: "POST" },
     body,
@@ -67,7 +67,7 @@ export function createKisDailyMarketData(
   const body = krMarketDataKisDailyPayloadSchema.parse(payload);
 
   return apiRequest(
-    "/admin/stocks/market-data/kis-daily",
+    "/admin/stock-prices/kis-daily",
     krStocksKisDailyJobRegistrationSchema,
     { method: "POST" },
     body,
@@ -80,7 +80,7 @@ export function createKrMarketData(
   const { stockCode, ...body } = krMarketDataCreatePayloadSchema.parse(payload);
 
   return apiRequest(
-    `/admin/stocks/${encodeURIComponent(stockCode)}/market-data`,
+    `/admin/stock-prices/${encodeURIComponent(stockCode)}`,
     krMarketDataCreateResultSchema,
     { method: "POST" },
     body,

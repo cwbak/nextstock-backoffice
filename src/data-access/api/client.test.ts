@@ -11,6 +11,14 @@ describe("getErrorMessage", () => {
     ["stock lookup failed", "KR 종목 정보를 조회하지 못했습니다."],
     ["stock not found", "KR 종목을 찾을 수 없습니다."],
     [
+      "krx website stock prices lookup failed",
+      "KRX 정보데이터시스템에서 전체 종목 일봉을 조회하지 못했습니다.",
+    ],
+    [
+      "korea investment stock prices lookup failed",
+      "한국투자증권에서 KR 일봉을 조회하지 못했습니다.",
+    ],
+    [
       "limit must be between 1 and 200",
       "캔들 조회 개수는 1개 이상 200개 이하여야 합니다.",
     ],

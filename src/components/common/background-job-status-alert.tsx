@@ -22,7 +22,7 @@ function getStageLabel(job: BackgroundJob | undefined) {
     return null;
   }
   if (job.stage === "PROCESSING_STOCKS") {
-    return job.type === "stocks_market_data_adjust"
+    return job.type === "stock_prices_adjust"
       ? "KR 종목별 수정주가 반영"
       : "KR 종목별 KIS 일봉 처리";
   }

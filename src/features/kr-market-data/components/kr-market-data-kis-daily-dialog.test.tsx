@@ -107,9 +107,7 @@ describe("KrMarketDataKisDailyDialog", () => {
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: krMarketDataKeys.lists(),
     });
-    expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/market-data/kis-daily",
-    );
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/stock-prices/kis-daily");
     expect(fetchMock.mock.calls[0]?.[1]?.body).toBe(
       JSON.stringify({
         from: "2026-01-01",

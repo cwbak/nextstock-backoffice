@@ -5,8 +5,8 @@ export const backgroundJobTypeSchema = z.enum([
   "equity_investments_all",
   "holidays_sync",
   "stocks_kis_daily",
-  "stocks_market_data_adjust",
-  "stocks_market_data_statistics_generate",
+  "stock_prices_adjust",
+  "stock_price_statistics_generate",
   "stocks_sync",
 ]);
 
@@ -91,12 +91,12 @@ export const krStocksKisDailyJobRegistrationSchema =
 
 export const krStocksMarketDataAdjustJobRegistrationSchema =
   backgroundJobRegistrationSchema.extend({
-    type: z.literal("stocks_market_data_adjust"),
+    type: z.literal("stock_prices_adjust"),
   });
 
 export const krStocksMarketDataStatisticsJobRegistrationSchema =
   backgroundJobRegistrationSchema.extend({
-    type: z.literal("stocks_market_data_statistics_generate"),
+    type: z.literal("stock_price_statistics_generate"),
   });
 
 export type BackgroundJob = z.infer<typeof backgroundJobSchema>;

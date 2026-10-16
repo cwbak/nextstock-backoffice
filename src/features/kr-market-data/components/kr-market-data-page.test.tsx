@@ -163,7 +163,7 @@ describe("KrMarketDataPage", () => {
       expect(screen.getByText("70,500")).toBeInTheDocument();
     });
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      `/admin/stocks/005930/market-data?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=false`,
+      `/admin/stock-prices/005930?period=weekly&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=false`,
     );
     expect(screen.getByText("870,000,000,000")).toBeInTheDocument();
     expect(
@@ -224,7 +224,7 @@ describe("KrMarketDataPage", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      `/admin/stocks/000020/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
+      `/admin/stock-prices/000020?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
     );
 
     fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
@@ -244,7 +244,7 @@ describe("KrMarketDataPage", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
-      `/admin/stocks/377220/market-data?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
+      `/admin/stock-prices/377220?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
     );
   });
 
@@ -295,7 +295,7 @@ describe("KrMarketDataPage", () => {
       screen.getByText(/액면분할·병합 경계 1건을 탐지/),
     ).toBeInTheDocument();
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/005930/market-data/adjust",
+      "/admin/stock-prices/005930/adjust",
     );
     expect(fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");
     expect(invalidateQueries).toHaveBeenCalledWith({

@@ -37,7 +37,7 @@ export function KrMarketDataAdjustAllDialog({
 }: KrMarketDataAdjustAllDialogProps) {
   const queryClient = useQueryClient();
   const jobTracker = useBackgroundJob({
-    expectedType: "stocks_market_data_adjust",
+    expectedType: "stock_prices_adjust",
     resultSchema: krMarketDataAdjustAllResultSchema,
     onCompleted: async (result) => {
       await queryClient.invalidateQueries({

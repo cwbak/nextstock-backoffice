@@ -82,7 +82,7 @@ describe("background job schemas", () => {
   it("KR 전 종목 수정주가 작업 등록 응답을 검증한다", () => {
     const response = {
       jobId: 53,
-      type: "stocks_market_data_adjust",
+      type: "stock_prices_adjust",
       status: "QUEUED",
       statusUrl: "/admin/jobs/53",
       created: true,
@@ -97,7 +97,7 @@ describe("background job schemas", () => {
   it("KR 전 종목 수정주가 통계 작업 등록 응답을 검증한다", () => {
     const response = {
       jobId: 54,
-      type: "stocks_market_data_statistics_generate",
+      type: "stock_price_statistics_generate",
       status: "QUEUED",
       statusUrl: "/admin/jobs/54",
       created: true,

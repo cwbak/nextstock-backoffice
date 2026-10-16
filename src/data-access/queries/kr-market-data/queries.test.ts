@@ -60,7 +60,7 @@ describe("KR market data queries", () => {
     expect(result.pageParams).toEqual(["2026-08-11"]);
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
-      "/admin/stocks/005930/market-data?period=weekly&end=2026-08-11&limit=200&adjusted=false",
+      "/admin/stock-prices/005930?period=weekly&end=2026-08-11&limit=200&adjusted=false",
     );
   });
 
