@@ -107,9 +107,11 @@ export class ApiError extends Error {
 }
 
 function buildUrl(path: string) {
-  const baseUrl = env.apiBaseUrl.endsWith("/")
-    ? env.apiBaseUrl.slice(0, -1)
-    : env.apiBaseUrl;
+  const configuredBaseUrl =
+    path === "/admin" || path.startsWith("/admin/")
+      ? env.adminApiUrl
+      : env.apiUrl;
+  const baseUrl = configuredBaseUrl.replace(/\/+$/, "");
 
   return `${baseUrl}${path}`;
 }

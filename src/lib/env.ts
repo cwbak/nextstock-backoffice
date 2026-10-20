@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { apiEnvSchema } from "@/lib/api-env";
 
-const publicEnvSchema = z.object({
-  VITE_API_BASE_URL: z.string().url().or(z.literal("")).default(""),
+const publicEnv = apiEnvSchema.parse({
+  VITE_ADMIN_API_URL: import.meta.env.VITE_ADMIN_API_URL,
+  VITE_API_URL: import.meta.env.VITE_API_URL,
 });
 
-const publicEnv = publicEnvSchema.parse(import.meta.env);
-
 export const env = {
-  apiBaseUrl: publicEnv.VITE_API_BASE_URL,
+  adminApiUrl: publicEnv.VITE_ADMIN_API_URL,
+  apiUrl: publicEnv.VITE_API_URL,
 } as const;
