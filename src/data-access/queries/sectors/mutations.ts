@@ -3,13 +3,14 @@ import {
   sectorIdSchema,
   sectorSchema,
   sectorUpdatePayloadSchema,
-  sectorWritePayloadSchema,
+  sectorCreatePayloadSchema,
+  sectorSyncResultSchema,
   type SectorFormValues,
   type SectorUpdatePayload,
 } from "@/data-access/schemas/sector";
 
 export function createSector(payload: SectorFormValues) {
-  const body = sectorWritePayloadSchema.parse(payload);
+  const body = sectorCreatePayloadSchema.parse(payload);
   return apiRequest("/admin/sectors", sectorSchema, { method: "POST" }, body);
 }
 
@@ -26,5 +27,11 @@ export function updateSector(payload: SectorUpdatePayload) {
 export function deleteSector(id: number) {
   return apiRequestVoid(`/admin/sectors/${sectorIdSchema.parse(id)}`, {
     method: "DELETE",
+  });
+}
+
+export function synchronizeSectors() {
+  return apiRequest("/admin/sectors/sync", sectorSyncResultSchema, {
+    method: "POST",
   });
 }

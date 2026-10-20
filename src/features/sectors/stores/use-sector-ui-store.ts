@@ -6,11 +6,13 @@ export type SectorEditor =
 interface SectorUiState {
   editor: SectorEditor | null;
   deletingId: number | null;
+  syncOpen: boolean;
 }
 
 export const useSectorUiStore = create<SectorUiState>(() => ({
   editor: null,
   deletingId: null,
+  syncOpen: false,
 }));
 
 export const sectorUiActions = {
@@ -21,4 +23,11 @@ export const sectorUiActions = {
   closeEditor: () => useSectorUiStore.setState({ editor: null }),
   confirmDelete: (id: number) => useSectorUiStore.setState({ deletingId: id }),
   closeDelete: () => useSectorUiStore.setState({ deletingId: null }),
+  openSync: () =>
+    useSectorUiStore.setState({
+      syncOpen: true,
+      editor: null,
+      deletingId: null,
+    }),
+  closeSync: () => useSectorUiStore.setState({ syncOpen: false }),
 };

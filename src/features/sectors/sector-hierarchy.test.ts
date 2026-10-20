@@ -29,4 +29,16 @@ describe("sector hierarchy", () => {
     expect([...getSectorBranchIds(sectors, 1)].sort()).toEqual([1, 2, 3]);
     expect([...getSectorBranchIds(sectors, 4)]).toEqual([4]);
   });
+
+  it("같은 이름은 정수 ID 순서로 정렬한다", () => {
+    const items: Sector[] = [10, 2, 145, 42].map((id) => ({
+      id,
+      name: "기술",
+      depth: "major",
+      parentId: null,
+    }));
+    expect(buildSectorRows(items).map(({ sector }) => sector.id)).toEqual([
+      2, 10, 42, 145,
+    ]);
+  });
 });

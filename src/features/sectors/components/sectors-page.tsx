@@ -10,6 +10,7 @@ import { sectorsQueryOptions } from "@/data-access/queries/sectors/queries";
 import { SectorDeleteDialog } from "@/features/sectors/components/sector-delete-dialog";
 import { SectorFormDialog } from "@/features/sectors/components/sector-form-dialog";
 import { SectorListPanel } from "@/features/sectors/components/sector-list-panel";
+import { SectorSyncDialog } from "@/features/sectors/components/sector-sync-dialog";
 import { SectorsPageActions } from "@/features/sectors/components/sectors-page-actions";
 import { sectorDepthLabels } from "@/features/sectors/sector-depth";
 import { buildSectorRows } from "@/features/sectors/sector-hierarchy";
@@ -64,6 +65,7 @@ export function SectorsPage() {
       </section>
       <SectorFormDialog sectors={query.data ?? []} />
       <SectorDeleteDialog sectors={query.data ?? []} />
+      <SectorSyncDialog />
     </>
   );
 }

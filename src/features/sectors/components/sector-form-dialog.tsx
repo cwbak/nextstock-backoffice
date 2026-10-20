@@ -82,7 +82,7 @@ export function SectorFormDialog({
           <DialogDescription>
             {editor?.mode === "edit"
               ? `섹터 #${editor.id}의 이름, 분류와 상위 관계를 변경합니다.`
-              : "이름, 분류와 상위 관계를 지정합니다. ID는 자동으로 발급됩니다."}
+              : "Toss 섹터 ID, 이름, 분류와 상위 관계를 지정합니다."}
           </DialogDescription>
         </DialogHeader>
         {editor ? (

@@ -36,6 +36,7 @@ describe("SectorsPage", () => {
     cleanup();
     sectorUiActions.closeEditor();
     sectorUiActions.closeDelete();
+    sectorUiActions.closeSync();
     vi.restoreAllMocks();
   });
 
@@ -68,6 +69,24 @@ describe("SectorsPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("가구·가스수입의 실제 정수 ID 응답을 오류 없이 표시한다", async () => {
+    mockSectorApi([
+      { id: 237, name: "가구", depth: "minor", parentId: 145 },
+      { id: 385, name: "가스수입", depth: "middle", parentId: 255 },
+    ]);
+    renderPage();
+    expect(
+      await screen.findByRole("button", { name: "가구 섹터 수정" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "가스수입 섹터 수정" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "237" })).toBeInTheDocument();
+    expect(
+      screen.queryByText("섹터를 불러오지 못했습니다"),
+    ).not.toBeInTheDocument();
+  });
+
   it.each([
     ["대분류", ["금융", "기술"]],
     ["중분류", ["반도체"]],
@@ -95,6 +114,9 @@ describe("SectorsPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "섹터 추가" }));
     fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
       target: { value: "소프트웨어" },
+    });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+      target: { value: "5" },
     });
     fireEvent.click(screen.getByRole("combobox", { name: "분류" }));
     fireEvent.click(screen.getByRole("option", { name: "중분류" }));
@@ -166,7 +188,12 @@ describe("SectorsPage", () => {
     fireEvent.click(screen.getByRole("option", { name: "중분류" }));
     fireEvent.click(screen.getByRole("combobox", { name: "상위 섹터" }));
     fireEvent.click(screen.getByRole("option", { name: "기술 (#1)" }));
-    api.sectors.set(5, { id: 5, name: "은행", depth: "middle", parentId: 4 });
+    api.sectors.set(5, {
+      id: 5,
+      name: "은행",
+      depth: "middle",
+      parentId: 4,
+    });
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
     expect(
       await screen.findByText("하위 섹터가 있어 분류를 변경할 수 없습니다."),
@@ -191,6 +218,9 @@ describe("SectorsPage", () => {
     );
     fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
       target: { value: " 설계 " },
+    });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+      target: { value: "5" },
     });
     fireEvent.click(screen.getByRole("button", { name: "추가" }));
     expect(
@@ -220,6 +250,10 @@ describe("SectorsPage", () => {
     fireEvent.click(edit);
     const name = await screen.findByRole("textbox", { name: "섹터명" });
     expect(name).toHaveValue("최신 반도체");
+    expect(screen.getByRole("spinbutton", { name: "섹터 ID" })).toHaveValue(2);
+    expect(screen.getByRole("spinbutton", { name: "섹터 ID" })).toHaveAttribute(
+      "readonly",
+    );
     expect(screen.getByRole("combobox", { name: "분류" })).toBeDisabled();
     expect(
       screen.getByText("하위 섹터가 있어 분류를 변경할 수 없습니다."),
@@ -315,6 +349,9 @@ describe("SectorsPage", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
       target: { value: "신규" },
     });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+      target: { value: "5" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "추가" }));
     expect(
       await screen.findByText("섹터를 저장하지 못했습니다"),
@@ -360,4 +397,95 @@ describe("SectorsPage", () => {
       "선택할 수 있는 중분류 섹터가 없습니다.",
     );
   });
+
+  it("ID 입력을 요구하고 ID와 부모 ID를 숫자로 저장한다", async () => {
+    const api = mockSectorApi([
+      { id: 10, name: "기술", depth: "major", parentId: null },
+    ]);
+    renderPage();
+    fireEvent.click(
+      await screen.findByRole("button", { name: "기술 하위 섹터 추가" }),
+    );
+    fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
+      target: { value: "반도체" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    expect(
+      await screen.findByText(
+        "섹터 ID는 1~2,147,483,647 사이의 정수여야 합니다.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      api.fetchMock.mock.calls.some(([, init]) => init?.method === "POST"),
+    ).toBe(false);
+    fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+      target: { value: "00042" },
+    });
+    fireEvent.click(screen.getByRole("combobox", { name: "상위 섹터" }));
+    fireEvent.click(screen.getByRole("option", { name: "기술 (#10)" }));
+    fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    expect(
+      await screen.findByRole("button", { name: "반도체 섹터 수정" }),
+    ).toBeInTheDocument();
+    expect(api.sectors.get(42)).toEqual({
+      id: 42,
+      name: "반도체",
+      depth: "middle",
+      parentId: 10,
+    });
+  });
+
+  it("중복 ID 오류에서 입력을 유지하고 다른 ID로 다시 저장한다", async () => {
+    const api = mockSectorApi(sectors);
+    renderPage();
+    await screen.findByRole("button", { name: "기술 섹터 수정" });
+    fireEvent.click(screen.getByRole("button", { name: "섹터 추가" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
+      target: { value: "신규 섹터" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    expect(
+      await screen.findByText("이미 등록된 섹터 ID입니다."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "섹터명" })).toHaveValue(
+      "신규 섹터",
+    );
+    fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+      target: { value: "5" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    expect(api.sectors.has(5)).toBe(true);
+  });
+
+  it.each(["0", "1.5", "2147483648"])(
+    "허용하지 않는 ID %s 입력은 저장 요청을 보내지 않는다",
+    async (id) => {
+      const api = mockSectorApi([]);
+      renderPage();
+      fireEvent.click(
+        await screen.findByRole("button", { name: "첫 섹터 추가" }),
+      );
+      fireEvent.change(screen.getByRole("spinbutton", { name: "섹터 ID" }), {
+        target: { value: id },
+      });
+      fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
+        target: { value: "테스트" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: "추가" }));
+      expect(
+        await screen.findByText(
+          "섹터 ID는 1~2,147,483,647 사이의 정수여야 합니다.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        api.fetchMock.mock.calls.some(([, init]) => init?.method === "POST"),
+      ).toBe(false);
+    },
+  );
 });

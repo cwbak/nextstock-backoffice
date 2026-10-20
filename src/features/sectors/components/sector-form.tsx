@@ -19,11 +19,12 @@ import {
   updateSector,
 } from "@/data-access/queries/sectors/mutations";
 import {
-  sectorWritePayloadSchema,
+  sectorCreatePayloadSchema,
   type Sector,
   type SectorFormValues,
 } from "@/data-access/schemas/sector";
 import { SectorClassificationFields } from "@/features/sectors/components/sector-classification-fields";
+import { SectorIdField } from "@/features/sectors/components/sector-id-field";
 import {
   getChildSectorDepth,
   sectorDepthLabels,
@@ -56,6 +57,7 @@ export function SectorForm({
     sectors.some((sector) => sector.parentId === editor.id);
   const form = useForm<SectorFormValues>({
     defaultValues: {
+      id: editor.mode === "edit" ? editor.id : 0,
       name: initialSector?.name ?? "",
       depth:
         initialSector?.depth ??
@@ -71,7 +73,7 @@ export function SectorForm({
     mutationKey: sectorKeys.writes(),
     mutationFn: (values: SectorFormValues) =>
       editor.mode === "edit"
-        ? updateSector({ id: editor.id, ...values })
+        ? updateSector({ ...values, id: editor.id })
         : createSector(values),
     onSuccess: async (sector) => {
       queryClient.setQueryData(sectorKeys.detail(sector.id), sector);
@@ -81,11 +83,16 @@ export function SectorForm({
   });
   const submit = form.handleSubmit((values) => {
     form.clearErrors();
-    const result = sectorWritePayloadSchema.safeParse(values);
+    const result = sectorCreatePayloadSchema.safeParse(values);
     if (!result.success) {
       for (const issue of result.error.issues) {
         const field = issue.path[0];
-        if (field === "name" || field === "depth" || field === "parentId")
+        if (
+          field === "id" ||
+          field === "name" ||
+          field === "depth" ||
+          field === "parentId"
+        )
           form.setError(field, { message: issue.message });
       }
       return;
@@ -129,12 +136,17 @@ export function SectorForm({
       onSubmit={(event) => void submit(event)}
     >
       <FieldGroup>
+        <SectorIdField
+          disabled={mutation.isPending}
+          form={form}
+          mode={editor.mode}
+        />
         <Field data-invalid={Boolean(errors.name)}>
           <FieldLabel htmlFor="sector-name">섹터명</FieldLabel>
           <Input
             {...form.register("name")}
             aria-invalid={Boolean(errors.name)}
-            autoFocus
+            autoFocus={editor.mode === "edit"}
             disabled={mutation.isPending}
             id="sector-name"
             placeholder="반도체"

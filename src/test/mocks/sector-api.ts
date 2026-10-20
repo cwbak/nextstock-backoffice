@@ -2,6 +2,7 @@ import { vi } from "vitest";
 
 import {
   sectorWritePayloadSchema,
+  sectorCreatePayloadSchema,
   type Sector,
 } from "@/data-access/schemas/sector";
 
@@ -14,12 +15,15 @@ function jsonResponse(value: unknown, status = 200) {
 
 export function mockSectorApi(initial: ReadonlyArray<Sector>) {
   const sectors = new Map(initial.map((sector) => [sector.id, { ...sector }]));
-  let nextId = Math.max(0, ...initial.map((sector) => sector.id)) + 1;
-  const control: { fail: ((path: string, method: string) => boolean) | null } =
-    { fail: null };
+  const control: {
+    fail: ((path: string, method: string) => boolean) | null;
+    syncSectors: ReadonlyArray<Sector> | null;
+    syncError: string | null;
+    syncGate: Promise<void> | null;
+  } = { fail: null, syncSectors: null, syncError: null, syncGate: null };
   const fetchMock = vi
     .spyOn(globalThis, "fetch")
-    .mockImplementation((input, init) => {
+    .mockImplementation(async (input, init) => {
       const path =
         typeof input === "string"
           ? input
@@ -31,9 +35,32 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
         Promise.resolve(jsonResponse(value, status));
       if (control.fail?.(path, method))
         return reply({ error: "internal server error" }, 500);
+      if (path === "/admin/sectors/sync" && method === "POST") {
+        if (control.syncGate) await control.syncGate;
+        if (control.syncError) return reply({ error: control.syncError }, 502);
+        const listings = control.syncSectors ?? [...sectors.values()];
+        const result = { created: 0, updated: 0, deleted: 0, unchanged: 0 };
+        for (const listing of listings) {
+          const current = sectors.get(listing.id);
+          if (!current) result.created++;
+          else if (
+            current.name !== listing.name ||
+            current.depth !== listing.depth ||
+            current.parentId !== listing.parentId
+          )
+            result.updated++;
+          else result.unchanged++;
+        }
+        result.deleted = [...sectors.keys()].filter(
+          (id) => !listings.some((sector) => sector.id === id),
+        ).length;
+        sectors.clear();
+        for (const sector of listings) sectors.set(sector.id, { ...sector });
+        return reply(result);
+      }
       if (path === "/admin/sectors" && method === "GET")
         return reply([...sectors.values()]);
-      const match = /^\/admin\/sectors\/(\d+)$/.exec(path);
+      const match = /^\/admin\/sectors\/([^/]+)$/.exec(path);
       const id = match ? Number(match[1]) : null;
       if (id !== null && !sectors.has(id))
         return reply({ error: "sector not found" }, 404);
@@ -41,9 +68,13 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
       if (method === "POST" || method === "PUT") {
         if (typeof init?.body !== "string")
           throw new Error("JSON 요청 본문이 필요합니다.");
-        const payload = sectorWritePayloadSchema.parse(
-          JSON.parse(init.body) as unknown,
-        );
+        const raw: unknown = JSON.parse(init.body);
+        const payload =
+          method === "POST"
+            ? sectorCreatePayloadSchema.parse(raw)
+            : { ...sectorWritePayloadSchema.parse(raw), id: id ?? 0 };
+        if (method === "POST" && sectors.has(payload.id))
+          return reply({ error: "sector id already exists" }, 409);
         if (payload.parentId !== null && !sectors.has(payload.parentId))
           return reply({ error: "parent sector not found" }, 404);
         const parent =
@@ -69,7 +100,7 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
             400,
           );
         }
-        const sector = { id: id ?? nextId++, ...payload };
+        const sector = payload;
         sectors.set(sector.id, sector);
         return reply(sector, method === "POST" ? 201 : 200);
       }

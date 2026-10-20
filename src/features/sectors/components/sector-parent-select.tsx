@@ -63,7 +63,7 @@ export function SectorParentSelect({
       disabled={disabled || depth === "major"}
       value={depth === "major" ? "root" : value === null ? "" : String(value)}
       onValueChange={(next) =>
-        onValueChange(next === "root" || next === "" ? null : Number(next))
+        onValueChange(depth === "major" || next === "" ? null : Number(next))
       }
     >
       <SelectTrigger

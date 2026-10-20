@@ -12,6 +12,20 @@ describe("getErrorMessage", () => {
     ["stock not found", "KR 종목을 찾을 수 없습니다."],
     ["sector not found", "섹터를 찾을 수 없습니다."],
     ["parent sector not found", "상위 섹터를 찾을 수 없습니다."],
+    ["invalid sector id", "섹터 ID는 정수여야 합니다."],
+    [
+      "id must be between 1 and 2147483647",
+      "섹터 ID는 1~2,147,483,647 사이의 정수여야 합니다.",
+    ],
+    [
+      "parent id must be between 1 and 2147483647",
+      "상위 섹터 ID는 1~2,147,483,647 사이의 정수여야 합니다.",
+    ],
+    ["sector id already exists", "이미 등록된 섹터 ID입니다."],
+    [
+      "sector source lookup failed",
+      "Toss 섹터를 조회하지 못했습니다. 서버의 Toss 설정과 연결 상태를 확인해 주세요.",
+    ],
     [
       "depth must be major, middle, or minor",
       "대분류, 중분류, 소분류 중 하나를 선택해 주세요.",

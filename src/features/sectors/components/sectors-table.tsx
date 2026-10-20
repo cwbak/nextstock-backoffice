@@ -61,7 +61,10 @@ function SectorRowActions({ row }: { row: SectorRow }) {
 function SectorTableRow({ row }: { row: SectorRow }) {
   return (
     <TableRow>
-      <TableCell className="pl-4 font-mono text-xs tabular-nums">
+      <TableCell
+        className="truncate pl-4 font-mono text-xs"
+        title={String(row.sector.id)}
+      >
         {row.sector.id}
       </TableCell>
       <TableCell>

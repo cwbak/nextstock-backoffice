@@ -22,7 +22,7 @@ export function SectorsEmptyState() {
         </EmptyMedia>
         <EmptyTitle>등록된 섹터가 없습니다</EmptyTitle>
         <EmptyDescription>
-          최상위 섹터를 추가한 뒤 하위 섹터를 구성하세요.
+          동기화로 Toss 섹터를 가져오거나 최상위 섹터부터 직접 추가하세요.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
