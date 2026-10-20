@@ -111,7 +111,7 @@ export function KrStocksTable({
     <VirtualizedDataTableViewport label="등록된 KR 종목 목록" rootRef={rootRef}>
       <Table
         aria-rowcount={krStocks.length + 1}
-        className="min-w-[96rem] table-fixed"
+        className="min-w-[89rem] table-fixed"
       >
         <TableCaption className="sr-only">등록된 KR 종목 목록</TableCaption>
         <colgroup>
@@ -121,7 +121,6 @@ export function KrStocksTable({
           <col className="w-28" />
           <col className="w-24" />
           <col className="w-72" />
-          <col className="w-28" />
           <col className="w-28" />
           <col className="w-36" />
           <col className="w-44" />
@@ -144,7 +143,6 @@ export function KrStocksTable({
               label="상장일"
               onSort={() => onSort("listDd")}
             />
-            <TableHead className="text-right">액면가</TableHead>
             <TableHead className="text-right">상장주식수</TableHead>
             <TableHead>최종 수정</TableHead>
             <TableHead className="pr-4 text-right">작업</TableHead>
@@ -152,7 +150,7 @@ export function KrStocksTable({
         </TableHeader>
         <TableBody>
           <VirtualizedDataTableSpacer
-            columnCount={11}
+            columnCount={10}
             height={topSpacerHeight}
           />
           {virtualRows.map((virtualRow) => {
@@ -212,11 +210,6 @@ export function KrStocksTable({
                 </TableCell>
                 <TableCell>{formatDate(krStock.listDd)}</TableCell>
                 <TableCell className="text-right tabular-nums">
-                  {krStock.parval === null
-                    ? "-"
-                    : `${krStock.parval.toLocaleString("ko-KR")}원`}
-                </TableCell>
-                <TableCell className="text-right tabular-nums">
                   {krStock.listShrs === null
                     ? "-"
                     : `${krStock.listShrs.toLocaleString("ko-KR")}주`}
@@ -235,7 +228,7 @@ export function KrStocksTable({
             );
           })}
           <VirtualizedDataTableSpacer
-            columnCount={11}
+            columnCount={10}
             height={bottomSpacerHeight}
           />
         </TableBody>

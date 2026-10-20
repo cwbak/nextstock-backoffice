@@ -17,7 +17,6 @@ const formValues: KrStockFormValues = {
   listShrs: 5_969_782_550,
   marketType: "KOSPI",
   name: "삼성전자",
-  parval: null,
   status: "ACTIVE",
   stockType: "보통주",
 };
@@ -189,7 +188,6 @@ describe("KR stock mutations", () => {
       listShrs: 5_969_782_550,
       marketType: "KOSPI",
       name: "삼성전자",
-      parval: null,
       status: "ACTIVE",
       stockType: "보통주",
     });

@@ -99,7 +99,6 @@ export function KrStocksPage() {
         krStockStatusLabels[krStock.status],
         krStock.corporationCode,
         krStock.listDd,
-        krStock.parval?.toString() ?? "",
         krStock.listShrs?.toString() ?? "",
         corporation?.name ?? "",
       ].some((value) => value.toLocaleLowerCase("ko-KR").includes(query));

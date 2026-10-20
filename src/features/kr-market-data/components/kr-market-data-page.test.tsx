@@ -33,7 +33,6 @@ const stock: KrStock = {
   stockType: "보통주",
   status: "ACTIVE",
   listDd: "1975-06-11",
-  parval: 100,
   listShrs: 5_969_782_550,
   createdAt: "2026-08-10T10:00:00+09:00",
   updatedAt: "2026-08-10T10:00:00+09:00",

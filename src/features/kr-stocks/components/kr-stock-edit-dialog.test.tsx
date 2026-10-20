@@ -35,7 +35,6 @@ const krStock: KrStock = {
   listShrs: 5_969_782_550,
   marketType: "KOSPI",
   name: "삼성전자",
-  parval: 100,
   status: "ACTIVE",
   stockType: "보통주",
   updatedAt: "2026-07-26T11:00:00+09:00",
@@ -107,6 +106,9 @@ describe("KrStockEditDialog", () => {
       "/admin/stocks/005930/name-aliases",
     );
     expect(aliasesInput).toHaveValue("삼성전자 보통주\n삼전");
+    expect(
+      screen.queryByRole("spinbutton", { name: "액면가" }),
+    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("combobox", { name: "종목 상태" }));
     fireEvent.click(
@@ -124,7 +126,6 @@ describe("KrStockEditDialog", () => {
       listShrs: 5_969_782_550,
       marketType: "KOSPI",
       name: "삼성전자",
-      parval: 100,
       status: "SUSPENDED",
       stockType: "보통주",
     });

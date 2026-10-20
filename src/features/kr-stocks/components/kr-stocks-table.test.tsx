@@ -31,7 +31,6 @@ const krStock: KrStock = {
   listShrs: 5_969_782_550,
   marketType: "KOSPI",
   name: "삼성전자",
-  parval: 100,
   status: "ACTIVE",
   stockType: "보통주",
   updatedAt: "2026-07-26T11:00:00+09:00",
@@ -65,7 +64,9 @@ describe("KrStocksTable", () => {
     expect(screen.getByText("1975. 6. 11.")).toBeInTheDocument();
     expect(screen.getByText("정상")).toBeInTheDocument();
     expect(screen.getByText("보통주")).toBeInTheDocument();
-    expect(screen.getByText("100원")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "액면가" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("5,969,782,550주")).toBeInTheDocument();
     expect(
       screen

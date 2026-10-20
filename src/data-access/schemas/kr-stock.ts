@@ -34,21 +34,11 @@ const listDateSchema = z
   .string()
   .regex(datePattern, "상장일은 YYYY-MM-DD 형식이어야 합니다.");
 
-const parvalSchema = z
-  .number({ error: "액면가는 숫자여야 합니다." })
-  .int("액면가는 정수여야 합니다.")
-  .min(0, "액면가는 0 이상이어야 합니다.")
-  .nullable();
-
 const listedSharesSchema = z
   .number({ error: "상장주식수는 숫자여야 합니다." })
   .int("상장주식수는 정수여야 합니다.")
   .min(0, "상장주식수는 0 이상이어야 합니다.")
   .nullable();
-
-const optionalParvalResponseSchema = parvalSchema
-  .optional()
-  .transform((value) => value ?? null);
 
 const optionalListedSharesResponseSchema = listedSharesSchema
   .optional()
@@ -63,7 +53,6 @@ export const krStockSchema = z
     stockType: stockTypeSchema,
     status: krStockStatusSchema,
     listDd: listDateSchema,
-    parval: optionalParvalResponseSchema,
     listShrs: optionalListedSharesResponseSchema,
     createdAt: z.iso.datetime({ offset: true }),
     updatedAt: z.iso.datetime({ offset: true }),
@@ -82,7 +71,6 @@ export const krStockFormSchema = z
     stockType: stockTypeSchema,
     status: krStockStatusSchema,
     listDd: listDateSchema,
-    parval: parvalSchema,
     listShrs: listedSharesSchema,
   })
   .strict();

@@ -25,7 +25,6 @@ const stocks = [
     stockType: "보통주",
     status: "ACTIVE",
     listDd: "1979-02-27",
-    parval: 5_000,
     listShrs: 80_585_530,
     createdAt: "2026-08-09T10:00:00+09:00",
     updatedAt: "2026-08-09T10:00:00+09:00",

@@ -27,7 +27,7 @@ export function ThemeStocksTable({
   themeName,
 }: ThemeStocksTableProps) {
   return (
-    <Table className="min-w-[79rem] table-fixed">
+    <Table className="min-w-[72rem] table-fixed">
       <TableCaption className="sr-only">
         {themeName} 테마의 KR 종목 목록
       </TableCaption>
@@ -38,7 +38,6 @@ export function ThemeStocksTable({
         <col className="w-28" />
         <col className="w-24" />
         <col className="w-32" />
-        <col className="w-28" />
         <col className="w-28" />
         <col className="w-36" />
         <col className="w-20" />
@@ -52,7 +51,6 @@ export function ThemeStocksTable({
           <TableHead>주식 종류</TableHead>
           <TableHead>법인 코드</TableHead>
           <TableHead>상장일</TableHead>
-          <TableHead className="text-right">액면가</TableHead>
           <TableHead className="pr-4 text-right">상장주식수</TableHead>
           <TableHead className="pr-4 text-right">작업</TableHead>
         </TableRow>
@@ -81,11 +79,6 @@ export function ThemeStocksTable({
               {stock.corporationCode}
             </TableCell>
             <TableCell>{formatDate(stock.listDd)}</TableCell>
-            <TableCell className="text-right tabular-nums">
-              {stock.parval === null
-                ? "-"
-                : `${stock.parval.toLocaleString("ko-KR")}원`}
-            </TableCell>
             <TableCell className="pr-4 text-right tabular-nums">
               {stock.listShrs === null
                 ? "-"

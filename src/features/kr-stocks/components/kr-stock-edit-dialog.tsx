@@ -63,7 +63,6 @@ const krStockFieldNames = new Set<keyof KrStockFormValues>([
   "stockType",
   "status",
   "listDd",
-  "parval",
   "listShrs",
 ]);
 
@@ -86,7 +85,6 @@ function getDefaultValues(
     stockType: krStock.stockType,
     status: krStock.status,
     listDd: krStock.listDd,
-    parval: krStock.parval,
     listShrs: krStock.listShrs,
   };
 }
@@ -244,21 +242,6 @@ function KrStockEditForm({
             {...register("listDd")}
           />
           <FieldError errors={[errors.listDd]} />
-        </Field>
-        <Field data-invalid={Boolean(errors.parval)}>
-          <FieldLabel htmlFor="edit-par-value">액면가</FieldLabel>
-          <Input
-            aria-invalid={Boolean(errors.parval)}
-            id="edit-par-value"
-            inputMode="numeric"
-            min={0}
-            placeholder="5000"
-            step={1}
-            type="number"
-            {...register("parval", { setValueAs: parseNullableNumber })}
-          />
-          <FieldDescription>미입력 시 값 없음</FieldDescription>
-          <FieldError errors={[errors.parval]} />
         </Field>
         <Field data-invalid={Boolean(errors.listShrs)}>
           <FieldLabel htmlFor="edit-listed-shares">상장주식수</FieldLabel>

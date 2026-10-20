@@ -21,22 +21,21 @@ const krStockResponse = {
 } as const;
 
 describe("krStockSchema", () => {
-  it("parval과 listShrs가 누락된 이전 응답을 null로 정규화한다", () => {
-    expect(krStockSchema.parse(krStockResponse)).toMatchObject({
-      parval: null,
+  it("상장주식수가 누락된 응답을 null로 정규화한다", () => {
+    expect(krStockSchema.parse(krStockResponse)).toEqual({
+      ...krStockResponse,
       listShrs: null,
     });
   });
 
-  it("parval과 listShrs를 새 응답에서 검증한다", () => {
+  it("상장주식수가 포함된 응답을 검증한다", () => {
     expect(
       krStockSchema.parse({
         ...krStockResponse,
-        parval: 100,
         listShrs: 5_969_782_550,
       }),
-    ).toMatchObject({
-      parval: 100,
+    ).toEqual({
+      ...krStockResponse,
       listShrs: 5_969_782_550,
     });
   });
@@ -148,7 +147,6 @@ describe("krStockSchema", () => {
       listShrs: null,
       marketType: "KOSPI" as const,
       name: "삼성전자",
-      parval: null,
       status: "ACTIVE" as const,
       stockType: "보통주",
     };
