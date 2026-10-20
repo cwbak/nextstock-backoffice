@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { MutationErrorAlert } from "@/components/common/mutation-error-alert";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -24,7 +23,12 @@ import {
   type Sector,
   type SectorFormValues,
 } from "@/data-access/schemas/sector";
-import { SectorParentSelect } from "@/features/sectors/components/sector-parent-select";
+import { SectorClassificationFields } from "@/features/sectors/components/sector-classification-fields";
+import {
+  getChildSectorDepth,
+  sectorDepthLabels,
+  sectorParentDepths,
+} from "@/features/sectors/sector-depth";
 import { getSectorBranchIds } from "@/features/sectors/sector-hierarchy";
 import {
   sectorUiActions,
@@ -43,9 +47,20 @@ export function SectorForm({
   sectors,
 }: SectorFormProps) {
   const queryClient = useQueryClient();
+  const parent =
+    editor.mode === "create"
+      ? sectors.find((sector) => sector.id === editor.parentId)
+      : undefined;
+  const depthLocked =
+    editor.mode === "edit" &&
+    sectors.some((sector) => sector.parentId === editor.id);
   const form = useForm<SectorFormValues>({
     defaultValues: {
       name: initialSector?.name ?? "",
+      depth:
+        initialSector?.depth ??
+        (parent ? getChildSectorDepth(parent.depth) : null) ??
+        "major",
       parentId:
         editor.mode === "create"
           ? editor.parentId
@@ -70,7 +85,7 @@ export function SectorForm({
     if (!result.success) {
       for (const issue of result.error.issues) {
         const field = issue.path[0];
-        if (field === "name" || field === "parentId")
+        if (field === "name" || field === "depth" || field === "parentId")
           form.setError(field, { message: issue.message });
       }
       return;
@@ -82,6 +97,25 @@ export function SectorForm({
     ) {
       form.setError("parentId", {
         message: "자기 자신이나 하위 섹터를 상위 섹터로 지정할 수 없습니다.",
+      });
+      return;
+    }
+    if (depthLocked && result.data.depth !== initialSector?.depth) {
+      form.setError("depth", {
+        message: "하위 섹터가 있어 분류를 변경할 수 없습니다.",
+      });
+      return;
+    }
+    const parentDepth = sectorParentDepths[result.data.depth];
+    if (
+      parentDepth !== null &&
+      !sectors.some(
+        (sector) =>
+          sector.id === result.data.parentId && sector.depth === parentDepth,
+      )
+    ) {
+      form.setError("parentId", {
+        message: `${sectorDepthLabels[parentDepth]} 섹터를 선택해 주세요.`,
       });
       return;
     }
@@ -107,28 +141,13 @@ export function SectorForm({
           />
           <FieldError errors={[errors.name]} />
         </Field>
-        <Field data-invalid={Boolean(errors.parentId)}>
-          <FieldLabel htmlFor="sector-parent">상위 섹터</FieldLabel>
-          <Controller
-            control={form.control}
-            name="parentId"
-            render={({ field }) => (
-              <SectorParentSelect
-                disabled={mutation.isPending}
-                invalid={Boolean(errors.parentId)}
-                sectorId={editor.mode === "edit" ? editor.id : null}
-                sectors={sectors}
-                value={field.value}
-                onValueChange={field.onChange}
-              />
-            )}
-          />
-          <FieldDescription>
-            최상위로 두려면 없음을 선택하세요. 자기 자신과 하위 섹터는 선택할 수
-            없습니다.
-          </FieldDescription>
-          <FieldError errors={[errors.parentId]} />
-        </Field>
+        <SectorClassificationFields
+          depthLocked={depthLocked}
+          disabled={mutation.isPending}
+          form={form}
+          sectorId={editor.mode === "edit" ? editor.id : null}
+          sectors={sectors}
+        />
       </FieldGroup>
       {mutation.isError ? (
         <MutationErrorAlert

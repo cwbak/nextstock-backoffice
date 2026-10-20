@@ -6,12 +6,18 @@ import {
   sectorsQueryOptions,
 } from "@/data-access/queries/sectors/queries";
 import { mockSectorApi } from "@/test/mocks/sector-api";
+import type { Sector } from "@/data-access/schemas/sector";
 
 describe("sector queries", () => {
   afterEach(() => vi.restoreAllMocks());
 
   it("전체 목록과 단건을 각각의 API에서 조회한다", async () => {
-    const sector = { id: 1, name: "기술", parentId: null };
+    const sector: Sector = {
+      id: 1,
+      name: "기술",
+      depth: "major",
+      parentId: null,
+    };
     const api = mockSectorApi([sector]);
     const client = new QueryClient();
     await expect(client.fetchQuery(sectorsQueryOptions)).resolves.toEqual([

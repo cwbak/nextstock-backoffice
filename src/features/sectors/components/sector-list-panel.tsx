@@ -30,7 +30,7 @@ export function SectorListPanel({
   return (
     <DataTableCard
       contentClassName="max-h-[70svh] overflow-y-auto"
-      description="상위 섹터 아래에 하위 섹터를 표시합니다. 섹터명과 상위 경로로 검색할 수 있습니다."
+      description="대분류 → 중분류 → 소분류 순서로 표시합니다. 섹터명, 분류, 상위 경로로 검색할 수 있습니다."
       recordCount={rows.length}
       title="전체 섹터"
     >

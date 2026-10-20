@@ -11,6 +11,7 @@ import { SectorDeleteDialog } from "@/features/sectors/components/sector-delete-
 import { SectorFormDialog } from "@/features/sectors/components/sector-form-dialog";
 import { SectorListPanel } from "@/features/sectors/components/sector-list-panel";
 import { SectorsPageActions } from "@/features/sectors/components/sectors-page-actions";
+import { sectorDepthLabels } from "@/features/sectors/sector-depth";
 import { buildSectorRows } from "@/features/sectors/sector-hierarchy";
 
 export function SectorsPage() {
@@ -22,7 +23,7 @@ export function SectorsPage() {
     const keyword = filter.trim().toLocaleLowerCase("ko-KR");
     return keyword
       ? rows.filter((row) =>
-          `${row.sector.id} ${row.path.join(" ")}`
+          `${row.sector.id} ${sectorDepthLabels[row.sector.depth]} ${row.path.join(" ")}`
             .toLocaleLowerCase("ko-KR")
             .includes(keyword),
         )
@@ -39,14 +40,14 @@ export function SectorsPage() {
               onRefresh={() => void query.refetch()}
             />
           }
-          description="섹터의 이름과 상위 관계를 관리합니다."
+          description="대분류·중분류·소분류별 섹터와 상위 관계를 관리합니다."
           eyebrow="Sector management"
           recordCount={query.data?.length ?? 0}
           title="섹터 관리"
         />
         <DataTableToolbar
           label="섹터 검색"
-          placeholder="섹터 ID, 섹터명, 상위 경로 검색"
+          placeholder="섹터 ID, 섹터명, 분류, 상위 경로 검색"
           query={state.q}
           onFilterChange={updateFilter}
           onQueryChange={updateQuery}

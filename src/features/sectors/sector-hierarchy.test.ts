@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest";
+import type { Sector } from "@/data-access/schemas/sector";
 
 import {
   buildSectorRows,
   getSectorBranchIds,
 } from "@/features/sectors/sector-hierarchy";
 
-const sectors = [
-  { id: 3, name: "장비", parentId: 2 },
-  { id: 2, name: "반도체", parentId: 1 },
-  { id: 4, name: "금융", parentId: null },
-  { id: 1, name: "기술", parentId: null },
+const sectors: Sector[] = [
+  { id: 3, name: "장비", depth: "minor", parentId: 2 },
+  { id: 2, name: "반도체", depth: "middle", parentId: 1 },
+  { id: 4, name: "금융", depth: "major", parentId: null },
+  { id: 1, name: "기술", depth: "major", parentId: null },
 ];
 
 describe("sector hierarchy", () => {

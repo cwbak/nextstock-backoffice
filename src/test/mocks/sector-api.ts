@@ -46,6 +46,29 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
         );
         if (payload.parentId !== null && !sectors.has(payload.parentId))
           return reply({ error: "parent sector not found" }, 404);
+        const parent =
+          payload.parentId === null ? undefined : sectors.get(payload.parentId);
+        if (
+          parent &&
+          !(
+            (payload.depth === "middle" && parent.depth === "major") ||
+            (payload.depth === "minor" && parent.depth === "middle")
+          )
+        )
+          return reply(
+            { error: "parent depth must immediately precede sector depth" },
+            400,
+          );
+        if (
+          id !== null &&
+          sectors.get(id)?.depth !== payload.depth &&
+          [...sectors.values()].some((sector) => sector.parentId === id)
+        ) {
+          return reply(
+            { error: "depth cannot be changed while sector has children" },
+            400,
+          );
+        }
         const sector = { id: id ?? nextId++, ...payload };
         sectors.set(sector.id, sector);
         return reply(sector, method === "POST" ? 201 : 200);

@@ -15,22 +15,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SectorDepthBadge } from "@/features/sectors/components/sector-depth-badge";
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
 import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 
 function SectorRowActions({ row }: { row: SectorRow }) {
   return (
     <div className="flex justify-end gap-1">
-      <Button
-        aria-label={`${row.sector.name} 하위 섹터 추가`}
-        size="icon-sm"
-        title="하위 섹터 추가"
-        type="button"
-        variant="ghost"
-        onClick={() => sectorUiActions.create(row.sector.id)}
-      >
-        <PlusIcon aria-hidden="true" data-icon="inline-start" />
-      </Button>
+      {row.sector.depth !== "minor" ? (
+        <Button
+          aria-label={`${row.sector.name} 하위 섹터 추가`}
+          size="icon-sm"
+          title="하위 섹터 추가"
+          type="button"
+          variant="ghost"
+          onClick={() => sectorUiActions.create(row.sector.id)}
+        >
+          <PlusIcon aria-hidden="true" data-icon="inline-start" />
+        </Button>
+      ) : null}
       <Button
         aria-label={`${row.sector.name} 섹터 수정`}
         size="icon-sm"
@@ -72,6 +75,9 @@ function SectorTableRow({ row }: { row: SectorRow }) {
           <span className="truncate font-medium">{row.sector.name}</span>
         </div>
       </TableCell>
+      <TableCell>
+        <SectorDepthBadge depth={row.sector.depth} />
+      </TableCell>
       <TableCell className="overflow-hidden text-muted-foreground">
         <span
           className="block truncate"
@@ -94,11 +100,14 @@ function SectorTableRow({ row }: { row: SectorRow }) {
 
 export function SectorsTable({ rows }: { rows: ReadonlyArray<SectorRow> }) {
   return (
-    <Table className="min-w-[52rem] table-fixed">
-      <TableCaption className="sr-only">등록된 섹터와 상위 관계</TableCaption>
+    <Table className="min-w-[58rem] table-fixed">
+      <TableCaption className="sr-only">
+        등록된 섹터의 분류와 상위 관계
+      </TableCaption>
       <colgroup>
         <col className="w-24" />
         <col className="w-64" />
+        <col className="w-24" />
         <col />
         <col className="w-28" />
         <col className="w-32" />
@@ -107,6 +116,7 @@ export function SectorsTable({ rows }: { rows: ReadonlyArray<SectorRow> }) {
         <TableRow className="bg-muted/35 hover:bg-muted/35">
           <TableHead className="pl-4">ID</TableHead>
           <TableHead>섹터명</TableHead>
+          <TableHead>분류</TableHead>
           <TableHead>상위 경로</TableHead>
           <TableHead className="text-right">전체 하위</TableHead>
           <TableHead className="pr-4 text-right">작업</TableHead>
