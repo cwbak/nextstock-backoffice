@@ -14,8 +14,14 @@ import {
 describe("sector schemas", () => {
   it("실제 목록 응답의 정수 ID와 부모 ID를 검증한다", () => {
     const response = [
-      { id: 237, name: "가구", depth: "minor", parentId: 145 },
-      { id: 385, name: "가스수입", depth: "middle", parentId: 255 },
+      { id: 237, name: "가구", depth: "minor", parentId: 145, isLeaf: true },
+      {
+        id: 385,
+        name: "가스수입",
+        depth: "middle",
+        parentId: 255,
+        isLeaf: false,
+      },
     ];
     expect(sectorListSchema.parse(response)).toEqual(response);
     expect(
@@ -24,6 +30,7 @@ describe("sector schemas", () => {
         name: "에너지",
         depth: "major",
         parentId: null,
+        isLeaf: false,
       }).parentId,
     ).toBeNull();
   });
@@ -59,6 +66,7 @@ describe("sector schemas", () => {
           name: "기술",
           depth: "major",
           parentId: null,
+          isLeaf: false,
         }).success,
       ).toBe(false);
       expect(
@@ -75,6 +83,7 @@ describe("sector schemas", () => {
           name: "반도체",
           depth: "middle",
           parentId: id,
+          isLeaf: false,
         }).success,
       ).toBe(id === null);
       expect(
@@ -96,6 +105,45 @@ describe("sector schemas", () => {
       }).success,
     ).toBe(false);
     const payload = { id: 2, name: "반도체", depth: "middle", parentId: 2 };
+    expect(sectorCreatePayloadSchema.safeParse(payload).success).toBe(false);
+    expect(sectorUpdatePayloadSchema.safeParse(payload).success).toBe(false);
+  });
+
+  it.each([true, false])("isLeaf 응답 값 %s를 그대로 유지한다", (isLeaf) => {
+    expect(
+      sectorSchema.parse({
+        id: 42,
+        name: "반도체",
+        depth: "middle",
+        parentId: 10,
+        isLeaf,
+      }).isLeaf,
+    ).toBe(isLeaf);
+  });
+
+  it.each([undefined, null, 1, "true"])(
+    "누락되거나 boolean이 아닌 isLeaf %s를 거부한다",
+    (isLeaf) => {
+      expect(
+        sectorSchema.safeParse({
+          id: 42,
+          name: "반도체",
+          depth: "middle",
+          parentId: 10,
+          isLeaf,
+        }).success,
+      ).toBe(false);
+    },
+  );
+
+  it("읽기 전용 isLeaf를 생성·수정 요청 필드로 허용하지 않는다", () => {
+    const payload = {
+      id: 42,
+      name: "반도체",
+      depth: "middle",
+      parentId: 10,
+      isLeaf: true,
+    };
     expect(sectorCreatePayloadSchema.safeParse(payload).success).toBe(false);
     expect(sectorUpdatePayloadSchema.safeParse(payload).success).toBe(false);
   });

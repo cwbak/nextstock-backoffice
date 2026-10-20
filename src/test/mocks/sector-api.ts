@@ -200,7 +200,10 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
             400,
           );
         }
-        const sector = payload;
+        const sector = {
+          ...payload,
+          isLeaf: id === null ? false : (sectors.get(id)?.isLeaf ?? false),
+        };
         sectors.set(sector.id, sector);
         return reply(sector, method === "POST" ? 201 : 200);
       }

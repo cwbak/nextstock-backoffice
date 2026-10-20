@@ -7,10 +7,10 @@ import {
 } from "@/features/sectors/sector-hierarchy";
 
 const sectors: Sector[] = [
-  { id: 3, name: "장비", depth: "minor", parentId: 2 },
-  { id: 2, name: "반도체", depth: "middle", parentId: 1 },
-  { id: 4, name: "금융", depth: "major", parentId: null },
-  { id: 1, name: "기술", depth: "major", parentId: null },
+  { id: 3, name: "장비", depth: "minor", parentId: 2, isLeaf: false },
+  { id: 2, name: "반도체", depth: "middle", parentId: 1, isLeaf: false },
+  { id: 4, name: "금융", depth: "major", parentId: null, isLeaf: false },
+  { id: 1, name: "기술", depth: "major", parentId: null, isLeaf: false },
 ];
 
 describe("sector hierarchy", () => {
@@ -36,6 +36,7 @@ describe("sector hierarchy", () => {
       name: "기술",
       depth: "major",
       parentId: null,
+      isLeaf: false,
     }));
     expect(buildSectorRows(items).map(({ sector }) => sector.id)).toEqual([
       2, 10, 42, 145,

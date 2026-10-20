@@ -16,10 +16,10 @@ import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 import { mockSectorApi } from "@/test/mocks/sector-api";
 
 const sectors: Sector[] = [
-  { id: 10, name: "기술", depth: "major", parentId: null },
-  { id: 42, name: "반도체", depth: "middle", parentId: 10 },
-  { id: 103, name: "장비", depth: "minor", parentId: 42 },
-  { id: 20, name: "금융", depth: "major", parentId: null },
+  { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
+  { id: 42, name: "반도체", depth: "middle", parentId: 10, isLeaf: false },
+  { id: 103, name: "장비", depth: "minor", parentId: 42, isLeaf: false },
+  { id: 20, name: "금융", depth: "major", parentId: null, isLeaf: false },
 ];
 
 function renderPage() {

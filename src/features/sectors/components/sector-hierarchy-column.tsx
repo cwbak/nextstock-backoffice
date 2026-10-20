@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/empty";
 import type { SectorDepth } from "@/data-access/schemas/sector";
 import { SectorRowActions } from "@/features/sectors/components/sector-row-actions";
+import { SectorName } from "@/features/sectors/components/sector-name";
 import { sectorDepthLabels } from "@/features/sectors/sector-depth";
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
 import { cn } from "@/lib/utils";
@@ -43,9 +44,7 @@ function SectorHierarchyRow({
         onClick={() => onSelect(row.sector.id)}
       >
         <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
-          <span className="w-full truncate text-left" title={row.sector.name}>
-            {row.sector.name}
-          </span>
+          <SectorName sector={row.sector} />
           <span className="text-xs text-muted-foreground">
             #{row.sector.id}
             {row.sector.depth !== "minor"

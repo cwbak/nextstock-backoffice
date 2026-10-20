@@ -15,13 +15,13 @@ import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 import { mockSectorApi } from "@/test/mocks/sector-api";
 
 const sectors: Sector[] = [
-  { id: 1, name: "기술", depth: "major", parentId: null },
-  { id: 2, name: "반도체", depth: "middle", parentId: 1 },
-  { id: 3, name: "장비", depth: "minor", parentId: 2 },
-  { id: 4, name: "금융", depth: "major", parentId: null },
-  { id: 5, name: "은행", depth: "middle", parentId: 4 },
-  { id: 6, name: "지방은행", depth: "minor", parentId: 5 },
-  { id: 7, name: "소프트웨어", depth: "middle", parentId: 1 },
+  { id: 1, name: "기술", depth: "major", parentId: null, isLeaf: false },
+  { id: 2, name: "반도체", depth: "middle", parentId: 1, isLeaf: false },
+  { id: 3, name: "장비", depth: "minor", parentId: 2, isLeaf: true },
+  { id: 4, name: "금융", depth: "major", parentId: null, isLeaf: false },
+  { id: 5, name: "은행", depth: "middle", parentId: 4, isLeaf: false },
+  { id: 6, name: "지방은행", depth: "minor", parentId: 5, isLeaf: false },
+  { id: 7, name: "소프트웨어", depth: "middle", parentId: 1, isLeaf: true },
 ];
 
 function renderPage() {
@@ -43,6 +43,83 @@ describe("sector views", () => {
     sectorUiActions.closeDelete();
     sectorUiActions.closeSync();
     vi.restoreAllMocks();
+  });
+
+  it("ALL과 각 분류에서 서버의 isLeaf가 true인 섹터명 앞에만 점을 표시한다", async () => {
+    mockSectorApi([
+      ...sectors,
+      {
+        id: 8,
+        name: "독립 업종",
+        depth: "major",
+        parentId: null,
+        isLeaf: true,
+      },
+    ]);
+    renderPage();
+    const marker = (name: string) =>
+      within(screen.getByRole("button", { name: `${name} 선택` }));
+    await screen.findByRole("button", { name: "기술 선택" });
+    expect(
+      marker("독립 업종").getByRole("img", { name: "말단 섹터" }),
+    ).toBeInTheDocument();
+    expect(marker("기술").queryByRole("img")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "기술 선택" }));
+    expect(
+      marker("소프트웨어").getByRole("img", { name: "말단 섹터" }),
+    ).toBeInTheDocument();
+    expect(marker("반도체").queryByRole("img")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "반도체 선택" }));
+    expect(
+      marker("장비").getByRole("img", { name: "말단 섹터" }),
+    ).toHaveAttribute("title", expect.stringContaining("마지막 동기화"));
+    for (const [depth, leafName, nonLeafName] of [
+      ["major", "독립 업종", "기술"],
+      ["middle", "소프트웨어", "반도체"],
+      ["minor", "장비", "지방은행"],
+    ] as const) {
+      fireEvent.click(screen.getByRole("radio", { name: depth }));
+      expect(
+        marker(leafName).getByRole("img", { name: "말단 섹터" }),
+      ).toBeInTheDocument();
+      expect(marker(nonLeafName).queryByRole("img")).not.toBeInTheDocument();
+    }
+  });
+
+  it("새로고침으로 isLeaf가 바뀌면 점 표시를 갱신한다", async () => {
+    const api = mockSectorApi(sectors);
+    renderPage();
+    await screen.findByRole("button", { name: "기술 선택" });
+    api.sectors.set(1, {
+      id: 1,
+      name: "기술",
+      depth: "major",
+      parentId: null,
+      isLeaf: true,
+    });
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    await within(screen.getByRole("button", { name: "기술 선택" })).findByRole(
+      "img",
+      { name: "말단 섹터" },
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "새로고침" })).toBeEnabled(),
+    );
+    api.sectors.set(1, {
+      id: 1,
+      name: "기술",
+      depth: "major",
+      parentId: null,
+      isLeaf: false,
+    });
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole("button", { name: "기술 선택" })).queryByRole(
+          "img",
+        ),
+      ).not.toBeInTheDocument(),
+    );
   });
 
   it("ALL은 처음에 대분류만 표시하고 선택한 경로의 하위만 연다", async () => {

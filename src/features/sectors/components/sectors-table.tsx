@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { SectorDepthBadge } from "@/features/sectors/components/sector-depth-badge";
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
 import { SectorRowActions } from "@/features/sectors/components/sector-row-actions";
+import { SectorName } from "@/features/sectors/components/sector-name";
 import {
   sectorUiActions,
   useSectorUiStore,
@@ -42,7 +43,7 @@ function SectorTableRow({
           variant="ghost"
           onClick={() => sectorUiActions.selectSector(row.sector.id)}
         >
-          <span className="truncate">{row.sector.name}</span>
+          <SectorName sector={row.sector} />
         </Button>
       </TableCell>
       <TableCell>
