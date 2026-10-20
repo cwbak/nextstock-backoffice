@@ -24,11 +24,14 @@ function SectorDeleteConfirmation({
     mutationKey: sectorKeys.writes(),
     mutationFn: () => deleteSector(sector.id),
     onSuccess: async () => {
-      for (const id of branchIds)
+      for (const id of branchIds) {
         queryClient.removeQueries({
           queryKey: sectorKeys.detail(id),
           exact: true,
         });
+        await queryClient.cancelQueries({ queryKey: sectorKeys.stocks(id) });
+        queryClient.removeQueries({ queryKey: sectorKeys.stocks(id) });
+      }
       await queryClient.invalidateQueries({ queryKey: sectorKeys.lists() });
       sectorUiActions.closeDelete();
     },

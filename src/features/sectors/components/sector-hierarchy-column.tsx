@@ -23,7 +23,7 @@ function SectorHierarchyRow({
 }: {
   row: SectorRow;
   selected: boolean;
-  onSelect: ((id: number) => void) | undefined;
+  onSelect: (id: number) => void;
   controls: string | undefined;
 }) {
   return (
@@ -33,39 +33,30 @@ function SectorHierarchyRow({
         selected && "bg-accent",
       )}
     >
-      {onSelect ? (
-        <Button
-          aria-controls={controls}
-          aria-label={`${row.sector.name} 선택`}
-          aria-pressed={selected}
-          className="h-auto min-w-0 flex-1 justify-start gap-2 px-2 py-2.5"
-          type="button"
-          variant="ghost"
-          onClick={() => onSelect(row.sector.id)}
-        >
-          <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
-            <span className="w-full truncate text-left" title={row.sector.name}>
-              {row.sector.name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              #{row.sector.id} · 하위 {row.descendantCount}개
-            </span>
-          </span>
-          <ChevronRightIcon aria-hidden="true" className="shrink-0" />
-        </Button>
-      ) : (
-        <div className="flex min-w-0 flex-1 flex-col gap-1 px-2 py-2.5">
-          <span
-            className="truncate text-sm font-medium"
-            title={row.sector.name}
-          >
+      <Button
+        aria-controls={controls}
+        aria-label={`${row.sector.name} 선택`}
+        aria-pressed={selected}
+        className="h-auto min-w-0 flex-1 justify-start gap-2 px-2 py-2.5"
+        type="button"
+        variant="ghost"
+        onClick={() => onSelect(row.sector.id)}
+      >
+        <span className="flex min-w-0 flex-1 flex-col items-start gap-1">
+          <span className="w-full truncate text-left" title={row.sector.name}>
             {row.sector.name}
           </span>
           <span className="text-xs text-muted-foreground">
             #{row.sector.id}
+            {row.sector.depth !== "minor"
+              ? ` · 하위 ${row.descendantCount}개`
+              : ""}
           </span>
-        </div>
-      )}
+        </span>
+        {row.sector.depth !== "minor" ? (
+          <ChevronRightIcon aria-hidden="true" className="shrink-0" />
+        ) : null}
+      </Button>
       <SectorRowActions sector={row.sector} />
     </li>
   );
@@ -78,7 +69,7 @@ interface SectorHierarchyColumnProps {
   description: string;
   emptyTitle: string;
   emptyDescription: string;
-  onSelect?: (id: number) => void;
+  onSelect: (id: number) => void;
   rows: ReadonlyArray<SectorRow>;
   selectedId?: number | null;
 }

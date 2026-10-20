@@ -11,6 +11,7 @@ interface SectorUiState {
   browserView: SectorView;
   selectedMajorId: number | null;
   selectedMiddleId: number | null;
+  selectedSectorId: number | null;
 }
 
 export const useSectorUiStore = create<SectorUiState>(() => ({
@@ -20,20 +21,31 @@ export const useSectorUiStore = create<SectorUiState>(() => ({
   browserView: "all",
   selectedMajorId: null,
   selectedMiddleId: null,
+  selectedSectorId: null,
 }));
 
 export const sectorUiActions = {
   setBrowserView: (browserView: SectorView) =>
-    useSectorUiStore.setState({ browserView }),
+    useSectorUiStore.setState({ browserView, selectedSectorId: null }),
   selectMajor: (selectedMajorId: number) =>
-    useSectorUiStore.setState({ selectedMajorId, selectedMiddleId: null }),
+    useSectorUiStore.setState({
+      selectedMajorId,
+      selectedMiddleId: null,
+      selectedSectorId: selectedMajorId,
+    }),
   selectMiddle: (selectedMiddleId: number) =>
-    useSectorUiStore.setState({ selectedMiddleId }),
+    useSectorUiStore.setState({
+      selectedMiddleId,
+      selectedSectorId: selectedMiddleId,
+    }),
+  selectSector: (selectedSectorId: number) =>
+    useSectorUiStore.setState({ selectedSectorId }),
   resetBrowser: () =>
     useSectorUiStore.setState({
       browserView: "all",
       selectedMajorId: null,
       selectedMiddleId: null,
+      selectedSectorId: null,
     }),
   create: (parentId: number | null = null) =>
     useSectorUiStore.setState({ editor: { mode: "create", parentId } }),

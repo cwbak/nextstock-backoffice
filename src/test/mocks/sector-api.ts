@@ -4,7 +4,18 @@ import {
   sectorWritePayloadSchema,
   sectorCreatePayloadSchema,
   type Sector,
+  type SectorStock,
 } from "@/data-access/schemas/sector";
+import type { BackgroundJob } from "@/data-access/schemas/background-job";
+
+export const sectorSyncRegistration = {
+  jobId: 42,
+  type: "sectors_sync",
+  status: "QUEUED",
+  statusUrl: "/admin/jobs/42",
+  created: true,
+  createdAt: "2026-10-20T00:00:00Z",
+} as const;
 
 function jsonResponse(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), {
@@ -15,12 +26,34 @@ function jsonResponse(value: unknown, status = 200) {
 
 export function mockSectorApi(initial: ReadonlyArray<Sector>) {
   const sectors = new Map(initial.map((sector) => [sector.id, { ...sector }]));
+  const stocks = new Map<number, SectorStock[]>();
+  let jobId = 41;
+  let result: unknown;
   const control: {
     fail: ((path: string, method: string) => boolean) | null;
     syncSectors: ReadonlyArray<Sector> | null;
     syncError: string | null;
     syncGate: Promise<void> | null;
-  } = { fail: null, syncSectors: null, syncError: null, syncGate: null };
+    jobStatus: BackgroundJob["status"];
+    jobStage: string | null;
+    jobError: string | null;
+    jobResult: unknown;
+    jobCreated: boolean;
+    syncStocks: Map<number, SectorStock[]> | null;
+    stocksSkipped: number;
+  } = {
+    fail: null,
+    syncSectors: null,
+    syncError: null,
+    syncGate: null,
+    jobStatus: "COMPLETED",
+    jobStage: null,
+    jobError: null,
+    jobResult: undefined,
+    jobCreated: true,
+    syncStocks: null,
+    stocksSkipped: 0,
+  };
   const fetchMock = vi
     .spyOn(globalThis, "fetch")
     .mockImplementation(async (input, init) => {
@@ -37,26 +70,93 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
         return reply({ error: "internal server error" }, 500);
       if (path === "/admin/sectors/sync" && method === "POST") {
         if (control.syncGate) await control.syncGate;
-        if (control.syncError) return reply({ error: control.syncError }, 502);
-        const listings = control.syncSectors ?? [...sectors.values()];
-        const result = { created: 0, updated: 0, deleted: 0, unchanged: 0 };
-        for (const listing of listings) {
-          const current = sectors.get(listing.id);
-          if (!current) result.created++;
-          else if (
-            current.name !== listing.name ||
-            current.depth !== listing.depth ||
-            current.parentId !== listing.parentId
-          )
-            result.updated++;
-          else result.unchanged++;
+        if (control.syncError) return reply({ error: control.syncError }, 503);
+        jobId++;
+        result = undefined;
+        return reply(
+          {
+            ...sectorSyncRegistration,
+            jobId,
+            statusUrl: `/admin/jobs/${jobId}`,
+            created: control.jobCreated,
+          },
+          202,
+        );
+      }
+      if (path === `/admin/jobs/${jobId}` && method === "GET") {
+        if (control.jobStatus === "COMPLETED" && result === undefined) {
+          const listings = control.syncSectors ?? [...sectors.values()];
+          const counts = {
+            created: 0,
+            updated: 0,
+            deleted: 0,
+            unchanged: 0,
+            stocksSynced: 0,
+            stocksSkipped: control.stocksSkipped,
+          };
+          for (const listing of listings) {
+            const current = sectors.get(listing.id);
+            if (!current) counts.created++;
+            else if (
+              current.name !== listing.name ||
+              current.depth !== listing.depth ||
+              current.parentId !== listing.parentId
+            )
+              counts.updated++;
+            else counts.unchanged++;
+          }
+          counts.deleted = [...sectors.keys()].filter(
+            (id) => !listings.some((sector) => sector.id === id),
+          ).length;
+          sectors.clear();
+          for (const sector of listings) sectors.set(sector.id, { ...sector });
+          if (control.syncStocks) {
+            stocks.clear();
+            for (const [id, items] of control.syncStocks) stocks.set(id, items);
+          }
+          for (const id of stocks.keys())
+            if (!sectors.has(id)) stocks.delete(id);
+          counts.stocksSynced = [...stocks.values()].reduce(
+            (count, items) => count + items.length,
+            0,
+          );
+          result = counts;
         }
-        result.deleted = [...sectors.keys()].filter(
-          (id) => !listings.some((sector) => sector.id === id),
-        ).length;
-        sectors.clear();
-        for (const sector of listings) sectors.set(sector.id, { ...sector });
-        return reply(result);
+        const finished =
+          control.jobStatus === "COMPLETED" || control.jobStatus === "FAILED";
+        return reply({
+          jobId,
+          type: "sectors_sync",
+          status: control.jobStatus,
+          stage:
+            control.jobStage ??
+            (finished ? control.jobStatus : "FETCHING_SECTORS"),
+          parameters: {},
+          progress: {
+            current: 2,
+            total: 2,
+            percent: 100,
+            succeeded: 2,
+            failed: 0,
+          },
+          result:
+            control.jobStatus === "COMPLETED"
+              ? (control.jobResult ?? result)
+              : null,
+          error: control.jobError,
+          attemptCount: 1,
+          createdAt: sectorSyncRegistration.createdAt,
+          startedAt: sectorSyncRegistration.createdAt,
+          finishedAt: finished ? sectorSyncRegistration.createdAt : null,
+          updatedAt: sectorSyncRegistration.createdAt,
+        });
+      }
+      const stockMatch = /^\/api\/sectors\/(\d+)\/stocks$/.exec(path);
+      if (stockMatch && method === "GET") {
+        const id = Number(stockMatch[1]);
+        return sectors.has(id)
+          ? reply(stocks.get(id) ?? [])
+          : reply({ error: "sector not found" }, 404);
       }
       if (path === "/admin/sectors" && method === "GET")
         return reply([...sectors.values()]);
@@ -125,5 +225,5 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
       }
       throw new Error(`예상하지 못한 요청: ${method} ${path}`);
     });
-  return { sectors, control, fetchMock };
+  return { sectors, stocks, control, fetchMock };
 }

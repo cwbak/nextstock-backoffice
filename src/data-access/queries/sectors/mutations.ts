@@ -1,10 +1,10 @@
 import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
+import { sectorsSyncJobRegistrationSchema } from "@/data-access/schemas/background-job";
 import {
   sectorIdSchema,
   sectorSchema,
   sectorUpdatePayloadSchema,
   sectorCreatePayloadSchema,
-  sectorSyncResultSchema,
   type SectorFormValues,
   type SectorUpdatePayload,
 } from "@/data-access/schemas/sector";
@@ -31,7 +31,7 @@ export function deleteSector(id: number) {
 }
 
 export function synchronizeSectors() {
-  return apiRequest("/admin/sectors/sync", sectorSyncResultSchema, {
+  return apiRequest("/admin/sectors/sync", sectorsSyncJobRegistrationSchema, {
     method: "POST",
   });
 }

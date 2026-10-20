@@ -8,6 +8,7 @@ import {
   sectorWritePayloadSchema,
   sectorUpdatePayloadSchema,
   sectorSyncResultSchema,
+  sectorStockListSchema,
 } from "@/data-access/schemas/sector";
 
 describe("sector schemas", () => {
@@ -121,8 +122,17 @@ describe("sector schemas", () => {
         updated: 0,
         deleted: 0,
         unchanged: 10,
+        stocksSynced: 1200,
+        stocksSkipped: 3,
       }),
-    ).toEqual({ created: 0, updated: 0, deleted: 0, unchanged: 10 });
+    ).toEqual({
+      created: 0,
+      updated: 0,
+      deleted: 0,
+      unchanged: 10,
+      stocksSynced: 1200,
+      stocksSkipped: 3,
+    });
   });
 
   it.each([
@@ -130,7 +140,47 @@ describe("sector schemas", () => {
     { created: 1.5, updated: 0, deleted: 0, unchanged: 0 },
     { created: "1", updated: 0, deleted: 0, unchanged: 0 },
     { created: 1, updated: 0, deleted: 0 },
+    {
+      created: 0,
+      updated: 0,
+      deleted: 0,
+      unchanged: 1,
+      stocksSynced: -1,
+      stocksSkipped: 0,
+    },
+    {
+      created: 0,
+      updated: 0,
+      deleted: 0,
+      unchanged: 1,
+      stocksSynced: 1,
+      stocksSkipped: 0.5,
+    },
   ])("잘못되거나 누락된 동기화 건수를 거부한다", (result) => {
-    expect(sectorSyncResultSchema.safeParse(result).success).toBe(false);
+    expect(
+      sectorSyncResultSchema.safeParse({
+        stocksSynced: 0,
+        stocksSkipped: 0,
+        ...result,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("섹터 종목은 코드와 이름 배열이며 코드의 앞자리 0을 유지한다", () => {
+    const stocks = [
+      { code: "005930", name: "삼성전자" },
+      { code: "00088K", name: "한화3우B" },
+    ];
+    expect(sectorStockListSchema.parse(stocks)).toEqual(stocks);
+    expect(sectorStockListSchema.parse([])).toEqual([]);
+    expect(
+      sectorStockListSchema.safeParse([{ code: 5930, name: "삼성전자" }])
+        .success,
+    ).toBe(false);
+    expect(
+      sectorStockListSchema.safeParse([
+        { stock_code: "005930", name: "삼성전자" },
+      ]).success,
+    ).toBe(false);
   });
 });

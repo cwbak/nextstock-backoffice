@@ -7,13 +7,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { SectorDepthBadge } from "@/features/sectors/components/sector-depth-badge";
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
 import { SectorRowActions } from "@/features/sectors/components/sector-row-actions";
+import {
+  sectorUiActions,
+  useSectorUiStore,
+} from "@/features/sectors/stores/use-sector-ui-store";
 
-function SectorTableRow({ row }: { row: SectorRow }) {
+function SectorTableRow({
+  row,
+  selected,
+}: {
+  row: SectorRow;
+  selected: boolean;
+}) {
   return (
-    <TableRow>
+    <TableRow data-state={selected ? "selected" : undefined}>
       <TableCell
         className="truncate pl-4 font-mono text-xs"
         title={String(row.sector.id)}
@@ -21,9 +32,18 @@ function SectorTableRow({ row }: { row: SectorRow }) {
         {row.sector.id}
       </TableCell>
       <TableCell>
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="truncate font-medium">{row.sector.name}</span>
-        </div>
+        <Button
+          aria-controls="sector-stocks-panel"
+          aria-label={`${row.sector.name} 선택`}
+          aria-pressed={selected}
+          className="max-w-full justify-start"
+          title={row.sector.name}
+          type="button"
+          variant="ghost"
+          onClick={() => sectorUiActions.selectSector(row.sector.id)}
+        >
+          <span className="truncate">{row.sector.name}</span>
+        </Button>
       </TableCell>
       <TableCell>
         <SectorDepthBadge depth={row.sector.depth} />
@@ -49,6 +69,7 @@ function SectorTableRow({ row }: { row: SectorRow }) {
 }
 
 export function SectorsTable({ rows }: { rows: ReadonlyArray<SectorRow> }) {
+  const selectedId = useSectorUiStore((state) => state.selectedSectorId);
   return (
     <Table className="min-w-[58rem] table-fixed">
       <TableCaption className="sr-only">
@@ -74,7 +95,11 @@ export function SectorsTable({ rows }: { rows: ReadonlyArray<SectorRow> }) {
       </TableHeader>
       <TableBody>
         {rows.map((row) => (
-          <SectorTableRow key={row.sector.id} row={row} />
+          <SectorTableRow
+            key={row.sector.id}
+            row={row}
+            selected={selectedId === row.sector.id}
+          />
         ))}
       </TableBody>
     </Table>

@@ -46,8 +46,8 @@ export function SectorListPanel({
       contentClassName={view === "all" ? "" : "max-h-[70svh] overflow-y-auto"}
       description={
         view === "all"
-          ? "대분류와 중분류를 선택해 하위 섹터를 확인하세요."
-          : "선택한 분류의 섹터만 표시합니다. 상위 경로와 함께 확인할 수 있습니다."
+          ? "대분류와 중분류를 선택해 하위 섹터를 확인하세요. 선택한 섹터의 종목은 아래에 표시됩니다."
+          : "선택한 분류의 섹터만 표시합니다. 섹터명을 선택하면 아래에 종목을 표시합니다."
       }
       recordCount={visibleRows.length}
       title={

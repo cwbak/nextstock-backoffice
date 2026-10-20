@@ -23,6 +23,15 @@ export const sectorSchema = z
 
 export const sectorListSchema = z.array(sectorSchema);
 
+export const sectorStockSchema = z
+  .object({
+    code: z.string().regex(/^[A-Z0-9]{6}$/),
+    name: z.string(),
+  })
+  .strict();
+
+export const sectorStockListSchema = z.array(sectorStockSchema);
+
 export const sectorWritePayloadSchema = z
   .object({
     name: z.string().trim().min(1, "섹터명을 입력해 주세요."),
@@ -56,10 +65,13 @@ export const sectorSyncResultSchema = z
     updated: z.number().int().nonnegative(),
     deleted: z.number().int().nonnegative(),
     unchanged: z.number().int().nonnegative(),
+    stocksSynced: z.number().int().nonnegative(),
+    stocksSkipped: z.number().int().nonnegative(),
   })
   .strict();
 
 export type Sector = z.infer<typeof sectorSchema>;
+export type SectorStock = z.infer<typeof sectorStockSchema>;
 export type SectorDepth = z.infer<typeof sectorDepthSchema>;
 export type SectorFormValues = z.infer<typeof sectorCreatePayloadSchema>;
 export type SectorUpdatePayload = z.infer<typeof sectorUpdatePayloadSchema>;

@@ -5,11 +5,13 @@ import {
   screen,
   waitFor,
   within,
+  act,
 } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { sectorKeys } from "@/data-access/queries/sectors/keys";
+import { backgroundJobKeys } from "@/data-access/queries/background-jobs/keys";
 import type { Sector } from "@/data-access/schemas/sector";
 import { SectorsPage } from "@/features/sectors/components/sectors-page";
 import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
@@ -69,7 +71,15 @@ describe("sector synchronization", () => {
   it("추가·수정·삭제·유지 건수를 표시하고 목록과 상세 캐시를 갱신한다", async () => {
     const api = mockSectorApi(initial);
     api.control.syncSectors = latest;
+    api.control.stocksSkipped = 3;
+    api.stocks.set(10, [{ code: "005930", name: "삼성전자" }]);
+    api.control.syncStocks = new Map([
+      [10, [{ code: "000660", name: "SK하이닉스" }]],
+    ]);
     const client = renderPage();
+    client.setQueryData(sectorKeys.stocks(10), [
+      { code: "005930", name: "삼성전자" },
+    ]);
     client.setQueryData(sectorKeys.detail(99), initial[2]);
     client.setQueryData(sectorKeys.detail(42), initial[1]);
     await screen.findByRole("button", { name: "수동 섹터 섹터 수정" });
@@ -83,6 +93,8 @@ describe("sector synchronization", () => {
         .getAllByRole("cell")
         .map((cell) => cell.textContent),
     ).toEqual(["2", "1", "1", "1"]);
+    expect(screen.getByText("미등록 종목으로 건너뛴 연결")).toBeInTheDocument();
+    expect(screen.getByText("3건")).toBeInTheDocument();
     const calls = api.fetchMock.mock.calls.filter(
       ([path]) => path === "/admin/sectors/sync",
     );
@@ -91,7 +103,12 @@ describe("sector synchronization", () => {
     expect(calls[0]?.[1]?.body).toBeUndefined();
     expect(client.getQueryData(sectorKeys.detail(99))).toBeUndefined();
     expect(client.getQueryData(sectorKeys.detail(42))).toBeUndefined();
-    expect(client.getQueryData(sectorKeys.list())).toEqual(latest);
+    await waitFor(() =>
+      expect(client.getQueryData(sectorKeys.list())).toEqual(latest),
+    );
+    expect(client.getQueryState(sectorKeys.stocks(10))?.isInvalidated).toBe(
+      true,
+    );
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
     fireEvent.click(screen.getByRole("button", { name: "기술 선택" }));
     fireEvent.click(screen.getByRole("button", { name: "반도체 부품 선택" }));
@@ -116,7 +133,7 @@ describe("sector synchronization", () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "동기화" }));
     fireEvent.click(screen.getByRole("button", { name: "동기화 실행" }));
-    expect(await screen.findByText("Toss 섹터 동기화 중")).toBeInTheDocument();
+    expect(await screen.findByText("동기화 작업 등록 중")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "취소" })).toBeDisabled();
     const running = screen.getByRole("button", { name: "동기화 중" });
     expect(running).toBeDisabled();
@@ -132,16 +149,31 @@ describe("sector synchronization", () => {
     await screen.findByText("섹터 동기화를 완료했습니다");
   });
 
-  it("Toss 오류를 표시하고 자동 재시도 없이 사용자가 재시도할 수 있다", async () => {
+  it("동기화 완료 후 현재 선택한 섹터의 종목 목록도 다시 조회한다", async () => {
     const api = mockSectorApi(initial);
-    api.control.syncError = "sector source lookup failed";
+    api.stocks.set(10, [{ code: "005930", name: "삼성전자" }]);
+    api.control.syncStocks = new Map([
+      [10, [{ code: "000660", name: "SK하이닉스" }]],
+    ]);
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "기술 선택" }));
+    await screen.findByText("삼성전자");
+    fireEvent.click(screen.getByRole("button", { name: "동기화" }));
+    fireEvent.click(screen.getByRole("button", { name: "동기화 실행" }));
+    await screen.findByText("섹터 동기화를 완료했습니다");
+    fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+    expect(await screen.findByText("SK하이닉스")).toBeInTheDocument();
+    expect(screen.queryByText("삼성전자")).not.toBeInTheDocument();
+  });
+
+  it("작업 등록 오류를 표시하고 자동 재등록 없이 사용자가 재시도할 수 있다", async () => {
+    const api = mockSectorApi(initial);
+    api.control.syncError = "background jobs are unavailable";
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "동기화" }));
     fireEvent.click(screen.getByRole("button", { name: "동기화 실행" }));
     expect(
-      await screen.findByText(
-        "Toss 섹터를 조회하지 못했습니다. 서버의 Toss 설정과 연결 상태를 확인해 주세요.",
-      ),
+      await screen.findByText("백그라운드 작업 저장소가 구성되지 않았습니다."),
     ).toBeInTheDocument();
     expect([...api.sectors.values()]).toEqual(initial);
     expect(
@@ -159,6 +191,85 @@ describe("sector synchronization", () => {
     ).toEqual(["0", "0", "0", "3"]);
   });
 
+  it("기존 작업의 대기·진행률·저장을 표시하며 100%여도 COMPLETED 전에는 갱신하지 않는다", async () => {
+    const api = mockSectorApi(initial);
+    api.control.jobStatus = "QUEUED";
+    api.control.jobCreated = false;
+    api.control.syncSectors = latest;
+    const client = renderPage();
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    fireEvent.click(await screen.findByRole("button", { name: "동기화" }));
+    fireEvent.click(screen.getByRole("button", { name: "동기화 실행" }));
+    await screen.findByText("Worker 처리 대기 중");
+    expect(
+      screen.getByText("이미 진행 중인 동기화 작업을 확인하고 있습니다."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "취소" })).toBeDisabled();
+    fireEvent.keyDown(screen.getByRole("alertdialog"), { key: "Escape" });
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    api.control.jobStatus = "RUNNING";
+    api.control.jobStage = "FETCHING_SECTOR_STOCKS";
+    await act(() =>
+      client.refetchQueries({ queryKey: backgroundJobKeys.detail(42) }),
+    );
+    await screen.findByText(/섹터별 구성 종목 조회/);
+    expect(
+      screen.getByRole("progressbar", { name: "백그라운드 작업 진행률" }),
+    ).toHaveAttribute("value", "100");
+    expect(
+      screen.queryByText("섹터 동기화를 완료했습니다"),
+    ).not.toBeInTheDocument();
+    expect(invalidate).not.toHaveBeenCalled();
+    expect([...api.sectors.values()]).toEqual(initial);
+    api.control.jobStage = "SAVING_SECTORS";
+    await act(() =>
+      client.refetchQueries({ queryKey: backgroundJobKeys.detail(42) }),
+    );
+    await screen.findByText(/섹터와 종목 연결 저장/);
+    api.control.jobStatus = "COMPLETED";
+    await act(() =>
+      client.refetchQueries({ queryKey: backgroundJobKeys.detail(42) }),
+    );
+    await screen.findByText("섹터 동기화를 완료했습니다");
+    await waitFor(() =>
+      expect(client.getQueryData(sectorKeys.list())).toEqual(latest),
+    );
+    expect(
+      api.fetchMock.mock.calls.filter(
+        ([path]) => path === "/admin/sectors/sync",
+      ),
+    ).toHaveLength(1);
+  });
+
+  it("worker 실패 사유를 표시하고 결과를 갱신하지 않으며 재시도할 수 있다", async () => {
+    const api = mockSectorApi(initial);
+    api.control.jobStatus = "FAILED";
+    api.control.jobError = "Toss 구성 종목 조회에 실패했습니다.";
+    const client = renderPage();
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+    fireEvent.click(await screen.findByRole("button", { name: "동기화" }));
+    fireEvent.click(screen.getByRole("button", { name: "동기화 실행" }));
+    await screen.findByText("Toss 구성 종목 조회에 실패했습니다.");
+    expect(invalidate).not.toHaveBeenCalled();
+    expect([...api.sectors.values()]).toEqual(initial);
+    api.control.jobStatus = "COMPLETED";
+    api.control.jobError = null;
+    fireEvent.click(screen.getByRole("button", { name: "다시 시도" }));
+    await screen.findByText("섹터 동기화를 완료했습니다");
+  });
+
+  it("완료 작업의 결과가 잘못되면 성공으로 표시하지 않는다", async () => {
+    const api = mockSectorApi(initial);
+    api.control.jobResult = { created: 10 };
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "동기화" }));
+    fireEvent.click(screen.getByRole("button", { name: "동기화 실행" }));
+    await screen.findByText("완료된 작업 결과가 API 명세와 다릅니다.");
+    expect(
+      screen.queryByText("섹터 동기화를 완료했습니다"),
+    ).not.toBeInTheDocument();
+  });
+
   it("빈 외부 목록으로 전체가 삭제된 결과와 빈 화면을 표시한다", async () => {
     const api = mockSectorApi(initial);
     api.control.syncSectors = [];
@@ -173,7 +284,9 @@ describe("sector synchronization", () => {
         .map((cell) => cell.textContent),
     ).toEqual(["0", "0", "3", "0"]);
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
-    expect(screen.getByText("등록된 섹터가 없습니다")).toBeInTheDocument();
+    expect(
+      await screen.findByText("등록된 섹터가 없습니다"),
+    ).toBeInTheDocument();
   });
 
   it("결과 형식이 잘못되면 완료로 표시하지 않는다", async () => {

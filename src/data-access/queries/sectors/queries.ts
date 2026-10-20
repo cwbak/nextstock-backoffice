@@ -6,6 +6,7 @@ import {
   sectorIdSchema,
   sectorListSchema,
   sectorSchema,
+  sectorStockListSchema,
 } from "@/data-access/schemas/sector";
 
 export const sectorsQueryOptions = queryOptions({
@@ -22,6 +23,19 @@ export function sectorQueryOptions(id: number) {
       apiRequest(`/admin/sectors/${sectorIdSchema.parse(id)}`, sectorSchema, {
         signal,
       }),
+    staleTime: 30 * 1000,
+  });
+}
+
+export function sectorStocksQueryOptions(id: number) {
+  return queryOptions({
+    queryKey: sectorKeys.stocks(id),
+    queryFn: ({ signal }) =>
+      apiRequest(
+        `/api/sectors/${sectorIdSchema.parse(id)}/stocks`,
+        sectorStockListSchema,
+        { signal },
+      ),
     staleTime: 30 * 1000,
   });
 }

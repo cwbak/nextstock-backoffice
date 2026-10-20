@@ -101,6 +101,7 @@ export function useBackgroundJob<TResult>({
     isTracking,
     job,
     jobId,
+    result: completedResult?.success ? completedResult.data : undefined,
     reset,
     track,
   };

@@ -6,7 +6,7 @@ import {
   deleteSector,
   synchronizeSectors,
 } from "@/data-access/queries/sectors/mutations";
-import { mockSectorApi } from "@/test/mocks/sector-api";
+import { mockSectorApi, sectorSyncRegistration } from "@/test/mocks/sector-api";
 
 function requestBody(body: BodyInit | null | undefined): unknown {
   if (typeof body !== "string") throw new Error("JSON 요청 본문이 필요합니다.");
@@ -78,16 +78,11 @@ describe("sector mutations", () => {
     expect(api.fetchMock).not.toHaveBeenCalled();
   });
 
-  it("동기화를 본문 없이 한 번 호출하고 결과를 반환한다", async () => {
+  it("동기화를 본문 없이 한 번 등록하고 202 작업 응답을 반환한다", async () => {
     const api = mockSectorApi([
       { id: 10, name: "기술", depth: "major", parentId: null },
     ]);
-    await expect(synchronizeSectors()).resolves.toEqual({
-      created: 0,
-      updated: 0,
-      deleted: 0,
-      unchanged: 1,
-    });
+    await expect(synchronizeSectors()).resolves.toEqual(sectorSyncRegistration);
     expect(api.fetchMock).toHaveBeenCalledTimes(1);
     expect(api.fetchMock.mock.calls[0]?.[0]).toBe("/admin/sectors/sync");
     expect(api.fetchMock.mock.calls[0]?.[1]?.method).toBe("POST");

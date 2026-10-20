@@ -7,9 +7,29 @@ import {
   krStocksKisDailyJobRegistrationSchema,
   krStocksMarketDataAdjustJobRegistrationSchema,
   krStocksMarketDataStatisticsJobRegistrationSchema,
+  sectorsSyncJobRegistrationSchema,
 } from "@/data-access/schemas/background-job";
+import { sectorSyncRegistration } from "@/test/mocks/sector-api";
 
 describe("background job schemas", () => {
+  it("섹터 동기화 신규 및 기존 작업 등록 응답을 검증한다", () => {
+    expect(
+      sectorsSyncJobRegistrationSchema.parse(sectorSyncRegistration),
+    ).toEqual(sectorSyncRegistration);
+    expect(
+      sectorsSyncJobRegistrationSchema.parse({
+        ...sectorSyncRegistration,
+        created: false,
+        status: "RUNNING",
+      }).created,
+    ).toBe(false);
+    expect(
+      sectorsSyncJobRegistrationSchema.safeParse({
+        ...sectorSyncRegistration,
+        type: "stocks_sync",
+      }).success,
+    ).toBe(false);
+  });
   it("작업 등록 응답을 검증한다", () => {
     const response = {
       jobId: 42,

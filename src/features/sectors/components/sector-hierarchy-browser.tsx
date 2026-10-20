@@ -35,6 +35,7 @@ export function SectorHierarchyBrowser({
 }) {
   const majorId = useSectorUiStore((state) => state.selectedMajorId);
   const middleId = useSectorUiStore((state) => state.selectedMiddleId);
+  const selectedSectorId = useSectorUiStore((state) => state.selectedSectorId);
   const browserRef = useRef<HTMLDivElement>(null);
   const middleRef = useRef<HTMLElement>(null);
   const minorRef = useRef<HTMLElement>(null);
@@ -92,6 +93,7 @@ export function SectorHierarchyBrowser({
         />
         <SectorHierarchyColumn
           columnRef={minorRef}
+          controls="sector-stocks-panel"
           depth="minor"
           description={
             middle ? `${middle.name}의 소분류` : "중분류 선택 후 표시됩니다."
@@ -109,6 +111,8 @@ export function SectorHierarchyBrowser({
               : "다른 중분류를 선택하거나 검색 조건을 확인해 주세요."
           }
           rows={minorRows}
+          selectedId={selectedSectorId}
+          onSelect={sectorUiActions.selectSector}
         />
       </div>
     </div>

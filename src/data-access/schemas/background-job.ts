@@ -8,6 +8,7 @@ export const backgroundJobTypeSchema = z.enum([
   "stock_prices_adjust",
   "stock_price_statistics_generate",
   "stocks_sync",
+  "sectors_sync",
 ]);
 
 export const backgroundJobStatusSchema = z.enum([
@@ -82,6 +83,11 @@ export const holidaysSyncJobRegistrationSchema =
 export const krStocksSyncJobRegistrationSchema =
   backgroundJobRegistrationSchema.extend({
     type: z.literal("stocks_sync"),
+  });
+
+export const sectorsSyncJobRegistrationSchema =
+  backgroundJobRegistrationSchema.extend({
+    type: z.literal("sectors_sync"),
   });
 
 export const krStocksKisDailyJobRegistrationSchema =
