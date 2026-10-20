@@ -7,6 +7,7 @@ import {
   buildCorporationInfo,
   corporationBasicPayloadSchema,
   corporationInfoPayloadSchema,
+  corporationListSchema,
   corporationSchema,
   corporationUpsertPayloadSchema,
   type Corporation,
@@ -14,14 +15,14 @@ import {
   type CorporationUpsertPayload,
 } from "@/data-access/schemas/corporation";
 
-export function upsertCorporation(
+export function upsertCorporations(
   payload: CorporationUpsertPayload,
-): Promise<Corporation> {
+): Promise<Corporation[]> {
   const parsedPayload = corporationUpsertPayloadSchema.parse(payload);
 
   return apiRequest(
     "/admin/corporations",
-    corporationSchema,
+    corporationListSchema,
     { method: "POST" },
     parsedPayload,
   );

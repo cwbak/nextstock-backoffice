@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   syncCorporations,
-  upsertCorporation,
+  upsertCorporations,
   updateCorporation,
 } from "@/data-access/queries/corporations/mutations";
 import type {
@@ -81,20 +81,48 @@ describe("corporation mutations", () => {
     expect(request?.body).toBeUndefined();
   });
 
-  it("법인 코드로 DART 법인을 생성·갱신한다", async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(jsonResponse(corporation));
+  it.each([{ codes: ["00126380"] }, { codes: ["00126380", "00164779"] }])(
+    "법인 코드 배열 $codes를 한 번에 전송하고 법인 배열을 반환한다",
+    async ({ codes }) => {
+      const corporations = codes.map((code) => ({ ...corporation, code }));
+      const fetchMock = vi
+        .spyOn(globalThis, "fetch")
+        .mockResolvedValueOnce(jsonResponse(corporations));
 
-    await expect(upsertCorporation({ code: "00126380" })).resolves.toEqual(
-      corporation,
+      await expect(upsertCorporations({ codes })).resolves.toEqual(
+        corporations,
+      );
+
+      const request = fetchMock.mock.calls[0]?.[1];
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations");
+      expect(request?.method).toBe("POST");
+      expect(parseRequestBody(request?.body)).toEqual({ codes });
+    },
+  );
+
+  it("빈 배열이나 잘못된 코드가 포함된 요청은 전송하지 않는다", () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch");
+
+    expect(() => upsertCorporations({ codes: [] })).toThrow();
+    expect(() =>
+      upsertCorporations({ codes: ["00126380", "invalid"] }),
+    ).toThrow();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("이전 단일 객체 응답이나 잘못된 법인이 포함된 배열을 거부한다", async () => {
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(corporation))
+      .mockResolvedValueOnce(jsonResponse([corporation, { code: "00164779" }]));
+
+    await expect(upsertCorporations({ codes: ["00126380"] })).rejects.toThrow(
+      "서버 응답 형식이 API 명세와 다릅니다.",
     );
-
-    const request = fetchMock.mock.calls[0]?.[1];
-
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/corporations");
-    expect(request?.method).toBe("POST");
-    expect(parseRequestBody(request?.body)).toEqual({ code: "00126380" });
+    await expect(
+      upsertCorporations({ codes: ["00126380", "00164779"] }),
+    ).rejects.toThrow("서버 응답 형식이 API 명세와 다릅니다.");
   });
 
   it("기본 정보 수정 후 새 info API에 줄 단위 배열을 저장한다", async () => {

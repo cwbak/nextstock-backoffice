@@ -11,22 +11,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { FieldGroup } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
 import { corporationKeys } from "@/data-access/queries/corporations/keys";
-import { upsertCorporation } from "@/data-access/queries/corporations/mutations";
+import { upsertCorporations } from "@/data-access/queries/corporations/mutations";
 import {
-  corporationUpsertPayloadSchema,
-  type CorporationUpsertPayload,
+  corporationUpsertFormSchema,
+  type CorporationUpsertFormValues,
 } from "@/data-access/schemas/corporation";
+import { CorporationCodesField } from "@/features/corporations/components/corporation-codes-field";
 
 interface CorporationUpsertDialogProps {
   onOpenChange: (open: boolean) => void;
@@ -49,25 +43,27 @@ function CorporationUpsertForm({
     handleSubmit,
     register,
     setError,
-  } = useForm<CorporationUpsertPayload>({
-    defaultValues: { code: "" },
+  } = useForm<CorporationUpsertFormValues>({
+    defaultValues: { codes: "" },
   });
   const mutation = useMutation({
-    mutationFn: upsertCorporation,
-    onSuccess: async () => {
+    mutationFn: upsertCorporations,
+    onSettled: async (_data, error) => {
       await queryClient.invalidateQueries({ queryKey: corporationKeys.all });
-      onSaved();
+      if (!error) {
+        onSaved();
+      }
     },
   });
 
   const submitForm = handleSubmit((values) => {
     clearErrors();
-    const result = corporationUpsertPayloadSchema.safeParse(values);
+    const result = corporationUpsertFormSchema.safeParse(values);
 
     if (!result.success) {
       for (const issue of result.error.issues) {
-        if (issue.path[0] === "code") {
-          setError("code", { message: issue.message });
+        if (issue.path[0] === "codes") {
+          setError("codes", { message: issue.message });
         }
       }
       return;
@@ -83,24 +79,17 @@ function CorporationUpsertForm({
       onSubmit={(event) => void submitForm(event)}
     >
       <FieldGroup>
-        <Field data-invalid={Boolean(errors.code)}>
-          <FieldLabel htmlFor="upsert-corporation-code">
-            DART 법인 코드
-          </FieldLabel>
-          <Input
-            aria-invalid={Boolean(errors.code)}
-            id="upsert-corporation-code"
-            inputMode="numeric"
-            maxLength={8}
-            placeholder="00126380"
-            {...register("code")}
-          />
-          <FieldDescription>숫자 8자리</FieldDescription>
-          <FieldError errors={[errors.code]} />
-        </Field>
+        <CorporationCodesField
+          disabled={mutation.isPending}
+          errorMessage={errors.codes?.message}
+          registration={register("codes")}
+        />
       </FieldGroup>
       {mutation.isError ? (
-        <MutationErrorAlert message={getErrorMessage(mutation.error)} />
+        <MutationErrorAlert
+          message={`${getErrorMessage(mutation.error)} 오류 전에 처리된 법인은 저장되었을 수 있습니다. 목록을 확인해 주세요.`}
+          title="법인 생성·갱신을 완료하지 못했습니다"
+        />
       ) : null}
       <DialogFooter>
         <Button
@@ -130,8 +119,8 @@ export function CorporationUpsertDialog({
         <DialogHeader>
           <DialogTitle>법인 생성·갱신</DialogTitle>
           <DialogDescription>
-            DART 법인 코드를 입력하면 기업개황을 조회해 법인을 생성하거나 최신
-            기본정보로 갱신합니다. 기존 부가 정보는 유지됩니다.
+            DART 법인 코드를 여러 개 입력하면 각 기업개황을 조회해 법인을
+            생성하거나 최신 기본정보로 갱신합니다. 기존 부가 정보는 유지됩니다.
           </DialogDescription>
         </DialogHeader>
         {open ? (

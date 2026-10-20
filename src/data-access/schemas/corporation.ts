@@ -38,7 +38,18 @@ export const corporationListSchema = z.array(corporationSchema);
 
 export const corporationUpsertPayloadSchema = z
   .object({
-    code: corporationCodeSchema,
+    codes: z
+      .array(corporationCodeSchema)
+      .min(1, "법인 코드를 하나 이상 입력해 주세요."),
+  })
+  .strict();
+
+export const corporationUpsertFormSchema = z
+  .object({
+    codes: z
+      .string()
+      .transform((value) => value.split(/[\s,]+/u).filter(Boolean))
+      .pipe(corporationUpsertPayloadSchema.shape.codes),
   })
   .strict();
 
@@ -116,6 +127,9 @@ export type CorporationInfo = z.infer<typeof corporationInfoSchema>;
 export type Corporation = z.infer<typeof corporationSchema>;
 export type CorporationUpsertPayload = z.infer<
   typeof corporationUpsertPayloadSchema
+>;
+export type CorporationUpsertFormValues = z.input<
+  typeof corporationUpsertFormSchema
 >;
 export type CorporationSyncResult = z.infer<typeof corporationSyncResultSchema>;
 export type CorporationFormValues = z.infer<typeof corporationFormSchema>;
