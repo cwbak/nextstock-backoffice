@@ -203,6 +203,7 @@ export function mockSectorApi(initial: ReadonlyArray<Sector>) {
         const sector = {
           ...payload,
           isLeaf: id === null ? false : (sectors.get(id)?.isLeaf ?? false),
+          isEmpty: id === null ? true : (sectors.get(id)?.isEmpty ?? true),
         };
         sectors.set(sector.id, sector);
         return reply(sector, method === "POST" ? 201 : 200);

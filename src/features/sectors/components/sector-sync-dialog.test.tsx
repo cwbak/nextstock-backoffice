@@ -18,15 +18,64 @@ import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 import { mockSectorApi } from "@/test/mocks/sector-api";
 
 const initial: Sector[] = [
-  { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
-  { id: 42, name: "반도체", depth: "middle", parentId: 10, isLeaf: false },
-  { id: 99, name: "수동 섹터", depth: "major", parentId: null, isLeaf: false },
+  {
+    id: 10,
+    name: "기술",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 42,
+    name: "반도체",
+    depth: "middle",
+    parentId: 10,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 99,
+    name: "수동 섹터",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
 ];
 const latest: Sector[] = [
-  { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
-  { id: 42, name: "반도체 부품", depth: "middle", parentId: 10, isLeaf: false },
-  { id: 103, name: "장비", depth: "minor", parentId: 42, isLeaf: false },
-  { id: 104, name: "설계", depth: "minor", parentId: 42, isLeaf: false },
+  {
+    id: 10,
+    name: "기술",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 42,
+    name: "반도체 부품",
+    depth: "middle",
+    parentId: 10,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 103,
+    name: "장비",
+    depth: "minor",
+    parentId: 42,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 104,
+    name: "설계",
+    depth: "minor",
+    parentId: 42,
+    isLeaf: false,
+    isEmpty: false,
+  },
 ];
 
 function renderPage() {

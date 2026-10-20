@@ -12,6 +12,7 @@ import { SectorDepthBadge } from "@/features/sectors/components/sector-depth-bad
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
 import { SectorRowActions } from "@/features/sectors/components/sector-row-actions";
 import { SectorName } from "@/features/sectors/components/sector-name";
+import { SectorParentPathButton } from "@/features/sectors/components/sector-parent-path-button";
 import {
   sectorUiActions,
   useSectorUiStore,
@@ -50,14 +51,7 @@ function SectorTableRow({
         <SectorDepthBadge depth={row.sector.depth} />
       </TableCell>
       <TableCell className="overflow-hidden text-muted-foreground">
-        <span
-          className="block truncate"
-          title={row.path.slice(0, -1).join(" › ")}
-        >
-          {row.ancestorIds.length
-            ? row.path.slice(0, -1).join(" › ")
-            : "최상위 섹터"}
-        </span>
+        <SectorParentPathButton row={row} />
       </TableCell>
       <TableCell className="text-right tabular-nums">
         {row.descendantCount.toLocaleString("ko-KR")}

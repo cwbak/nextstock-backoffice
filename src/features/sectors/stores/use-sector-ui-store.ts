@@ -40,6 +40,13 @@ export const sectorUiActions = {
     }),
   selectSector: (selectedSectorId: number) =>
     useSectorUiStore.setState({ selectedSectorId }),
+  openParentPath: (ancestorIds: ReadonlyArray<number>) =>
+    useSectorUiStore.setState({
+      browserView: "all",
+      selectedMajorId: ancestorIds[0] ?? null,
+      selectedMiddleId: ancestorIds[1] ?? null,
+      selectedSectorId: ancestorIds.at(-1) ?? null,
+    }),
   resetBrowser: () =>
     useSectorUiStore.setState({
       browserView: "all",

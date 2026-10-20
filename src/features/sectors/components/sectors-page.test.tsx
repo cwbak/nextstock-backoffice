@@ -16,10 +16,38 @@ import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 import { mockSectorApi } from "@/test/mocks/sector-api";
 
 const sectors: Sector[] = [
-  { id: 1, name: "기술", depth: "major", parentId: null, isLeaf: false },
-  { id: 2, name: "반도체", depth: "middle", parentId: 1, isLeaf: false },
-  { id: 3, name: "장비", depth: "minor", parentId: 2, isLeaf: false },
-  { id: 4, name: "금융", depth: "major", parentId: null, isLeaf: false },
+  {
+    id: 1,
+    name: "기술",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 2,
+    name: "반도체",
+    depth: "middle",
+    parentId: 1,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 3,
+    name: "장비",
+    depth: "minor",
+    parentId: 2,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 4,
+    name: "금융",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
 ];
 
 function renderPage(view: SectorView = "all") {
@@ -72,13 +100,21 @@ describe("SectorsPage", () => {
 
   it("가구·가스수입의 실제 정수 ID 응답을 오류 없이 표시한다", async () => {
     mockSectorApi([
-      { id: 237, name: "가구", depth: "minor", parentId: 145, isLeaf: false },
+      {
+        id: 237,
+        name: "가구",
+        depth: "minor",
+        parentId: 145,
+        isLeaf: false,
+        isEmpty: false,
+      },
       {
         id: 385,
         name: "가스수입",
         depth: "middle",
         parentId: 255,
         isLeaf: false,
+        isEmpty: false,
       },
     ]);
     renderPage("minor");
@@ -150,6 +186,7 @@ describe("SectorsPage", () => {
       depth: "middle",
       parentId: 1,
       isLeaf: false,
+      isEmpty: true,
     });
   });
 
@@ -184,6 +221,7 @@ describe("SectorsPage", () => {
       depth: "major",
       parentId: null,
       isLeaf: false,
+      isEmpty: false,
     });
   });
 
@@ -204,6 +242,7 @@ describe("SectorsPage", () => {
       depth: "middle",
       parentId: 4,
       isLeaf: false,
+      isEmpty: false,
     });
     fireEvent.click(screen.getByRole("button", { name: "저장" }));
     expect(
@@ -247,6 +286,7 @@ describe("SectorsPage", () => {
       depth: "minor",
       parentId: 2,
       isLeaf: false,
+      isEmpty: true,
     });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
@@ -263,6 +303,7 @@ describe("SectorsPage", () => {
       depth: "middle",
       parentId: 1,
       isLeaf: false,
+      isEmpty: false,
     });
     fireEvent.click(edit);
     const name = await screen.findByRole("textbox", { name: "섹터명" });
@@ -297,6 +338,7 @@ describe("SectorsPage", () => {
       depth: "middle",
       parentId: 4,
       isLeaf: false,
+      isEmpty: false,
     });
     expect(
       api.fetchMock.mock.calls.some(
@@ -321,6 +363,7 @@ describe("SectorsPage", () => {
       depth: "middle",
       parentId: 1,
       isLeaf: false,
+      isEmpty: false,
     });
     fireEvent.click(screen.getByRole("button", { name: "반도체 섹터 수정" }));
     await waitFor(() =>
@@ -419,7 +462,14 @@ describe("SectorsPage", () => {
 
   it("ID 입력을 요구하고 ID와 부모 ID를 숫자로 저장한다", async () => {
     const api = mockSectorApi([
-      { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
+      {
+        id: 10,
+        name: "기술",
+        depth: "major",
+        parentId: null,
+        isLeaf: false,
+        isEmpty: false,
+      },
     ]);
     renderPage();
     fireEvent.click(
@@ -456,6 +506,7 @@ describe("SectorsPage", () => {
       depth: "middle",
       parentId: 10,
       isLeaf: false,
+      isEmpty: true,
     });
   });
 

@@ -14,13 +14,21 @@ describe("sector queries", () => {
 
   it("실제 정수 응답 형식으로 목록과 단건을 조회한다", async () => {
     const sectors: Sector[] = [
-      { id: 237, name: "가구", depth: "minor", parentId: 145, isLeaf: false },
+      {
+        id: 237,
+        name: "가구",
+        depth: "minor",
+        parentId: 145,
+        isLeaf: false,
+        isEmpty: false,
+      },
       {
         id: 385,
         name: "가스수입",
         depth: "middle",
         parentId: 255,
         isLeaf: false,
+        isEmpty: false,
       },
     ];
     const api = mockSectorApi(sectors);
@@ -61,8 +69,22 @@ describe("sector queries", () => {
 
   it("섹터 종목을 공개 API에서 조회하고 섹터별로 캐시를 분리한다", async () => {
     const api = mockSectorApi([
-      { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
-      { id: 42, name: "반도체", depth: "middle", parentId: 10, isLeaf: false },
+      {
+        id: 10,
+        name: "기술",
+        depth: "major",
+        parentId: null,
+        isLeaf: false,
+        isEmpty: false,
+      },
+      {
+        id: 42,
+        name: "반도체",
+        depth: "middle",
+        parentId: 10,
+        isLeaf: false,
+        isEmpty: false,
+      },
     ]);
     const stocks = [{ code: "005930", name: "삼성전자" }];
     api.stocks.set(10, stocks);

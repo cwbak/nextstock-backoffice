@@ -14,13 +14,21 @@ import {
 describe("sector schemas", () => {
   it("실제 목록 응답의 정수 ID와 부모 ID를 검증한다", () => {
     const response = [
-      { id: 237, name: "가구", depth: "minor", parentId: 145, isLeaf: true },
+      {
+        id: 237,
+        name: "가구",
+        depth: "minor",
+        parentId: 145,
+        isLeaf: true,
+        isEmpty: false,
+      },
       {
         id: 385,
         name: "가스수입",
         depth: "middle",
         parentId: 255,
         isLeaf: false,
+        isEmpty: false,
       },
     ];
     expect(sectorListSchema.parse(response)).toEqual(response);
@@ -31,6 +39,7 @@ describe("sector schemas", () => {
         depth: "major",
         parentId: null,
         isLeaf: false,
+        isEmpty: false,
       }).parentId,
     ).toBeNull();
   });
@@ -67,6 +76,7 @@ describe("sector schemas", () => {
           depth: "major",
           parentId: null,
           isLeaf: false,
+          isEmpty: false,
         }).success,
       ).toBe(false);
       expect(
@@ -84,6 +94,7 @@ describe("sector schemas", () => {
           depth: "middle",
           parentId: id,
           isLeaf: false,
+          isEmpty: false,
         }).success,
       ).toBe(id === null);
       expect(
@@ -117,9 +128,40 @@ describe("sector schemas", () => {
         depth: "middle",
         parentId: 10,
         isLeaf,
+        isEmpty: false,
       }).isLeaf,
     ).toBe(isLeaf);
   });
+
+  it.each([true, false])("isEmpty 응답 값 %s를 그대로 유지한다", (isEmpty) => {
+    expect(
+      sectorSchema.parse({
+        id: 42,
+        name: "반도체",
+        depth: "middle",
+        parentId: 10,
+        isLeaf: false,
+        isEmpty,
+      }).isEmpty,
+    ).toBe(isEmpty);
+  });
+
+  it.each([undefined, null, 1, "true"])(
+    "누락되거나 boolean이 아닌 isEmpty %s를 거부한다",
+    (isEmpty) => {
+      const result = sectorSchema.safeParse({
+        id: 42,
+        name: "반도체",
+        depth: "middle",
+        parentId: 10,
+        isLeaf: false,
+        isEmpty,
+      });
+      expect(result.success).toBe(false);
+      if (!result.success)
+        expect(result.error.issues[0]?.path).toEqual(["isEmpty"]);
+    },
+  );
 
   it.each([undefined, null, 1, "true"])(
     "누락되거나 boolean이 아닌 isLeaf %s를 거부한다",
@@ -131,22 +173,26 @@ describe("sector schemas", () => {
           depth: "middle",
           parentId: 10,
           isLeaf,
+          isEmpty: false,
         }).success,
       ).toBe(false);
     },
   );
 
-  it("읽기 전용 isLeaf를 생성·수정 요청 필드로 허용하지 않는다", () => {
-    const payload = {
-      id: 42,
-      name: "반도체",
-      depth: "middle",
-      parentId: 10,
-      isLeaf: true,
-    };
-    expect(sectorCreatePayloadSchema.safeParse(payload).success).toBe(false);
-    expect(sectorUpdatePayloadSchema.safeParse(payload).success).toBe(false);
-  });
+  it.each(["isLeaf", "isEmpty"])(
+    "읽기 전용 %s를 생성·수정 요청 필드로 허용하지 않는다",
+    (field) => {
+      const payload = {
+        id: 42,
+        name: "반도체",
+        depth: "middle",
+        parentId: 10,
+        [field]: true,
+      };
+      expect(sectorCreatePayloadSchema.safeParse(payload).success).toBe(false);
+      expect(sectorUpdatePayloadSchema.safeParse(payload).success).toBe(false);
+    },
+  );
 
   it.each([
     { name: "기술", depth: "major", parentId: 1 },

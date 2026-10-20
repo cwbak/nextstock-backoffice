@@ -15,13 +15,62 @@ import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 import { mockSectorApi } from "@/test/mocks/sector-api";
 
 const sectors: Sector[] = [
-  { id: 1, name: "기술", depth: "major", parentId: null, isLeaf: false },
-  { id: 2, name: "반도체", depth: "middle", parentId: 1, isLeaf: false },
-  { id: 3, name: "장비", depth: "minor", parentId: 2, isLeaf: true },
-  { id: 4, name: "금융", depth: "major", parentId: null, isLeaf: false },
-  { id: 5, name: "은행", depth: "middle", parentId: 4, isLeaf: false },
-  { id: 6, name: "지방은행", depth: "minor", parentId: 5, isLeaf: false },
-  { id: 7, name: "소프트웨어", depth: "middle", parentId: 1, isLeaf: true },
+  {
+    id: 1,
+    name: "기술",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 2,
+    name: "반도체",
+    depth: "middle",
+    parentId: 1,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 3,
+    name: "장비",
+    depth: "minor",
+    parentId: 2,
+    isLeaf: true,
+    isEmpty: false,
+  },
+  {
+    id: 4,
+    name: "금융",
+    depth: "major",
+    parentId: null,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 5,
+    name: "은행",
+    depth: "middle",
+    parentId: 4,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 6,
+    name: "지방은행",
+    depth: "minor",
+    parentId: 5,
+    isLeaf: false,
+    isEmpty: false,
+  },
+  {
+    id: 7,
+    name: "소프트웨어",
+    depth: "middle",
+    parentId: 1,
+    isLeaf: true,
+    isEmpty: false,
+  },
 ];
 
 function renderPage() {
@@ -54,6 +103,7 @@ describe("sector views", () => {
         depth: "major",
         parentId: null,
         isLeaf: true,
+        isEmpty: false,
       },
     ]);
     renderPage();
@@ -96,6 +146,7 @@ describe("sector views", () => {
       depth: "major",
       parentId: null,
       isLeaf: true,
+      isEmpty: false,
     });
     fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
     await within(screen.getByRole("button", { name: "기술 선택" })).findByRole(
@@ -111,6 +162,7 @@ describe("sector views", () => {
       depth: "major",
       parentId: null,
       isLeaf: false,
+      isEmpty: false,
     });
     fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
     await waitFor(() =>

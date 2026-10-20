@@ -1,4 +1,4 @@
-import type { Ref } from "react";
+import { useEffect, useRef, type Ref } from "react";
 import { ChevronRightIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,14 +21,17 @@ function SectorHierarchyRow({
   selected,
   onSelect,
   controls,
+  rowRef,
 }: {
   row: SectorRow;
   selected: boolean;
   onSelect: (id: number) => void;
   controls: string | undefined;
+  rowRef: Ref<HTMLLIElement> | undefined;
 }) {
   return (
     <li
+      ref={rowRef}
       className={cn(
         "flex min-w-0 items-center gap-1 border-b p-2 last:border-b-0",
         selected && "bg-accent",
@@ -85,6 +88,24 @@ export function SectorHierarchyColumn({
   selectedId,
 }: SectorHierarchyColumnProps) {
   const titleId = `sector-${depth}-heading`;
+  const listRef = useRef<HTMLDivElement>(null);
+  const selectedRowRef = useRef<HTMLLIElement>(null);
+
+  useEffect(() => {
+    const list = listRef.current;
+    const row = selectedRowRef.current;
+    if (!list || !row) return;
+    const bounds = list.getBoundingClientRect();
+    const target = row.getBoundingClientRect();
+    const top =
+      target.top < bounds.top
+        ? target.top - bounds.top
+        : target.bottom > bounds.bottom
+          ? target.bottom - bounds.bottom
+          : 0;
+    if (top) list.scrollBy({ top });
+  }, [rows, selectedId]);
+
   return (
     <section
       aria-labelledby={titleId}
@@ -109,6 +130,7 @@ export function SectorHierarchyColumn({
       <div
         className="h-[min(45svh,28rem)] overflow-y-auto"
         id={`sector-${depth}-list`}
+        ref={listRef}
       >
         {rows.length ? (
           <ul aria-label={`${sectorDepthLabels[depth]} 목록`}>
@@ -119,6 +141,9 @@ export function SectorHierarchyColumn({
                 onSelect={onSelect}
                 row={row}
                 selected={selectedId === row.sector.id}
+                rowRef={
+                  selectedId === row.sector.id ? selectedRowRef : undefined
+                }
               />
             ))}
           </ul>

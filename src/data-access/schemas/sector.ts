@@ -19,6 +19,7 @@ export const sectorSchema = z
     depth: sectorDepthSchema,
     parentId: sectorIdSchema.nullable(),
     isLeaf: z.boolean(),
+    isEmpty: z.boolean(),
   })
   .strict();
 

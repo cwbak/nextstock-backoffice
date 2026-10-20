@@ -18,7 +18,14 @@ describe("sector mutations", () => {
 
   it("ID와 부모 ID를 JSON 숫자로 보내고 수정 본문에서는 ID를 제외한다", async () => {
     const api = mockSectorApi([
-      { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
+      {
+        id: 10,
+        name: "기술",
+        depth: "major",
+        parentId: null,
+        isLeaf: false,
+        isEmpty: false,
+      },
     ]);
     await expect(
       createSector({ id: 42, name: " 반도체 ", depth: "middle", parentId: 10 }),
@@ -28,6 +35,7 @@ describe("sector mutations", () => {
       depth: "middle",
       parentId: 10,
       isLeaf: false,
+      isEmpty: true,
     });
     expect(requestBody(api.fetchMock.mock.calls[0]?.[1]?.body)).toEqual({
       id: 42,
@@ -43,6 +51,7 @@ describe("sector mutations", () => {
       depth: "major",
       parentId: null,
       isLeaf: false,
+      isEmpty: true,
     });
     expect(api.fetchMock.mock.calls[1]?.[0]).toBe("/admin/sectors/42");
     expect(api.fetchMock.mock.calls[1]?.[1]?.method).toBe("PUT");
@@ -82,7 +91,14 @@ describe("sector mutations", () => {
 
   it("동기화를 본문 없이 한 번 등록하고 202 작업 응답을 반환한다", async () => {
     const api = mockSectorApi([
-      { id: 10, name: "기술", depth: "major", parentId: null, isLeaf: false },
+      {
+        id: 10,
+        name: "기술",
+        depth: "major",
+        parentId: null,
+        isLeaf: false,
+        isEmpty: false,
+      },
     ]);
     await expect(synchronizeSectors()).resolves.toEqual(sectorSyncRegistration);
     expect(api.fetchMock).toHaveBeenCalledTimes(1);
