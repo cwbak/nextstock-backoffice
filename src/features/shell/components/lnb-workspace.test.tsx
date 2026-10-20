@@ -38,7 +38,6 @@ import {
 import { routeTree } from "@/routeTree.gen";
 const theme = {
   id: 449,
-  parentThemeId: null,
   name: "2차전지(생산)",
   createdAt: "2026-08-09T10:00:00+09:00",
   updatedAt: "2026-08-09T10:00:00+09:00",

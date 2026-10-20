@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { PlusIcon, RefreshCwIcon } from "lucide-react";
 
 import { DataPageHeader } from "@/components/common/data-page-header";
 import { DataTableToolbar } from "@/components/common/data-table-controls";
@@ -12,8 +11,6 @@ import {
   type DataTableState,
   useDataTableState,
 } from "@/components/common/use-data-table-state";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import {
   themesQueryOptions,
   themeStocksQueryOptions,
@@ -26,6 +23,8 @@ import { ThemeStockCreateDialog } from "@/features/themes/components/theme-stock
 import { ThemeStockDeleteDialog } from "@/features/themes/components/theme-stock-delete-dialog";
 import { ThemeStocksPanel } from "@/features/themes/components/theme-stocks-panel";
 import { ThemesEmptyState } from "@/features/themes/components/themes-empty-state";
+import { ThemesPageActions } from "@/features/themes/components/themes-page-actions";
+import { ThemeSyncDialog } from "@/features/themes/components/theme-sync-dialog";
 
 const initialTableState: DataTableState = {
   page: 1,
@@ -56,10 +55,6 @@ export function ThemesPage() {
     (selectedThemeId === null ? undefined : themesById.get(selectedThemeId)) ??
     themesQuery.data[0] ??
     null;
-  const selectedParentTheme =
-    selectedTheme?.parentThemeId === null || !selectedTheme
-      ? undefined
-      : themesById.get(selectedTheme.parentThemeId);
   const themeStocksQuery = useQuery({
     ...themeStocksQueryOptions(selectedTheme?.id ?? 0),
     enabled: selectedTheme !== null,
@@ -72,17 +67,11 @@ export function ThemesPage() {
     }
 
     return themesQuery.data.filter((theme) => {
-      const parentName =
-        theme.parentThemeId === null
-          ? "최상위 테마"
-          : (themesById.get(theme.parentThemeId)?.name ??
-            theme.parentThemeId.toString());
-
-      return [theme.id.toString(), theme.name, parentName].some((value) =>
+      return [theme.id.toString(), theme.name].some((value) =>
         value.toLocaleLowerCase("ko-KR").includes(query),
       );
     });
-  }, [filterQuery, themesById, themesQuery.data]);
+  }, [filterQuery, themesQuery.data]);
   const isFetching = themesQuery.isFetching || themeStocksQuery.isFetching;
 
   return (
@@ -90,32 +79,18 @@ export function ThemesPage() {
       <section className="flex flex-col gap-6 lg:h-[calc(100svh-7rem)] lg:min-h-[40rem]">
         <DataPageHeader
           actions={
-            <>
-              <Button
-                disabled={isFetching}
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  void Promise.all([
-                    themesQuery.refetch(),
-                    selectedTheme
-                      ? themeStocksQuery.refetch()
-                      : Promise.resolve(),
-                  ]);
-                }}
-              >
-                {isFetching ? (
-                  <Spinner data-icon="inline-start" />
-                ) : (
-                  <RefreshCwIcon aria-hidden="true" data-icon="inline-start" />
-                )}
-                새로고침
-              </Button>
-              <Button type="button" onClick={() => setCreateOpen(true)}>
-                <PlusIcon aria-hidden="true" data-icon="inline-start" />
-                테마 추가
-              </Button>
-            </>
+            <ThemesPageActions
+              isFetching={isFetching}
+              onCreate={() => setCreateOpen(true)}
+              onRefresh={() => {
+                void Promise.all([
+                  themesQuery.refetch(),
+                  selectedTheme
+                    ? themeStocksQuery.refetch()
+                    : Promise.resolve(),
+                ]);
+              }}
+            />
           }
           description="시스템 테마를 선택해 연결된 KR 종목을 조회합니다."
           eyebrow="Theme listing"
@@ -134,7 +109,7 @@ export function ThemesPage() {
           <>
             <DataTableToolbar
               label="테마 검색"
-              placeholder="테마 ID, 테마명, 상위 테마 검색"
+              placeholder="테마 ID, 테마명 검색"
               query={tableState.q}
               onFilterChange={updateFilterQuery}
               onQueryChange={updateQuery}
@@ -156,7 +131,6 @@ export function ThemesPage() {
                   <ThemeList
                     selectedThemeId={selectedTheme?.id ?? 0}
                     themes={filteredThemes}
-                    themesById={themesById}
                     onSelect={setSelectedThemeId}
                   />
                 )}
@@ -166,7 +140,6 @@ export function ThemesPage() {
                   onAddStock={() => setStockCreateOpen(true)}
                   error={themeStocksQuery.error}
                   isPending={themeStocksQuery.isPending}
-                  parentThemeName={selectedParentTheme?.name}
                   stocks={themeStocksQuery.data}
                   theme={selectedTheme}
                   onDeleteStock={(stock) =>
@@ -181,7 +154,6 @@ export function ThemesPage() {
       </section>
       <ThemeCreateDialog
         open={createOpen}
-        themes={themesQuery.data}
         onCreated={(theme) => {
           setSelectedThemeId(theme.id);
           setCreateOpen(false);
@@ -201,6 +173,7 @@ export function ThemesPage() {
         theme={deletingThemeStock?.theme ?? null}
         onClose={() => setDeletingThemeStock(null)}
       />
+      <ThemeSyncDialog />
     </>
   );
 }

@@ -9,26 +9,14 @@ import {
 
 const themeResponse = {
   id: 449,
-  parentThemeId: null,
   name: "2차전지(생산)",
   createdAt: "2026-08-09T10:00:00+09:00",
   updatedAt: "2026-08-09T10:00:00+09:00",
 } as const;
 
 describe("themeSchema", () => {
-  it("최상위 테마 응답을 검증한다", () => {
+  it("상위 관계가 없는 테마 응답을 검증한다", () => {
     expect(themeSchema.parse(themeResponse)).toEqual(themeResponse);
-  });
-
-  it("하위 테마의 parentThemeId를 검증한다", () => {
-    expect(
-      themeSchema.parse({
-        ...themeResponse,
-        id: 450,
-        parentThemeId: 449,
-        name: "2차전지(소재)",
-      }).parentThemeId,
-    ).toBe(449);
   });
 
   it("테마 ID가 양의 정수가 아니면 거부한다", () => {
@@ -37,24 +25,22 @@ describe("themeSchema", () => {
 });
 
 describe("themeCreatePayloadSchema", () => {
-  it("테마명을 정리하고 최상위 테마 생성 값을 검증한다", () => {
+  it("테마명을 정리하고 테마 생성 값을 검증한다", () => {
     expect(
       themeCreatePayloadSchema.parse({
         id: 500,
-        parentThemeId: null,
         name: " 신규 테마 ",
       }),
-    ).toEqual({ id: 500, parentThemeId: null, name: "신규 테마" });
+    ).toEqual({ id: 500, name: "신규 테마" });
   });
 
-  it("자기 자신을 상위 테마로 지정하면 거부한다", () => {
+  it("빈 테마명을 거부한다", () => {
     expect(() =>
       themeCreatePayloadSchema.parse({
         id: 500,
-        parentThemeId: 500,
-        name: "신규 테마",
+        name: "  ",
       }),
-    ).toThrow("상위 테마는 생성할 테마와 달라야 합니다.");
+    ).toThrow("테마명을 입력해 주세요.");
   });
 });
 

@@ -16,19 +16,18 @@ import {
 import type { KrStock } from "@/data-access/schemas/kr-stock";
 import type { Theme } from "@/data-access/schemas/theme";
 import { ThemesPage } from "@/features/themes/components/themes-page";
+import { themeSyncActions } from "@/features/themes/stores/use-theme-sync-store";
 
-const rootTheme: Theme = {
+const batteryTheme: Theme = {
   id: 449,
-  parentThemeId: null,
   name: "2차전지(생산)",
   createdAt: "2026-08-09T10:00:00+09:00",
   updatedAt: "2026-08-09T10:00:00+09:00",
 };
 
-const childTheme: Theme = {
-  ...rootTheme,
+const materialsTheme: Theme = {
+  ...batteryTheme,
   id: 450,
-  parentThemeId: rootTheme.id,
   name: "2차전지(소재)",
 };
 
@@ -57,15 +56,16 @@ function renderPage() {
     },
   });
   queryClient.setQueryData(themesQueryOptions.queryKey, [
-    rootTheme,
-    childTheme,
+    batteryTheme,
+    materialsTheme,
   ]);
-  queryClient.setQueryData(themeStocksQueryOptions(rootTheme.id).queryKey, [
+  queryClient.setQueryData(themeStocksQueryOptions(batteryTheme.id).queryKey, [
     createStock("006400", "삼성SDI"),
   ]);
-  queryClient.setQueryData(themeStocksQueryOptions(childTheme.id).queryKey, [
-    createStock("005490", "POSCO홀딩스"),
-  ]);
+  queryClient.setQueryData(
+    themeStocksQueryOptions(materialsTheme.id).queryKey,
+    [createStock("005490", "POSCO홀딩스")],
+  );
   queryClient.setQueryData(krStocksQueryOptions.queryKey, [
     createStock("006400", "삼성SDI"),
     createStock("005930", "삼성전자"),
@@ -81,7 +81,19 @@ function renderPage() {
 describe("ThemesPage", () => {
   afterEach(() => {
     cleanup();
+    themeSyncActions.setOpen(false);
     vi.restoreAllMocks();
+  });
+
+  it("동기화 버튼으로 JSON 입력 화면을 연다", () => {
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "동기화" }));
+    expect(
+      screen.getByRole("dialog", { name: "테마 동기화" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: "테마 JSON" }),
+    ).toBeInTheDocument();
   });
 
   it("테마를 선택하면 연결된 KR 종목을 표시한다", async () => {
@@ -94,7 +106,7 @@ describe("ThemesPage", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: `${childTheme.name} 테마 선택`,
+        name: `${materialsTheme.name} 테마 선택`,
       }),
     );
 
@@ -103,7 +115,7 @@ describe("ThemesPage", () => {
     });
     expect(screen.queryByText("삼성SDI")).not.toBeInTheDocument();
     expect(
-      screen.getByText(`상위 테마 · ${rootTheme.name}`),
+      screen.getByText(`시스템 테마 #${materialsTheme.id}`),
     ).toBeInTheDocument();
   });
 
@@ -117,13 +129,13 @@ describe("ThemesPage", () => {
     await waitFor(() => {
       expect(
         screen.queryByRole("button", {
-          name: `${rootTheme.name} 테마 선택`,
+          name: `${batteryTheme.name} 테마 선택`,
         }),
       ).not.toBeInTheDocument();
     });
     expect(
       screen.getByRole("button", {
-        name: `${childTheme.name} 테마 선택`,
+        name: `${materialsTheme.name} 테마 선택`,
       }),
     ).toBeInTheDocument();
   });
@@ -142,7 +154,7 @@ describe("ThemesPage", () => {
 
     expect(
       await screen.findByRole("dialog", {
-        name: `${rootTheme.name}에 기업 추가`,
+        name: `${batteryTheme.name}에 기업 추가`,
       }),
     ).toBeInTheDocument();
 

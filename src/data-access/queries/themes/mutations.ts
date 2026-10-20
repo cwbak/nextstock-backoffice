@@ -2,6 +2,7 @@ import { apiRequest, apiRequestVoid } from "@/data-access/api/client";
 import { krStockSchema, type KrStock } from "@/data-access/schemas/kr-stock";
 import {
   themeCreatePayloadSchema,
+  themeIdSchema,
   themeSchema,
   themeStockCreatePayloadSchema,
   themeStockDeletePayloadSchema,
@@ -10,6 +11,13 @@ import {
   type ThemeStockCreatePayload,
   type ThemeStockDeletePayload,
 } from "@/data-access/schemas/theme";
+
+export async function deleteTheme(themeId: number): Promise<void> {
+  const id = themeIdSchema.parse(themeId);
+  await apiRequestVoid(`/admin/themes/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
 
 export async function createTheme(payload: ThemeCreatePayload): Promise<Theme> {
   const parsedPayload = themeCreatePayloadSchema.parse(payload);

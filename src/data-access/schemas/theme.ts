@@ -7,7 +7,6 @@ export const themeIdSchema = z.number().int().positive();
 export const themeSchema = z
   .object({
     id: themeIdSchema,
-    parentThemeId: themeIdSchema.nullable(),
     name: z.string().min(1),
     createdAt: z.iso.datetime({ offset: true }),
     updatedAt: z.iso.datetime({ offset: true }),
@@ -19,14 +18,9 @@ export const themeListSchema = z.array(themeSchema);
 export const themeCreatePayloadSchema = z
   .object({
     id: themeIdSchema,
-    parentThemeId: themeIdSchema.nullable(),
     name: z.string().trim().min(1, "테마명을 입력해 주세요."),
   })
-  .strict()
-  .refine(({ id, parentThemeId }) => parentThemeId !== id, {
-    message: "상위 테마는 생성할 테마와 달라야 합니다.",
-    path: ["parentThemeId"],
-  });
+  .strict();
 
 export const themeStockFormSchema = z
   .object({

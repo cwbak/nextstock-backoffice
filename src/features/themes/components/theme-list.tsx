@@ -5,22 +5,16 @@ interface ThemeListProps {
   onSelect: (themeId: number) => void;
   selectedThemeId: number;
   themes: ReadonlyArray<Theme>;
-  themesById: ReadonlyMap<number, Theme>;
 }
 
 export function ThemeList({
   onSelect,
   selectedThemeId,
   themes,
-  themesById,
 }: ThemeListProps) {
   return (
     <ul className="max-h-[50svh] divide-y overflow-y-auto lg:h-full lg:max-h-none">
       {themes.map((theme) => {
-        const parentTheme =
-          theme.parentThemeId === null
-            ? undefined
-            : themesById.get(theme.parentThemeId);
         const isSelected = theme.id === selectedThemeId;
 
         return (
@@ -38,13 +32,6 @@ export function ThemeList({
               <span className="truncate font-medium">{theme.name}</span>
               <span className="font-mono text-xs tabular-nums text-muted-foreground">
                 #{theme.id}
-              </span>
-              <span className="col-span-2 mt-0.5 truncate text-xs text-muted-foreground">
-                {parentTheme
-                  ? `상위 테마 · ${parentTheme.name}`
-                  : theme.parentThemeId === null
-                    ? "최상위 테마"
-                    : `상위 테마 #${theme.parentThemeId}`}
               </span>
             </button>
           </li>

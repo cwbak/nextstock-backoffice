@@ -26,7 +26,6 @@ interface ThemeStocksPanelProps {
   onAddStock: () => void;
   onDeleteStock: (stock: KrStock) => void;
   onRetry: () => void;
-  parentThemeName: string | undefined;
   stocks: ReadonlyArray<KrStock> | undefined;
   theme: Theme;
 }
@@ -37,14 +36,9 @@ export function ThemeStocksPanel({
   onDeleteStock,
   isPending,
   onRetry,
-  parentThemeName,
   stocks,
   theme,
 }: ThemeStocksPanelProps) {
-  const description = parentThemeName
-    ? `상위 테마 ${parentThemeName} · 시스템 테마 #${theme.id}`
-    : `시스템 테마 #${theme.id}`;
-
   return (
     <DataTableCard
       actions={
@@ -55,7 +49,7 @@ export function ThemeStocksPanel({
       }
       className="lg:h-full lg:min-h-0"
       contentClassName="lg:min-h-0 lg:flex-1 lg:overflow-y-auto"
-      description={description}
+      description={`시스템 테마 #${theme.id}`}
       recordCount={stocks?.length ?? 0}
       title={theme.name}
     >

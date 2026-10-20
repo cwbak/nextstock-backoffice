@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createTheme,
   createThemeStock,
+  deleteTheme,
   deleteThemeStock,
 } from "@/data-access/queries/themes/mutations";
 import type { KrStock } from "@/data-access/schemas/kr-stock";
@@ -10,7 +11,6 @@ import type { Theme } from "@/data-access/schemas/theme";
 
 const theme: Theme = {
   id: 500,
-  parentThemeId: 449,
   name: "신규 테마",
   createdAt: "2026-08-10T10:00:00+09:00",
   updatedAt: "2026-08-10T10:00:00+09:00",
@@ -57,7 +57,6 @@ describe("theme mutations", () => {
     await expect(
       createTheme({
         id: 500,
-        parentThemeId: 449,
         name: " 신규 테마 ",
       }),
     ).resolves.toEqual(theme);
@@ -68,7 +67,6 @@ describe("theme mutations", () => {
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({
       id: 500,
-      parentThemeId: 449,
       name: "신규 테마",
     });
   });
@@ -87,6 +85,18 @@ describe("theme mutations", () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/admin/themes/449/stocks");
     expect(request?.method).toBe("POST");
     expect(parseRequestBody(request?.body)).toEqual({ stockCode: "005930" });
+  });
+
+  it("테마 삭제 API를 요청 본문 없이 호출한다", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await expect(deleteTheme(449)).resolves.toBeUndefined();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/admin/themes/449",
+      expect.objectContaining({ method: "DELETE" }),
+    );
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toBeUndefined();
   });
 
   it("선택한 테마에서 KR 종목 연결을 삭제한다", async () => {

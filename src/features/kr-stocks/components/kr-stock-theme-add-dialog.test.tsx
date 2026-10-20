@@ -29,14 +29,12 @@ const krStock: KrStock = {
 const themes: Theme[] = [
   {
     id: 449,
-    parentThemeId: null,
     name: "2차전지(생산)",
     createdAt: "2026-08-09T10:00:00+09:00",
     updatedAt: "2026-08-09T10:00:00+09:00",
   },
   {
     id: 450,
-    parentThemeId: 449,
     name: "2차전지(소재)",
     createdAt: "2026-08-09T10:00:00+09:00",
     updatedAt: "2026-08-09T10:00:00+09:00",
