@@ -4,6 +4,7 @@ import {
   CalendarDaysIcon,
   ChartCandlestickIcon,
   Globe2Icon,
+  FolderTreeIcon,
   NetworkIcon,
   TagsIcon,
   type LucideIcon,
@@ -16,6 +17,7 @@ export type NavigationPath =
   | "/listed-stocks"
   | "/kr-market-data"
   | "/themes"
+  | "/sectors"
   | "/calendar-events"
   | "/calendar-earnings-us"
   | "/calendar-earnings-kr";
@@ -56,6 +58,11 @@ export const navigationItems = [
     icon: TagsIcon,
     label: "테마 리스팅",
     to: "/themes",
+  },
+  {
+    icon: FolderTreeIcon,
+    label: "섹터",
+    to: "/sectors",
   },
   {
     icon: CalendarDaysIcon,

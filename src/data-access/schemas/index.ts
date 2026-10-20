@@ -9,3 +9,4 @@ export * from "@/data-access/schemas/kr-market-data";
 export * from "@/data-access/schemas/kr-stock";
 export * from "@/data-access/schemas/us-stock";
 export * from "@/data-access/schemas/theme";
+export * from "@/data-access/schemas/sector";

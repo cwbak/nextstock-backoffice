@@ -11,6 +11,7 @@ describe("navigationItems", () => {
       { label: "주식", to: "/listed-stocks" },
       { label: "KR 캔들", to: "/kr-market-data" },
       { label: "테마 리스팅", to: "/themes" },
+      { label: "섹터", to: "/sectors" },
       { label: "일정", to: "/calendar-events" },
       { label: "실적(US)", to: "/calendar-earnings-us" },
       { label: "실적(KR)", to: "/calendar-earnings-kr" },

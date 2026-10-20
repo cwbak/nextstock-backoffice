@@ -10,6 +10,12 @@ describe("getErrorMessage", () => {
     ],
     ["stock lookup failed", "KR 종목 정보를 조회하지 못했습니다."],
     ["stock not found", "KR 종목을 찾을 수 없습니다."],
+    ["sector not found", "섹터를 찾을 수 없습니다."],
+    ["parent sector not found", "상위 섹터를 찾을 수 없습니다."],
+    [
+      "sector hierarchy would form a cycle",
+      "하위 섹터를 상위로 지정할 수 없습니다. 다른 상위 섹터를 선택해 주세요.",
+    ],
     [
       "krx website stock prices lookup failed",
       "KRX 정보데이터시스템에서 전체 종목 일봉을 조회하지 못했습니다.",

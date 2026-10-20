@@ -18,6 +18,7 @@ import { Route as WorkspaceCorporationInvestmentsRouteImport } from './routes/_w
 import { Route as WorkspaceCorporationsRouteImport } from './routes/_workspace.corporations'
 import { Route as WorkspaceKrMarketDataRouteImport } from './routes/_workspace.kr-market-data'
 import { Route as WorkspaceListedStocksRouteImport } from './routes/_workspace.listed-stocks'
+import { Route as WorkspaceSectorsRouteImport } from './routes/_workspace.sectors'
 import { Route as WorkspaceThemesRouteImport } from './routes/_workspace.themes'
 import { Route as WorkspaceUsStocksRouteImport } from './routes/_workspace.us-stocks'
 
@@ -68,6 +69,11 @@ const WorkspaceListedStocksRoute = WorkspaceListedStocksRouteImport.update({
   path: '/listed-stocks',
   getParentRoute: () => WorkspaceRoute,
 } as any)
+const WorkspaceSectorsRoute = WorkspaceSectorsRouteImport.update({
+  id: '/sectors',
+  path: '/sectors',
+  getParentRoute: () => WorkspaceRoute,
+} as any)
 const WorkspaceThemesRoute = WorkspaceThemesRouteImport.update({
   id: '/themes',
   path: '/themes',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/corporations': typeof WorkspaceCorporationsRoute
   '/kr-market-data': typeof WorkspaceKrMarketDataRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
+  '/sectors': typeof WorkspaceSectorsRoute
   '/themes': typeof WorkspaceThemesRoute
   '/us-stocks': typeof WorkspaceUsStocksRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/corporations': typeof WorkspaceCorporationsRoute
   '/kr-market-data': typeof WorkspaceKrMarketDataRoute
   '/listed-stocks': typeof WorkspaceListedStocksRoute
+  '/sectors': typeof WorkspaceSectorsRoute
   '/themes': typeof WorkspaceThemesRoute
   '/us-stocks': typeof WorkspaceUsStocksRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/_workspace/corporations': typeof WorkspaceCorporationsRoute
   '/_workspace/kr-market-data': typeof WorkspaceKrMarketDataRoute
   '/_workspace/listed-stocks': typeof WorkspaceListedStocksRoute
+  '/_workspace/sectors': typeof WorkspaceSectorsRoute
   '/_workspace/themes': typeof WorkspaceThemesRoute
   '/_workspace/us-stocks': typeof WorkspaceUsStocksRoute
 }
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/corporations'
     | '/kr-market-data'
     | '/listed-stocks'
+    | '/sectors'
     | '/themes'
     | '/us-stocks'
   fileRoutesByTo: FileRoutesByTo
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/corporations'
     | '/kr-market-data'
     | '/listed-stocks'
+    | '/sectors'
     | '/themes'
     | '/us-stocks'
   id:
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/_workspace/corporations'
     | '/_workspace/kr-market-data'
     | '/_workspace/listed-stocks'
+    | '/_workspace/sectors'
     | '/_workspace/themes'
     | '/_workspace/us-stocks'
   fileRoutesById: FileRoutesById
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceListedStocksRouteImport
       parentRoute: typeof WorkspaceRoute
     }
+    '/_workspace/sectors': {
+      id: '/_workspace/sectors'
+      path: '/sectors'
+      fullPath: '/sectors'
+      preLoaderRoute: typeof WorkspaceSectorsRouteImport
+      parentRoute: typeof WorkspaceRoute
+    }
     '/_workspace/themes': {
       id: '/_workspace/themes'
       path: '/themes'
@@ -252,6 +271,7 @@ interface WorkspaceRouteChildren {
   WorkspaceCorporationsRoute: typeof WorkspaceCorporationsRoute
   WorkspaceKrMarketDataRoute: typeof WorkspaceKrMarketDataRoute
   WorkspaceListedStocksRoute: typeof WorkspaceListedStocksRoute
+  WorkspaceSectorsRoute: typeof WorkspaceSectorsRoute
   WorkspaceThemesRoute: typeof WorkspaceThemesRoute
   WorkspaceUsStocksRoute: typeof WorkspaceUsStocksRoute
 }
@@ -264,6 +284,7 @@ const WorkspaceRouteChildren: WorkspaceRouteChildren = {
   WorkspaceCorporationsRoute: WorkspaceCorporationsRoute,
   WorkspaceKrMarketDataRoute: WorkspaceKrMarketDataRoute,
   WorkspaceListedStocksRoute: WorkspaceListedStocksRoute,
+  WorkspaceSectorsRoute: WorkspaceSectorsRoute,
   WorkspaceThemesRoute: WorkspaceThemesRoute,
   WorkspaceUsStocksRoute: WorkspaceUsStocksRoute,
 }

@@ -31,6 +31,7 @@ import { equityInvestmentsQueryOptions } from "@/data-access/queries/equity-inve
 import { corporationsQueryOptions } from "@/data-access/queries/corporations/queries";
 import { krStocksQueryOptions } from "@/data-access/queries/kr-stocks/queries";
 import { usStocksQueryOptions } from "@/data-access/queries/us-stocks/queries";
+import { sectorsQueryOptions } from "@/data-access/queries/sectors/queries";
 import {
   themesQueryOptions,
   themeStocksQueryOptions,
@@ -59,6 +60,7 @@ function renderWorkspace() {
   queryClient.setQueryData(equityInvestmentsQueryOptions.queryKey, []);
   queryClient.setQueryData(krStocksQueryOptions.queryKey, []);
   queryClient.setQueryData(usStocksQueryOptions.queryKey, []);
+  queryClient.setQueryData(sectorsQueryOptions.queryKey, []);
   queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
   queryClient.setQueryData(usCalendarEarningsQueryOptions.queryKey, []);
   queryClient.setQueryData(krCalendarEarningsQueryOptions.queryKey, []);
@@ -98,6 +100,19 @@ describe("LnbWorkspace", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+  });
+
+  it("테마 리스팅 다음 섹터 메뉴에서 관리 화면으로 이동한다", async () => {
+    const router = renderWorkspace();
+    const sectorLink = await screen.findByRole("link", { name: "섹터" });
+    fireEvent.click(sectorLink);
+    expect(
+      await screen.findByRole("heading", { name: "섹터 관리" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "섹터 추가" }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/sectors");
   });
 
   it("LNB를 왕복해도 각 페이지의 입력 중 상태를 유지한다", async () => {

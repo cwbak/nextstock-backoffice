@@ -14,6 +14,7 @@ import { KrStocksPage } from "@/features/kr-stocks";
 import { KrMarketDataPage } from "@/features/kr-market-data";
 import { UsStocksPage } from "@/features/us-stocks";
 import { ThemesPage } from "@/features/themes";
+import { SectorsPage } from "@/features/sectors";
 import { isNavigationPath } from "@/features/shell/navigation-items";
 
 export function LnbWorkspace() {
@@ -74,6 +75,14 @@ export function LnbWorkspace() {
       >
         <Suspense fallback={<ManagementPageLoading label="테마 리스팅" />}>
           <ThemesPage />
+        </Suspense>
+      </Activity>
+      <Activity
+        mode={activePath === "/sectors" ? "visible" : "hidden"}
+        name="Sectors workspace"
+      >
+        <Suspense fallback={<ManagementPageLoading label="섹터 관리" />}>
+          <SectorsPage />
         </Suspense>
       </Activity>
       <Activity
