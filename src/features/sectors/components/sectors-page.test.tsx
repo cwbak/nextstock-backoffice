@@ -9,6 +9,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Sector } from "@/data-access/schemas/sector";
 
+import type { SectorView } from "@/features/sectors/sector-browser";
+
 import { SectorsPage } from "@/features/sectors/components/sectors-page";
 import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
 import { mockSectorApi } from "@/test/mocks/sector-api";
@@ -20,7 +22,8 @@ const sectors: Sector[] = [
   { id: 4, name: "금융", depth: "major", parentId: null },
 ];
 
-function renderPage() {
+function renderPage(view: SectorView = "all") {
+  sectorUiActions.setBrowserView(view);
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
@@ -37,12 +40,13 @@ describe("SectorsPage", () => {
     sectorUiActions.closeEditor();
     sectorUiActions.closeDelete();
     sectorUiActions.closeSync();
+    sectorUiActions.resetBrowser();
     vi.restoreAllMocks();
   });
 
   it("계층 경로를 표시하고 섹터명과 상위 경로로 검색한다", async () => {
     mockSectorApi(sectors);
-    renderPage();
+    renderPage("minor");
     expect(
       screen.getByRole("status", { name: "섹터 목록 불러오는 중" }),
     ).toBeInTheDocument();
@@ -64,9 +68,6 @@ describe("SectorsPage", () => {
     expect(
       screen.getByRole("button", { name: "장비 섹터 수정" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "반도체 섹터 수정" }),
-    ).toBeInTheDocument();
   });
 
   it("가구·가스수입의 실제 정수 ID 응답을 오류 없이 표시한다", async () => {
@@ -74,27 +75,28 @@ describe("SectorsPage", () => {
       { id: 237, name: "가구", depth: "minor", parentId: 145 },
       { id: 385, name: "가스수입", depth: "middle", parentId: 255 },
     ]);
-    renderPage();
+    renderPage("minor");
     expect(
       await screen.findByRole("button", { name: "가구 섹터 수정" }),
     ).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "237" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: "middle" }));
     expect(
       screen.getByRole("button", { name: "가스수입 섹터 수정" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("cell", { name: "237" })).toBeInTheDocument();
     expect(
       screen.queryByText("섹터를 불러오지 못했습니다"),
     ).not.toBeInTheDocument();
   });
 
   it.each([
-    ["대분류", ["금융", "기술"]],
-    ["중분류", ["반도체"]],
-    ["소분류", ["장비"]],
-  ])("%s로 검색하면 해당 단계의 섹터만 표시한다", async (keyword, names) => {
+    ["major", "대분류", ["금융", "기술"]],
+    ["middle", "중분류", ["반도체"]],
+    ["minor", "소분류", ["장비"]],
+  ] as const)("%s에서 분류명으로 검색한다", async (view, keyword, names) => {
     mockSectorApi(sectors);
-    renderPage();
-    await screen.findByRole("button", { name: "기술 섹터 수정" });
+    renderPage(view);
+    await screen.findByRole("button", { name: `${names[0]} 섹터 수정` });
     fireEvent.change(screen.getByRole("searchbox", { name: "섹터 검색" }), {
       target: { value: keyword },
     });
@@ -109,8 +111,8 @@ describe("SectorsPage", () => {
 
   it("중분류 생성에는 대분류 부모를 요구하고 요청에 분류를 포함한다", async () => {
     const api = mockSectorApi(sectors);
-    renderPage();
-    await screen.findByRole("button", { name: "기술 섹터 수정" });
+    renderPage("middle");
+    await screen.findByRole("button", { name: "반도체 섹터 수정" });
     fireEvent.click(screen.getByRole("button", { name: "섹터 추가" }));
     fireEvent.change(screen.getByRole("textbox", { name: "섹터명" }), {
       target: { value: "소프트웨어" },
@@ -146,7 +148,7 @@ describe("SectorsPage", () => {
 
   it("하위가 없는 섹터의 분류 변경 시 기존 부모를 비우고 대분류에는 null을 저장한다", async () => {
     const api = mockSectorApi(sectors);
-    renderPage();
+    renderPage("minor");
     fireEvent.click(
       await screen.findByRole("button", { name: "장비 섹터 수정" }),
     );
@@ -206,7 +208,7 @@ describe("SectorsPage", () => {
 
   it("하위 섹터 추가 시 부모를 미리 선택하고 저장 후 목록을 갱신한다", async () => {
     const api = mockSectorApi(sectors);
-    renderPage();
+    renderPage("middle");
     fireEvent.click(
       await screen.findByRole("button", { name: "반도체 하위 섹터 추가" }),
     );
@@ -223,6 +225,10 @@ describe("SectorsPage", () => {
       target: { value: "5" },
     });
     fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByRole("radio", { name: "minor" }));
     expect(
       await screen.findByRole("button", { name: "설계 섹터 수정" }),
     ).toBeInTheDocument();
@@ -237,7 +243,7 @@ describe("SectorsPage", () => {
 
   it("최신 단건을 조회하고 하위가 있으면 분류를 고정하며 같은 단계의 부모로 이동한다", async () => {
     const api = mockSectorApi(sectors);
-    renderPage();
+    renderPage("middle");
     const edit = await screen.findByRole("button", {
       name: "반도체 섹터 수정",
     });
@@ -289,7 +295,7 @@ describe("SectorsPage", () => {
 
   it("수정 창을 다시 열 때 캐시가 신선해도 단건을 다시 조회한다", async () => {
     const api = mockSectorApi(sectors);
-    renderPage();
+    renderPage("middle");
     fireEvent.click(
       await screen.findByRole("button", { name: "반도체 섹터 수정" }),
     );
@@ -424,6 +430,10 @@ describe("SectorsPage", () => {
     fireEvent.click(screen.getByRole("combobox", { name: "상위 섹터" }));
     fireEvent.click(screen.getByRole("option", { name: "기술 (#10)" }));
     fireEvent.click(screen.getByRole("button", { name: "추가" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "기술 선택" }));
     expect(
       await screen.findByRole("button", { name: "반도체 섹터 수정" }),
     ).toBeInTheDocument();

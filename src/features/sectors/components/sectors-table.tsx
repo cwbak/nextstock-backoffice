@@ -1,12 +1,4 @@
 import {
-  CornerDownRightIcon,
-  PencilIcon,
-  PlusIcon,
-  Trash2Icon,
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
   Table,
   TableBody,
   TableCaption,
@@ -17,46 +9,7 @@ import {
 } from "@/components/ui/table";
 import { SectorDepthBadge } from "@/features/sectors/components/sector-depth-badge";
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
-import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
-
-function SectorRowActions({ row }: { row: SectorRow }) {
-  return (
-    <div className="flex justify-end gap-1">
-      {row.sector.depth !== "minor" ? (
-        <Button
-          aria-label={`${row.sector.name} 하위 섹터 추가`}
-          size="icon-sm"
-          title="하위 섹터 추가"
-          type="button"
-          variant="ghost"
-          onClick={() => sectorUiActions.create(row.sector.id)}
-        >
-          <PlusIcon aria-hidden="true" data-icon="inline-start" />
-        </Button>
-      ) : null}
-      <Button
-        aria-label={`${row.sector.name} 섹터 수정`}
-        size="icon-sm"
-        title="수정"
-        type="button"
-        variant="ghost"
-        onClick={() => sectorUiActions.edit(row.sector.id)}
-      >
-        <PencilIcon aria-hidden="true" data-icon="inline-start" />
-      </Button>
-      <Button
-        aria-label={`${row.sector.name} 섹터 삭제`}
-        size="icon-sm"
-        title="삭제"
-        type="button"
-        variant="ghost"
-        onClick={() => sectorUiActions.confirmDelete(row.sector.id)}
-      >
-        <Trash2Icon aria-hidden="true" data-icon="inline-start" />
-      </Button>
-    </div>
-  );
-}
+import { SectorRowActions } from "@/features/sectors/components/sector-row-actions";
 
 function SectorTableRow({ row }: { row: SectorRow }) {
   return (
@@ -69,12 +22,6 @@ function SectorTableRow({ row }: { row: SectorRow }) {
       </TableCell>
       <TableCell>
         <div className="flex min-w-0 items-center gap-2">
-          {row.ancestorIds.length ? (
-            <CornerDownRightIcon
-              aria-hidden="true"
-              className="size-4 shrink-0 text-muted-foreground"
-            />
-          ) : null}
           <span className="truncate font-medium">{row.sector.name}</span>
         </div>
       </TableCell>
@@ -95,7 +42,7 @@ function SectorTableRow({ row }: { row: SectorRow }) {
         {row.descendantCount.toLocaleString("ko-KR")}
       </TableCell>
       <TableCell className="pr-4">
-        <SectorRowActions row={row} />
+        <SectorRowActions sector={row.sector} />
       </TableCell>
     </TableRow>
   );

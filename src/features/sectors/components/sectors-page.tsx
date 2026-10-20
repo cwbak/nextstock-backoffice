@@ -11,8 +11,8 @@ import { SectorDeleteDialog } from "@/features/sectors/components/sector-delete-
 import { SectorFormDialog } from "@/features/sectors/components/sector-form-dialog";
 import { SectorListPanel } from "@/features/sectors/components/sector-list-panel";
 import { SectorSyncDialog } from "@/features/sectors/components/sector-sync-dialog";
+import { SectorViewSwitch } from "@/features/sectors/components/sector-view-switch";
 import { SectorsPageActions } from "@/features/sectors/components/sectors-page-actions";
-import { sectorDepthLabels } from "@/features/sectors/sector-depth";
 import { buildSectorRows } from "@/features/sectors/sector-hierarchy";
 
 export function SectorsPage() {
@@ -20,16 +20,6 @@ export function SectorsPage() {
   const { state, updateQuery } = useUnpaginatedDataTableState({ q: "" });
   const [filter, updateFilter] = useDataTableFilterQuery(state.q);
   const rows = useMemo(() => buildSectorRows(query.data ?? []), [query.data]);
-  const filteredRows = useMemo(() => {
-    const keyword = filter.trim().toLocaleLowerCase("ko-KR");
-    return keyword
-      ? rows.filter((row) =>
-          `${row.sector.id} ${sectorDepthLabels[row.sector.depth]} ${row.path.join(" ")}`
-            .toLocaleLowerCase("ko-KR")
-            .includes(keyword),
-        )
-      : rows;
-  }, [filter, rows]);
 
   return (
     <>
@@ -47,6 +37,7 @@ export function SectorsPage() {
           title="섹터 관리"
         />
         <DataTableToolbar
+          controls={<SectorViewSwitch />}
           label="섹터 검색"
           placeholder="섹터 ID, 섹터명, 분류, 상위 경로 검색"
           query={state.q}
@@ -59,8 +50,7 @@ export function SectorsPage() {
           onClear={() => updateQuery("")}
           onRetry={() => void query.refetch()}
           query={filter}
-          rows={filteredRows}
-          totalCount={query.data?.length ?? 0}
+          rows={rows}
         />
       </section>
       <SectorFormDialog sectors={query.data ?? []} />

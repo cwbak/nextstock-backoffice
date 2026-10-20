@@ -1,12 +1,22 @@
+import { useMemo } from "react";
+
 import { DataTableCard } from "@/components/common/data-table-card";
 import { NoSearchResults } from "@/components/common/no-search-results";
 import {
   SectorLoadError,
   SectorLoadingState,
   SectorsEmptyState,
+  SectorDepthEmptyState,
 } from "@/features/sectors/components/sector-list-states";
+import { SectorHierarchyBrowser } from "@/features/sectors/components/sector-hierarchy-browser";
 import { SectorsTable } from "@/features/sectors/components/sectors-table";
 import type { SectorRow } from "@/features/sectors/sector-hierarchy";
+import {
+  filterSectorRows,
+  getSectorDepthRows,
+} from "@/features/sectors/sector-browser";
+import { sectorDepthLabels } from "@/features/sectors/sector-depth";
+import { useSectorUiStore } from "@/features/sectors/stores/use-sector-ui-store";
 
 interface SectorListPanelProps {
   error: unknown;
@@ -15,7 +25,6 @@ interface SectorListPanelProps {
   onRetry: () => void;
   query: string;
   rows: ReadonlyArray<SectorRow>;
-  totalCount: number;
 }
 
 export function SectorListPanel({
@@ -25,25 +34,40 @@ export function SectorListPanel({
   onRetry,
   query,
   rows,
-  totalCount,
 }: SectorListPanelProps) {
+  const view = useSectorUiStore((state) => state.browserView);
+  const matches = useMemo(() => filterSectorRows(rows, query), [rows, query]);
+  const visibleRows = useMemo(
+    () => (view === "all" ? matches : getSectorDepthRows(matches, view)),
+    [matches, view],
+  );
   return (
     <DataTableCard
-      contentClassName="max-h-[70svh] overflow-y-auto"
-      description="대분류 → 중분류 → 소분류 순서로 표시합니다. 섹터명, 분류, 상위 경로로 검색할 수 있습니다."
-      recordCount={rows.length}
-      title="전체 섹터"
+      contentClassName={view === "all" ? "" : "max-h-[70svh] overflow-y-auto"}
+      description={
+        view === "all"
+          ? "대분류와 중분류를 선택해 하위 섹터를 확인하세요."
+          : "선택한 분류의 섹터만 표시합니다. 상위 경로와 함께 확인할 수 있습니다."
+      }
+      recordCount={visibleRows.length}
+      title={
+        view === "all" ? "전체 섹터 탐색" : `${sectorDepthLabels[view]} 섹터`
+      }
     >
       {isPending ? (
         <SectorLoadingState />
       ) : error ? (
         <SectorLoadError error={error} onRetry={onRetry} />
-      ) : totalCount === 0 ? (
-        <SectorsEmptyState />
       ) : rows.length === 0 ? (
+        <SectorsEmptyState />
+      ) : visibleRows.length === 0 && query.trim() ? (
         <NoSearchResults query={query} onClear={onClear} />
+      ) : view === "all" ? (
+        <SectorHierarchyBrowser matches={matches} query={query} rows={rows} />
+      ) : visibleRows.length === 0 ? (
+        <SectorDepthEmptyState depth={view} />
       ) : (
-        <SectorsTable rows={rows} />
+        <SectorsTable rows={visibleRows} />
       )}
     </DataTableCard>
   );

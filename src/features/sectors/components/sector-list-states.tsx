@@ -11,7 +11,24 @@ import {
 } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/data-access/api/client";
+import type { SectorDepth } from "@/data-access/schemas/sector";
+import { sectorDepthLabels } from "@/features/sectors/sector-depth";
 import { sectorUiActions } from "@/features/sectors/stores/use-sector-ui-store";
+
+export function SectorDepthEmptyState({ depth }: { depth: SectorDepth }) {
+  return (
+    <Empty className="min-h-48 border-0">
+      <EmptyHeader>
+        <EmptyTitle>
+          등록된 {sectorDepthLabels[depth]} 섹터가 없습니다
+        </EmptyTitle>
+        <EmptyDescription>
+          다른 분류를 선택하거나 동기화로 최신 섹터를 가져오세요.
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  );
+}
 
 export function SectorsEmptyState() {
   return (

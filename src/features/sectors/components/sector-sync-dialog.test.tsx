@@ -45,6 +45,7 @@ describe("sector synchronization", () => {
     sectorUiActions.closeEditor();
     sectorUiActions.closeDelete();
     sectorUiActions.closeSync();
+    sectorUiActions.resetBrowser();
     vi.restoreAllMocks();
   });
 
@@ -92,6 +93,8 @@ describe("sector synchronization", () => {
     expect(client.getQueryData(sectorKeys.detail(42))).toBeUndefined();
     expect(client.getQueryData(sectorKeys.list())).toEqual(latest);
     fireEvent.click(screen.getByRole("button", { name: "닫기" }));
+    fireEvent.click(screen.getByRole("button", { name: "기술 선택" }));
+    fireEvent.click(screen.getByRole("button", { name: "반도체 부품 선택" }));
     expect(
       screen.getByRole("button", { name: "장비 섹터 수정" }),
     ).toBeInTheDocument();
