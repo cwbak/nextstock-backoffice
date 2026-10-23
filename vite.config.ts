@@ -10,6 +10,11 @@ export default defineConfig(({ mode }) => {
   apiEnvSchema.parse(loadEnv(mode, process.cwd(), "VITE_"));
 
   return {
+    server: {
+      host: "127.0.0.1",
+      port: 3081,
+      strictPort: true,
+    },
     plugins: [
       tanstackRouter({
         target: "react",
