@@ -7,6 +7,7 @@ import { getErrorMessage } from "@/data-access/api/client";
 interface KrMarketDataInfiniteLoaderProps {
   error: unknown;
   hasNextPage: boolean;
+  isFetching: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
   onRetry: () => void;
@@ -15,6 +16,7 @@ interface KrMarketDataInfiniteLoaderProps {
 export function KrMarketDataInfiniteLoader({
   error,
   hasNextPage,
+  isFetching,
   isFetchingNextPage,
   onLoadMore,
   onRetry,
@@ -28,7 +30,7 @@ export function KrMarketDataInfiniteLoader({
     if (
       !trigger ||
       !hasNextPage ||
-      isFetchingNextPage ||
+      isFetching ||
       error ||
       typeof IntersectionObserver === "undefined"
     ) {
@@ -47,7 +49,7 @@ export function KrMarketDataInfiniteLoader({
     observer.observe(trigger);
 
     return () => observer.disconnect();
-  }, [error, hasNextPage, isFetchingNextPage]);
+  }, [error, hasNextPage, isFetching]);
 
   return (
     <div
@@ -68,7 +70,13 @@ export function KrMarketDataInfiniteLoader({
           </Button>
         </span>
       ) : hasNextPage ? (
-        <Button size="sm" type="button" variant="ghost" onClick={onLoadMore}>
+        <Button
+          disabled={isFetching}
+          size="sm"
+          type="button"
+          variant="ghost"
+          onClick={onLoadMore}
+        >
           이전 캔들 더 불러오기
         </Button>
       ) : (

@@ -6,24 +6,29 @@ export function sortUsStocksByMarketCap(
   items: ReadonlyArray<UsStock>,
   direction: SortDirection,
 ) {
-  return [...items].sort((first, second) => {
-    if (first.marketCap === null && second.marketCap === null) {
-      return first.symbol.localeCompare(second.symbol);
-    }
-    if (first.marketCap === null) {
-      return 1;
-    }
-    if (second.marketCap === null) {
-      return -1;
-    }
+  return items
+    .map((item) => ({
+      item,
+      marketCap:
+        item.marketCap === null ? null : marketCapAsCents(item.marketCap),
+    }))
+    .sort((first, second) => {
+      if (first.marketCap === null && second.marketCap === null) {
+        return first.item.symbol.localeCompare(second.item.symbol);
+      }
+      if (first.marketCap === null) {
+        return 1;
+      }
+      if (second.marketCap === null) {
+        return -1;
+      }
 
-    const firstMarketCap = marketCapAsCents(first.marketCap);
-    const secondMarketCap = marketCapAsCents(second.marketCap);
-    if (firstMarketCap === secondMarketCap) {
-      return first.symbol.localeCompare(second.symbol);
-    }
+      if (first.marketCap === second.marketCap) {
+        return first.item.symbol.localeCompare(second.item.symbol);
+      }
 
-    const comparison = firstMarketCap < secondMarketCap ? -1 : 1;
-    return direction === "asc" ? comparison : -comparison;
-  });
+      const comparison = first.marketCap < second.marketCap ? -1 : 1;
+      return direction === "asc" ? comparison : -comparison;
+    })
+    .map(({ item }) => item);
 }

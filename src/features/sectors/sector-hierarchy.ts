@@ -13,10 +13,9 @@ export function getSectorBranchIds(sectors: ReadonlyArray<Sector>, id: number) {
   const children = new Map<number, number[]>();
   for (const sector of sectors) {
     if (sector.parentId !== null) {
-      children.set(sector.parentId, [
-        ...(children.get(sector.parentId) ?? []),
-        sector.id,
-      ]);
+      const siblings = children.get(sector.parentId);
+      if (siblings) siblings.push(sector.id);
+      else children.set(sector.parentId, [sector.id]);
     }
   }
   const ids = new Set<number>();
@@ -42,7 +41,9 @@ export function buildSectorRows(sectors: ReadonlyArray<Sector>): SectorRow[] {
       sector.parentId !== null && byId.has(sector.parentId)
         ? sector.parentId
         : null;
-    children.set(parentId, [...(children.get(parentId) ?? []), sector]);
+    const siblings = children.get(parentId);
+    if (siblings) siblings.push(sector);
+    else children.set(parentId, [sector]);
   }
   const rows: SectorRow[] = [];
   const visited = new Set<number>();

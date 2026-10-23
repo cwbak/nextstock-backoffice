@@ -1,4 +1,5 @@
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -245,6 +246,57 @@ describe("KrMarketDataPage", () => {
     expect(fetchMock.mock.calls[1]?.[0]).toBe(
       `/admin/stock-prices/377220?period=daily&end=${getCurrentLocalDate()}&limit=${krMarketDataPageLimit}&adjusted=true`,
     );
+  });
+
+  it("새로고침 중에는 이전 캔들 요청으로 진행 중인 갱신을 취소하지 않는다", async () => {
+    const candles = Array.from(
+      { length: krMarketDataPageLimit },
+      (_, index) => ({
+        period: "daily",
+        date: new Date(Date.UTC(2026, 0, index + 1)).toISOString().slice(0, 10),
+        open: 70_000,
+        low: 69_500,
+        high: 71_000,
+        close: 70_500,
+        priceChange: 500,
+        priceChangeRate: 0.71,
+        volume: 12_345_678,
+        value: 870_000_000_000,
+      }),
+    );
+    let completeRefresh!: (response: Response) => void;
+    const pendingRefresh = new Promise<Response>((resolve) => {
+      completeRefresh = resolve;
+    });
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(candles))
+      .mockReturnValueOnce(pendingRefresh)
+      .mockResolvedValue(jsonResponse([]));
+    renderPage();
+
+    fireEvent.click(screen.getByRole("combobox", { name: "KR 종목" }));
+    fireEvent.click(screen.getByRole("option", { name: /삼성전자/ }));
+    fireEvent.click(screen.getByRole("button", { name: "조회" }));
+
+    const loadMore = await screen.findByRole("button", {
+      name: "이전 캔들 더 불러오기",
+    });
+    fireEvent.click(screen.getByRole("button", { name: "새로고침" }));
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+
+    fireEvent.click(loadMore);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1]?.[1]?.signal?.aborted).toBe(false);
+
+    await act(async () => {
+      completeRefresh(jsonResponse(candles));
+      await pendingRefresh;
+    });
+    await waitFor(() => expect(loadMore).toBeEnabled());
+    fireEvent.click(loadMore);
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
   });
 
   it("일봉 전용 저장 화면을 연다", () => {

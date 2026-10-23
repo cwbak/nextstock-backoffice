@@ -36,4 +36,34 @@ describe("sortUsStocksByMarketCap", () => {
       sortUsStocksByMarketCap(items, "desc").map((item) => item.symbol),
     ).toEqual(["B", "A", "C"]);
   });
+
+  it.each(["asc", "desc"] as const)(
+    "%s 정렬에서 같은 시가총액과 누락된 시가총액은 심볼 순서를 유지한다",
+    (direction) => {
+      const tiedItems = [
+        createItem("D", null),
+        createItem("B", "100.00"),
+        createItem("C", null),
+        createItem("A", "100"),
+      ];
+
+      expect(
+        sortUsStocksByMarketCap(tiedItems, direction).map(
+          (item) => item.symbol,
+        ),
+      ).toEqual(["A", "B", "C", "D"]);
+    },
+  );
+
+  it("원본 배열과 종목 객체를 변경하지 않는다", () => {
+    const input = Object.freeze([
+      Object.freeze(createItem("B", "200")),
+      Object.freeze(createItem("A", "100")),
+    ]);
+    const sorted = sortUsStocksByMarketCap(input, "asc");
+
+    expect(input.map((item) => item.symbol)).toEqual(["B", "A"]);
+    expect(sorted[0]).toBe(input[1]);
+    expect(sorted[1]).toBe(input[0]);
+  });
 });

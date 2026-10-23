@@ -246,6 +246,7 @@ export function KrMarketDataPage() {
                     : null
                 }
                 hasNextPage={marketDataQuery.hasNextPage}
+                isFetching={marketDataQuery.isFetching}
                 isFetchingNextPage={marketDataQuery.isFetchingNextPage}
                 onLoadMore={() => void marketDataQuery.fetchNextPage()}
                 onRetry={() => void marketDataQuery.fetchNextPage()}

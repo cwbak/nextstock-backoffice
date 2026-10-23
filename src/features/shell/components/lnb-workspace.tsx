@@ -1,21 +1,60 @@
-import { Activity, Suspense } from "react";
+import { lazy } from "react";
 
 import { Outlet, useRouterState } from "@tanstack/react-router";
 
-import { ManagementPageLoading } from "@/components/common/management-page-loading";
-import {
-  UsCalendarEarningsPage,
-  KrCalendarEarningsPage,
-} from "@/features/calendar-earnings";
-import { CalendarEventsPage } from "@/features/calendar-events";
-import { CorporationInvestmentsPage } from "@/features/corporation-investments";
-import { CorporationsPage } from "@/features/corporations";
-import { KrStocksPage } from "@/features/kr-stocks";
-import { KrMarketDataPage } from "@/features/kr-market-data";
-import { UsStocksPage } from "@/features/us-stocks";
-import { ThemesPage } from "@/features/themes";
-import { SectorsPage } from "@/features/sectors";
+import { RetainedWorkspace } from "@/features/shell/components/retained-workspace";
 import { isNavigationPath } from "@/features/shell/navigation-items";
+
+const UsStocksPage = lazy(() =>
+  import("@/features/us-stocks").then((module) => ({
+    default: module.UsStocksPage,
+  })),
+);
+const CorporationsPage = lazy(() =>
+  import("@/features/corporations").then((module) => ({
+    default: module.CorporationsPage,
+  })),
+);
+const CorporationInvestmentsPage = lazy(() =>
+  import("@/features/corporation-investments").then((module) => ({
+    default: module.CorporationInvestmentsPage,
+  })),
+);
+const KrStocksPage = lazy(() =>
+  import("@/features/kr-stocks").then((module) => ({
+    default: module.KrStocksPage,
+  })),
+);
+const KrMarketDataPage = lazy(() =>
+  import("@/features/kr-market-data").then((module) => ({
+    default: module.KrMarketDataPage,
+  })),
+);
+const ThemesPage = lazy(() =>
+  import("@/features/themes").then((module) => ({
+    default: module.ThemesPage,
+  })),
+);
+const SectorsPage = lazy(() =>
+  import("@/features/sectors").then((module) => ({
+    default: module.SectorsPage,
+  })),
+);
+const CalendarEventsPage = lazy(() =>
+  import("@/features/calendar-events").then((module) => ({
+    default: module.CalendarEventsPage,
+  })),
+);
+const UsCalendarEarningsPage = lazy(() =>
+  import("@/features/calendar-earnings").then((module) => ({
+    default: module.UsCalendarEarningsPage,
+  })),
+);
+const KrCalendarEarningsPage = lazy(() =>
+  import("@/features/calendar-earnings").then((module) => ({
+    default: module.KrCalendarEarningsPage,
+  })),
+);
 
 export function LnbWorkspace() {
   const pathname = useRouterState({
@@ -29,86 +68,76 @@ export function LnbWorkspace() {
 
   return (
     <>
-      <Activity
-        mode={activePath === "/us-stocks" ? "visible" : "hidden"}
+      <RetainedWorkspace
+        active={activePath === "/us-stocks"}
+        label="US 종목 정보"
         name="US stocks workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="US 종목 정보" />}>
-          <UsStocksPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/corporations" ? "visible" : "hidden"}
+        <UsStocksPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/corporations"}
+        label="법인 목록"
         name="Corporations workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="법인 목록" />}>
-          <CorporationsPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/corporation-investments" ? "visible" : "hidden"}
+        <CorporationsPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/corporation-investments"}
+        label="법인 출자현황"
         name="Corporation investments workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="법인 출자현황" />}>
-          <CorporationInvestmentsPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/listed-stocks" ? "visible" : "hidden"}
+        <CorporationInvestmentsPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/listed-stocks"}
+        label="상장 종목 목록"
         name="KR stocks workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="상장 종목 목록" />}>
-          <KrStocksPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/kr-market-data" ? "visible" : "hidden"}
+        <KrStocksPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/kr-market-data"}
+        label="KR 캔들"
         name="KR candle market data workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="KR 캔들" />}>
-          <KrMarketDataPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/themes" ? "visible" : "hidden"}
+        <KrMarketDataPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/themes"}
+        label="테마 리스팅"
         name="Theme listing workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="테마 리스팅" />}>
-          <ThemesPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/sectors" ? "visible" : "hidden"}
+        <ThemesPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/sectors"}
+        label="섹터 관리"
         name="Sectors workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="섹터 관리" />}>
-          <SectorsPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/calendar-events" ? "visible" : "hidden"}
+        <SectorsPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/calendar-events"}
+        label="일정"
         name="Calendar events workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="일정" />}>
-          <CalendarEventsPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/calendar-earnings-us" ? "visible" : "hidden"}
+        <CalendarEventsPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/calendar-earnings-us"}
+        label="US 실적 일정"
         name="US calendar earnings workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="US 실적 일정" />}>
-          <UsCalendarEarningsPage />
-        </Suspense>
-      </Activity>
-      <Activity
-        mode={activePath === "/calendar-earnings-kr" ? "visible" : "hidden"}
+        <UsCalendarEarningsPage />
+      </RetainedWorkspace>
+      <RetainedWorkspace
+        active={activePath === "/calendar-earnings-kr"}
+        label="KR 실적 일정"
         name="KR calendar earnings workspace"
       >
-        <Suspense fallback={<ManagementPageLoading label="KR 실적 일정" />}>
-          <KrCalendarEarningsPage />
-        </Suspense>
-      </Activity>
+        <KrCalendarEarningsPage />
+      </RetainedWorkspace>
       <Outlet />
     </>
   );

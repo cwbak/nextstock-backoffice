@@ -1,4 +1,5 @@
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -44,7 +45,7 @@ const theme = {
   updatedAt: "2026-08-09T10:00:00+09:00",
 } as const;
 
-function renderWorkspace() {
+function renderWorkspace(seedOtherPages = true) {
   vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
 
   const queryClient = new QueryClient({
@@ -57,15 +58,18 @@ function renderWorkspace() {
   });
 
   queryClient.setQueryData(corporationsQueryOptions.queryKey, []);
-  queryClient.setQueryData(equityInvestmentsQueryOptions.queryKey, []);
-  queryClient.setQueryData(krStocksQueryOptions.queryKey, []);
-  queryClient.setQueryData(usStocksQueryOptions.queryKey, []);
-  queryClient.setQueryData(sectorsQueryOptions.queryKey, []);
-  queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
-  queryClient.setQueryData(usCalendarEarningsQueryOptions.queryKey, []);
-  queryClient.setQueryData(krCalendarEarningsQueryOptions.queryKey, []);
-  queryClient.setQueryData(themesQueryOptions.queryKey, [theme]);
-  queryClient.setQueryData(themeStocksQueryOptions(theme.id).queryKey, []);
+
+  if (seedOtherPages) {
+    queryClient.setQueryData(equityInvestmentsQueryOptions.queryKey, []);
+    queryClient.setQueryData(krStocksQueryOptions.queryKey, []);
+    queryClient.setQueryData(usStocksQueryOptions.queryKey, []);
+    queryClient.setQueryData(sectorsQueryOptions.queryKey, []);
+    queryClient.setQueryData(calendarEventsQueryOptions.queryKey, []);
+    queryClient.setQueryData(usCalendarEarningsQueryOptions.queryKey, []);
+    queryClient.setQueryData(krCalendarEarningsQueryOptions.queryKey, []);
+    queryClient.setQueryData(themesQueryOptions.queryKey, [theme]);
+    queryClient.setQueryData(themeStocksQueryOptions(theme.id).queryKey, []);
+  }
 
   const router = createRouter({
     context: { queryClient },
@@ -100,6 +104,24 @@ describe("LnbWorkspace", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+  });
+
+  it("방문하지 않은 메뉴의 페이지와 API 조회를 시작하지 않는다", async () => {
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(() => new Promise<Response>(() => undefined));
+    const router = renderWorkspace(false);
+
+    await screen.findByRole("searchbox", { name: "법인 검색" });
+    await act(async () => {});
+
+    expect(fetch).not.toHaveBeenCalled();
+    expect(
+      router.options.context.queryClient
+        .getQueryCache()
+        .findAll({ type: "active" })
+        .map((query) => query.queryKey),
+    ).toEqual([corporationsQueryOptions.queryKey]);
   });
 
   it("테마 리스팅 다음 섹터 메뉴에서 관리 화면으로 이동한다", async () => {
@@ -164,7 +186,7 @@ describe("LnbWorkspace", () => {
       }),
     );
 
-    const krMarketDataPeriodSelect = screen.getByRole("combobox", {
+    const krMarketDataPeriodSelect = await screen.findByRole("combobox", {
       name: "캔들 주기",
     });
 
