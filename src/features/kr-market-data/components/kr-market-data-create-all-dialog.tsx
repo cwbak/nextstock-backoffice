@@ -22,6 +22,7 @@ import {
 } from "@/data-access/schemas/kr-market-data";
 import { KrMarketDataDateRangeFields } from "@/features/kr-market-data/components/kr-market-data-date-range-fields";
 import { useKrMarketDataDateRangeForm } from "@/features/kr-market-data/hooks/use-kr-market-data-date-range-form";
+import { getCurrentLocalDate } from "@/features/kr-market-data/kr-market-data-date";
 
 interface KrMarketDataCreateAllDialogProps {
   onCreated: (
@@ -38,8 +39,9 @@ export function KrMarketDataCreateAllDialog({
   open,
 }: KrMarketDataCreateAllDialogProps) {
   const queryClient = useQueryClient();
+  const today = getCurrentLocalDate();
   const { createSubmit, errors, register, resetForm } =
-    useKrMarketDataDateRangeForm();
+    useKrMarketDataDateRangeForm({ from: today, to: today });
   const mutation = useMutation({
     mutationFn: createKrxDailyMarketData,
     onSuccess: async (result, payload) => {

@@ -14,7 +14,9 @@ function isFieldName(
   return fieldNames.has(value as keyof KrMarketDataCreateAllPayload);
 }
 
-export function useKrMarketDataDateRangeForm() {
+export function useKrMarketDataDateRangeForm(
+  initialValues: KrMarketDataCreateAllPayload = defaultValues,
+) {
   const {
     clearErrors,
     formState: { errors },
@@ -22,11 +24,11 @@ export function useKrMarketDataDateRangeForm() {
     register,
     reset,
     setError,
-  } = useForm<KrMarketDataCreateAllPayload>({ defaultValues });
+  } = useForm<KrMarketDataCreateAllPayload>({ defaultValues: initialValues });
 
   const resetForm = () => {
     clearErrors();
-    reset(defaultValues);
+    reset(initialValues);
   };
   const createSubmit = (
     onSubmit: (payload: KrMarketDataCreateAllPayload) => void,
